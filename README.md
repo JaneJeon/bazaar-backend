@@ -1,10 +1,10 @@
 # Bazaar Back End
 
-TODO: super short project description, some sample screenshots or mockups that you keep up-to-date.
+This is a backend service that will support the Bazaar client.
 
 ## Architecture
 
-TODO:  overall descriptions of code organization and tools and libraries used
+We will have an Express API and a NodeJS server. 
 
 ## Setup
 
