@@ -1,4 +1,5 @@
 {
+  "private": true,
   "scripts": {
     "start": "node app",
     "watch": "nodemon app",
@@ -17,7 +18,12 @@
     "helmet": "^3.15.0",
     "ioredis": "^4.6.2",
     "knex": "^0.16.3",
+    "normalize-email": "^1.1.1",
     "objection": "^1.5.3",
+    "objection-db-errors": "^1.0.0",
+    "objection-password-argon2": "^2.0.0",
+    "objection-soft-delete": "^1.0.5",
+    "objection-visibility": "^0.4.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.8.0",
