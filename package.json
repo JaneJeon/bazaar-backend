@@ -2,7 +2,9 @@
   "scripts": {
     "start": "node app",
     "watch": "nodemon app",
-    "secret": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+    "secret": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
+    "migrate": "DEBUG=knex knex migrate:latest",
+    "rollback": "DEBUG=knex knex migrate:rollback"
   },
   "dependencies": {
     "aws-sdk": "^2.395.0",
@@ -18,7 +20,8 @@
     "objection": "^1.5.3",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "pg": "^7.8.0"
+    "pg": "^7.8.0",
+    "pluralize": "^7.0.0"
   },
   "devDependencies": {
     "@types/cookie-session": "^2.0.36",
