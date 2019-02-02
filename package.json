@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "start": "node app",
+    "watch": "nodemon app",
+    "secret": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+  },
   "dependencies": {
     "aws-sdk": "^2.395.0",
     "body-parser": "^1.18.3",
@@ -22,6 +27,7 @@
     "@types/knex": "^0.15.1",
     "@types/passport": "^1.0.0",
     "@types/passport-local": "^1.0.33",
+    "nodemon": "^1.18.9",
     "prettier": "^1.16.3"
   },
   "prettier": {

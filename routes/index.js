@@ -1,3 +1,4 @@
-const { Router } = require('express')
+const { Router } = require("express")
+const users = require("./users")
 
-module.exports = Router()
+module.exports = Router().use("/users", users)
