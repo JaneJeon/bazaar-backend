@@ -1,21 +1,28 @@
 # Bazaar Back End
 
-This is a backend service that will support the Bazaar client.
+This is a backend service that will support the Bazaar client. Please refer to the frontent repo @ https://github.com/dartmouth-cs98/19w-bazaar-frontend
 
 ## Architecture
 
-We will have an Express API and a NodeJS server. 
+We will have an Express API and a NodeJS server. Major assets will be stored on S3.
 
 ## Setup
 
-TODO: how to get the project dev environment up and running, npm install etc, all necessary commands needed, environment variables etc
+1. npm install
+2. node app.js
 
 ## Deployment
 
-TODO: how to deploy the project
+The server will be listening for connections as soon as it is run. Visit localhost.
 
 ## Authors
 
-TODO: list of authors
+Lindsey Hodel
+Ryan Hall
+Daniel Kim
+Sungil Ahn
+Ricky Taboada
 
 ## Acknowledgments
+
+Thank you to everyone.
