@@ -1,8 +1,9 @@
 const BaseModel = require("./base")
 const Password = require("objection-password-argon2")
+const softDelete = require("objection-soft-delete")
 const normalize = require("normalize-email")
 
-class User extends Password()(BaseModel) {
+class User extends softDelete()(Password()(BaseModel)) {
   static get jsonSchema() {
     return {
       type: "object",
