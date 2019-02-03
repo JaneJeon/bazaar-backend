@@ -4,10 +4,10 @@ const passport = require("passport")
 
 module.exports = Router()
   .post("/", async (req, res) => {
-    const user = await User.query().create({
-      username: req.username,
-      email: req.email,
-      password: req.password
+    const user = await User.query().insert({
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password
     })
 
     req.login(user, () => res.status(201).send({ user: req.user }))
