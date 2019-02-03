@@ -40,4 +40,4 @@ Ricky Taboada (frontend)
 
 ## Acknowledgments
 
-Thanks Ryan for taking me out for a drink
+Thanks Ryan for taking me out for a drink!
