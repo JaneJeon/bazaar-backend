@@ -4,8 +4,8 @@
     "start": "node app",
     "watch": "nodemon app",
     "secret": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
-    "migrate": "DEBUG=knex knex migrate:latest",
-    "rollback": "DEBUG=knex knex migrate:rollback"
+    "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
+    "rollback": "DEBUG=knex knex migrate:rollback --knexfile ./config/database.js"
   },
   "dependencies": {
     "aws-sdk": "^2.395.0",
