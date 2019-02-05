@@ -16,6 +16,10 @@ exports.up = knex =>
       .boolean("deleted")
       .notNullable()
       .defaultTo(false)
+    table
+      .boolean("verified")
+      .notNullable()
+      .defaultTo(false)
 
     table.timestamps(true, true)
   })
