@@ -19,7 +19,8 @@ class User extends softDelete()(Password()(BaseModel)) {
         password: {
           type: "string",
           minLength: process.env.MIN_PASSWORD_LENGTH
-        }
+        },
+        verified: { type: "boolean" }
       },
       required: ["username", "email", "password"],
       additionalProperties: false
@@ -27,7 +28,7 @@ class User extends softDelete()(Password()(BaseModel)) {
   }
 
   static get hidden() {
-    return ["email", "password"]
+    return ["email", "password", "deleted"]
   }
 
   $beforeInsert(queryContext) {

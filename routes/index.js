@@ -1,8 +1,7 @@
 const { Router } = require("express")
+const sessions = require("./sessions")
 const users = require("./users")
-const assert = require("http-assert")
 
 module.exports = Router()
+  .use("/sessions", sessions)
   .use("/users", users)
-  // ensure people are logged in
-  .use((req, res, next) => assert(req.user, 401))
