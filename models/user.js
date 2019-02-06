@@ -8,7 +8,6 @@ class User extends softDelete()(Password()(BaseModel)) {
     return {
       type: "object",
       properties: {
-        id: { type: "integer", min: 1 },
         username: {
           type: "string",
           minLength: 1,

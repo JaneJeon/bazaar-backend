@@ -2,6 +2,7 @@ const { Router } = require("express")
 const { User } = require("../models")
 const ses = require("../config/ses")
 const jwt = require("jsonwebtoken")
+const assert = require("http-assert")
 
 module.exports = Router()
   // CREATE user - i.e. sign up
@@ -24,10 +25,8 @@ module.exports = Router()
   // verify user email
   .patch("/verify/:token", async (req, res) => {
     const { id } = jwt.verify(req.params.token, process.env.JWT_SECRET)
-    const user = await User.query()
-      .patch({ verified: true })
-      .where({ id })
-      .returning("*")
-      .first()
+    assert(req.user.id, 401)
+    assert(id == req.user.id, 403)
+    const user = await User.query().patchAndFetchById(id, { verified: true })
     res.send({ user })
   })
