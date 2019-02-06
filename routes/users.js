@@ -19,12 +19,17 @@ module.exports = Router()
       Source: process.env.SENDER_ADDRESS,
       Template: "verify",
       Destination: { ToAddresses: [user.email] },
-      TemplateData: { url: `${process.env.FRONTEND_URL}/users/verify/${token}` }
+      TemplateData: {
+        url: `${
+          process.env.FRONTEND_URL
+        }/users/verify?token=${encodeURIComponent(token)}`
+      }
     })
   })
   // verify user email
-  .patch("/verify/:token", async (req, res) => {
-    const { id } = jwt.verify(req.params.token, process.env.JWT_SECRET)
+  .patch("/verify", async (req, res) => {
+    assert(req.body.token, 400)
+    const { id } = jwt.verify(req.body.token, process.env.JWT_SECRET)
     assert(req.user.id, 401)
     assert(id == req.user.id, 403)
     const user = await User.query().patchAndFetchById(id, { verified: true })
