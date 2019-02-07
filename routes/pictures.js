@@ -12,11 +12,12 @@ module.exports = Router()
     const pictures = await Picture.query()
       .where("id", "<", req.body.after || POSTGRES_MAX_INT)
       .orderBy("id", "desc")
+      .limit(process.env.PAGE_SIZE)
 
     res.send({ pictures })
   })
   // create a single picture
-  .post("/", upload.single(), async (req, res) => {
+  .post("/", upload.single("picture"), async (req, res) => {
     const { title, description } = req.body
     const url = req.file.location
     const picture = await Picture.query().insert({ title, description, url })
