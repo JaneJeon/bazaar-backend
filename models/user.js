@@ -19,6 +19,7 @@ class User extends softDelete()(Password()(BaseModel)) {
           type: "string",
           minLength: process.env.MIN_PASSWORD_LENGTH
         },
+        deleted: { type: "boolean" },
         verified: { type: "boolean" }
       },
       required: ["username", "email", "password"],
@@ -26,20 +27,24 @@ class User extends softDelete()(Password()(BaseModel)) {
     }
   }
 
-  static get hidden() {
-    return ["email", "password", "deleted"]
+  static get visible() {
+    return ["username", "verified"]
+  }
+
+  static normalizeEmail(email) {
+    return normalize(email)
   }
 
   $beforeInsert(queryContext) {
     super.$beforeInsert(queryContext)
     this.username = this.username.toLowerCase()
-    this.email = normalize(this.email)
+    this.email = User.normalizeEmail(this.email)
   }
 
   $beforeUpdate(opt, queryContext) {
     super.$beforeUpdate(opt, queryContext)
     if (this.username) this.username = this.username.toLowerCase()
-    if (this.email) this.email = normalize(this.email)
+    if (this.email) this.email = User.normalizeEmail(this.email)
   }
 }
 

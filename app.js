@@ -3,7 +3,6 @@ require("express-async-errors")
 require("./config/passport")
 
 const express = require("express")
-const pino = require("express-pino-logger")
 const logger = require("./config/logger")
 const helmet = require("helmet")
 const cors = require("cors")
@@ -15,10 +14,12 @@ const RedisStore = require("rate-limit-redis")
 const redis = require("./config/redis")
 const router = require("./routes")
 
+const { ValidationError, NotFoundError } = require("objection")
+const { UniqueViolationError } = require("db-errors")
+
 const app = express()
 if (process.env.NODE_ENV == "production") app.enable("trust proxy")
 app
-  .use(pino({ logger }))
   .use(helmet())
   .use(cors({ origin: process.env.FRONTEND_URL }))
   .use(jsonParser())
@@ -29,11 +30,17 @@ app
   .use(router)
   .use((req, res) => res.sendStatus(404))
   .use((err, req, res, next) => {
-    res
-      .status(
-        err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500
-      )
-      .send({ error: err.message })
+    if (!(err.code || err.status || err.statusCode)) {
+      if (err instanceof ValidationError) err.statusCode = 400
+      else if (err instanceof NotFoundError) err.statusCode = 404
+      else if (err instanceof UniqueViolationError) err.statusCode = 409
+      else {
+        err.statusCode = 500
+        logger.error(err)
+      }
+    }
+
+    res.status(err.statusCode).send({ error: err.message })
   })
 
 app.listen(process.env.PORT, err => {
