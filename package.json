@@ -16,7 +16,6 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "express-async-errors": "^3.1.1",
-    "express-pino-logger": "^4.0.0",
     "express-rate-limit": "^3.3.2",
     "helmet": "^3.15.0",
     "http-assert": "^1.4.0",
@@ -66,7 +65,6 @@
     "chai-as-promised": "^7.1.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.9",
-    "pino-pretty": "^2.5.0",
     "prettier": "^1.16.3",
     "supertest": "^3.4.2"
   },
