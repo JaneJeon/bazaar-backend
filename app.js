@@ -14,7 +14,6 @@ const RedisStore = require("rate-limit-redis")
 const redis = require("./config/redis")
 const router = require("./routes")
 
-const { JsonWebTokenError, TokenExpiredError } = require("jsonwebtoken")
 const { ValidationError, NotFoundError } = require("objection")
 const { UniqueViolationError } = require("db-errors")
 
@@ -32,12 +31,7 @@ app
   .use((req, res) => res.sendStatus(404))
   .use((err, req, res, next) => {
     if (!(err.code || err.status || err.statusCode)) {
-      if (
-        err instanceof JsonWebTokenError ||
-        err instanceof TokenExpiredError ||
-        err instanceof ValidationError
-      )
-        err.statusCode = 400
+      if (err instanceof ValidationError) err.statusCode = 400
       else if (err instanceof NotFoundError) err.statusCode = 404
       else if (err instanceof UniqueViolationError) err.statusCode = 409
       else {

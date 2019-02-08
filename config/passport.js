@@ -5,7 +5,9 @@ const { Strategy: LocalStrategy } = require("passport-local")
 passport.serializeUser((user, done) => done(null, user.id))
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.query().findById(id)
+    const user = await User.query()
+      .findById(id)
+      .whereNotDeleted()
     if (!user) done(null, false)
     else done(null, user)
   } catch (err) {

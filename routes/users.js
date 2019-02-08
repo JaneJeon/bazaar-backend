@@ -1,7 +1,8 @@
 const { Router } = require("express")
 const { User } = require("../models")
+const redis = require("../config/redis")
+const random = require("../config/random")
 const ses = require("../config/ses")
-const jwt = require("jsonwebtoken")
 const assert = require("http-assert")
 
 module.exports = Router()
@@ -12,26 +13,52 @@ module.exports = Router()
     req.login(user, () => res.status(201).send({ user: req.user }))
 
     // email verification
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "24h"
-    })
+    const token = await random.string(24)
+    await redis.setex(`verify:${token}`, user.id, 86400)
+
     await ses.sendTemplatedEmail({
       Source: process.env.SENDER_ADDRESS,
       Template: "verify",
       Destination: { ToAddresses: [user.email] },
-      TemplateData: {
-        url: `${
-          process.env.FRONTEND_URL
-        }/users/verify?token=${encodeURIComponent(token)}`
-      }
+      TemplateData: { url: `${process.env.FRONTEND_URL}/users/verify/${token}` }
     })
   })
   // verify user email
-  .patch("/verify", async (req, res) => {
-    assert(req.body.token, 400)
-    const { id } = jwt.verify(req.body.token, process.env.JWT_SECRET)
-    assert(req.user.id, 401)
-    assert(id == req.user.id, 403)
-    const user = await User.query().patchAndFetchById(id, { verified: true })
-    res.send({ user })
+  .patch("/verify/:token", async (req, res) => {
+    const id = await redis.get(`verify:${req.params.token}`)
+    await User.query()
+      .patch({ verified: true })
+      .where({ id })
+      .whereNotDeleted()
+    await redis.del(`verify:${token}`)
+
+    res.end()
   })
+  // password reset when user forgets their password while logging in
+  .patch("/reset", async (req, res) => {
+    assert(req.body.email, 400)
+    const id = await User.query()
+      .where({ email: User.normalizeEmail(email) })
+      .whereNotDeleted()
+    res.end()
+
+    const token = await random.string(24)
+    await redis.setex(`reset:${token}`, id, 86400)
+
+    await ses.sendTemplatedEmail({
+      Source: process.env.SENDER_ADDRESS,
+      Template: "reset",
+      Destination: { ToAddresses: [req.body.email] },
+      TemplateData: { url: `${process.env.FRONTEND_URL}/users/reset/${token}` }
+    })
+  })
+  .patch("/reset/:token", async (req, res) => {
+    const id = await redis.get(`verify:${req.params.token}`)
+    await User.query()
+      .patch({ password })
+      .where({ id })
+      .whereNotDeleted()
+
+    res.end()
+  })
+  .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))

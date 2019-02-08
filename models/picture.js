@@ -1,7 +1,7 @@
 const BaseModel = require("./base")
 const sharp = require("sharp")
 const s3 = require("../config/s3")
-const uuid = require("uuid/v1")
+const random = require("../config/random")
 
 class Picture extends BaseModel {
   static get jsonSchema() {
@@ -37,7 +37,7 @@ class Picture extends BaseModel {
 
     const file = await s3
       .upload({
-        Key: `${uuid()}.jpeg`,
+        Key: `${await random.string()}.jpeg`,
         Body: image,
         Bucket: process.env.PICTURE_BUCKET,
         ACL: "public-read"
