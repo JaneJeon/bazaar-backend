@@ -38,7 +38,7 @@ This API uses a REST design - that means each endpoint exposes a single "resourc
 - [DELETE `/sessions`](#logout)
 - [POST `/users`](#createuser)
 - [PATCH `/users/verify/:token`](#verifyuser)
-- [POST `/users/reset`](#requestreset)
+- [PATCH `/users/reset`](#requestreset)
 - [PATCH `/users/reset/:token`](#passwordreset)
 - [POST `/pictures`](#createpicture)
 - [GET `/pictures/explore`](#discover)
@@ -60,7 +60,7 @@ Additionally, an email is sent out to the user's email asking for verification c
 
 When a user accesses a page of form `/users/verify/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` value) to verify the user's email address. On success, returns status code 200, at which point the user should be redirected to a login page (front-end routing).
 
-### <a name="requestreset"></a>POST `/users/reset`
+### <a name="requestreset"></a>PATCH `/users/reset`
 
 This endpoint is used to request a password reset in case a user forgot it. Param `email` is expected. On success, returns a 200 and sends out an email with the password reset link of form `/users/reset/:token`.
 

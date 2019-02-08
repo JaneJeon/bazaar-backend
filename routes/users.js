@@ -26,6 +26,7 @@ module.exports = Router()
   // verify user email
   .patch("/verify/:token", async (req, res) => {
     const id = await redis.get(`verify:${req.params.token}`)
+    assert(id, 404)
     await User.query()
       .patch({ verified: true })
       .where({ id })
@@ -35,11 +36,12 @@ module.exports = Router()
     res.end()
   })
   // password reset when user forgets their password while logging in
-  .post("/reset", async (req, res) => {
+  .patch("/reset", async (req, res) => {
     assert(req.body.email, 400)
     const id = await User.query()
       .where({ email: User.normalizeEmail(email) })
       .whereNotDeleted()
+    assert(id, 404)
     res.end()
 
     const token = await random.string(24)
@@ -54,6 +56,7 @@ module.exports = Router()
   })
   .patch("/reset/:token", async (req, res) => {
     const id = await redis.get(`verify:${req.params.token}`)
+    assert(id, 404)
     await User.query()
       .patch({ password })
       .where({ id })
