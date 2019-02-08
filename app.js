@@ -14,6 +14,9 @@ const rateLimit = require("express-rate-limit")
 const RedisStore = require("rate-limit-redis")
 const redis = require("./config/redis")
 const router = require("./routes")
+const { JsonWebTokenError, TokenExpiredError } = require("jsonwebtoken")
+const { ValidationError, NotFoundError } = require("objection")
+const { UniqueViolationError } = require("db-errors")
 
 const app = express()
 if (process.env.NODE_ENV == "production") app.enable("trust proxy")
@@ -29,11 +32,19 @@ app
   .use(router)
   .use((req, res) => res.sendStatus(404))
   .use((err, req, res, next) => {
-    res
-      .status(
-        err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500
+    if (!err.statusCode) {
+      if (
+        err instanceof JsonWebTokenError ||
+        err instanceof TokenExpiredError ||
+        err instanceof ValidationError
       )
-      .send({ error: err.message })
+        err.statusCode = 400
+      else if (err instanceof NotFoundError) err.statusCode = 404
+      else if (err instanceof UniqueViolationError) err.statusCode = 409
+      else err.statusCode = 500
+    }
+
+    res.status(err.statusCode).send({ error: err.message })
   })
 
 app.listen(process.env.PORT, err => {
