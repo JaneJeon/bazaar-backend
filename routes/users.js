@@ -10,7 +10,7 @@ module.exports = Router()
   .post("/", async (req, res) => {
     const { username, email, password } = req.body
     const user = await User.query().insert({ username, email, password })
-    req.login(user, () => res.status(201).send({ user: req.user }))
+    req.login(user, () => res.status(201).send({ data: req.user }))
 
     // email verification
     const token = await random.string(24)
@@ -35,7 +35,7 @@ module.exports = Router()
     res.end()
   })
   // password reset when user forgets their password while logging in
-  .patch("/reset", async (req, res) => {
+  .post("/reset", async (req, res) => {
     assert(req.body.email, 400)
     const id = await User.query()
       .where({ email: User.normalizeEmail(email) })

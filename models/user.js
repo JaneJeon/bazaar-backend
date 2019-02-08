@@ -28,7 +28,7 @@ class User extends softDelete()(Password()(BaseModel)) {
   }
 
   static get visible() {
-    return ["username", "verified"]
+    return ["id", "username", "verified"]
   }
 
   static normalizeEmail(email) {

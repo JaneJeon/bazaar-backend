@@ -4,8 +4,14 @@ const { Picture } = require("../models")
 const POSTGRES_MAX_INT = 2147483647
 
 module.exports = Router()
-  // TODO: get person's pictures
-  .get("/")
+  // create a single picture
+  .post("/", upload.single("picture"), async (req, res) => {
+    const { title, description } = req.body
+    const url = req.file.path
+    const picture = await Picture.query().insert({ title, description, url })
+
+    res.status(201).send({ data: picture })
+  })
   // dashboard for this person
   .get("/explore", async (req, res) => {
     // FOR NOW, we're using id as the bookmark
@@ -14,13 +20,5 @@ module.exports = Router()
       .orderBy("id", "desc")
       .limit(process.env.PAGE_SIZE)
 
-    res.send({ pictures })
-  })
-  // create a single picture
-  .post("/", upload.single("picture"), async (req, res) => {
-    const { title, description } = req.body
-    const url = req.file.path
-    const picture = await Picture.query().insert({ title, description, url })
-
-    res.status(201).send({ picture })
+    res.send({ data: pictures })
   })
