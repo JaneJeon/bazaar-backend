@@ -1,7 +1,11 @@
 const multer = require("multer")
-const storage = multer.memoryStorage()
+const logger = require("./logger")
 
 module.exports = multer({
-  storage,
-  limits: { fileSize: process.env.IMAGE_MAX_FILESIZE }
+  dest: "/tmp",
+  limits: { fileSize: process.env.IMAGE_MAX_FILESIZE },
+  fileFilter: (req, file, done) => {
+    logger.info({ fileSizeBytes: file.size })
+    done(null, true)
+  }
 })
