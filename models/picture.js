@@ -2,6 +2,8 @@ const BaseModel = require("./base")
 const sharp = require("sharp")
 const s3 = require("../config/s3")
 const random = require("../config/random")
+const MAX_WIDTH = process.env.IMAGE_MAX_WIDTH - 0
+const MAX_HEIGHT = process.env.IMAGE_MAX_HEIGHT - 0
 
 class Picture extends BaseModel {
   static get jsonSchema() {
@@ -27,8 +29,8 @@ class Picture extends BaseModel {
   async $beforeInsert(queryContext) {
     await super.$beforeInsert(queryContext)
 
-    const image = await sharp(url)
-      .resize(process.env.IMAGE_MAX_WIDTH, process.env.IMAGE_MAX_HEIGHT, {
+    const image = await sharp(this.url)
+      .resize(MAX_WIDTH, MAX_HEIGHT, {
         withoutEnlargement: true,
         fit: "inside"
       })
