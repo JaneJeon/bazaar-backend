@@ -3,7 +3,6 @@ require("express-async-errors")
 require("./config/passport")
 
 const express = require("express")
-const logger = require("./config/logger")
 const helmet = require("helmet")
 const cors = require("cors")
 const { json: jsonParser } = require("body-parser")
@@ -36,11 +35,13 @@ app
       else if (err instanceof UniqueViolationError) err.statusCode = 409
       else {
         err.statusCode = 500
-        logger.error(err)
+        console.error(err)
       }
     }
 
-    res.status(err.statusCode).send({ error: err.message })
+    res
+      .status(err.statusCode || err.status || err.code)
+      .send({ error: err.message })
   })
 
 app.listen(process.env.PORT, err => {
