@@ -31,20 +31,23 @@ class User extends softDelete()(Password()(BaseModel)) {
     return ["id", "username", "verified"]
   }
 
-  static normalizeEmail(email) {
-    return normalize(email)
-  }
-
   $beforeInsert(queryContext) {
     super.$beforeInsert(queryContext)
     this.username = this.username.toLowerCase()
-    this.email = User.normalizeEmail(this.email)
+    this.email = normalize(this.email)
   }
 
   $beforeUpdate(opt, queryContext) {
     super.$beforeUpdate(opt, queryContext)
     if (this.username) this.username = this.username.toLowerCase()
-    if (this.email) this.email = User.normalizeEmail(this.email)
+    if (this.email) this.email = normalize(this.email)
+  }
+
+  static async findByEmail(email) {
+    return this.constructor
+      .query()
+      .findOne({ email: normalize(email) })
+      .whereNotDeleted()
   }
 }
 

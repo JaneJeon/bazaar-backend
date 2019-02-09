@@ -38,9 +38,7 @@ module.exports = Router()
   // password reset when user forgets their password while logging in
   .patch("/reset", async (req, res) => {
     assert(req.body.email, 400)
-    const id = await User.query()
-      .where({ email: User.normalizeEmail(email) })
-      .whereNotDeleted()
+    const id = await User.findByEmail(email)
     assert(id, 404)
     res.end()
 
