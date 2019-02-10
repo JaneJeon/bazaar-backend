@@ -1,6 +1,7 @@
 const BaseModel = require("./base")
 const sharp = require("sharp")
 const s3 = require("../config/s3")
+const path = require("path")
 const MAX_WIDTH = process.env.IMAGE_MAX_WIDTH - 0
 const MAX_HEIGHT = process.env.IMAGE_MAX_HEIGHT - 0
 
@@ -38,7 +39,7 @@ class Picture extends BaseModel {
 
     const file = await s3
       .upload({
-        Key: this.url.substr(5),
+        Key: `${path.basename(this.url, path.extname(this.url))}.jpeg`,
         Body: image,
         Bucket: process.env.PICTURE_BUCKET,
         ACL: "public-read"
