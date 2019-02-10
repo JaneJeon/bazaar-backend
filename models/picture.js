@@ -38,7 +38,7 @@ class Picture extends BaseModel {
 
     const file = await s3
       .upload({
-        Key: `${await this.random()}.jpeg`,
+        Key: this.url.substr(5),
         Body: image,
         Bucket: process.env.PICTURE_BUCKET,
         ACL: "public-read"
