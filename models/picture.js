@@ -1,7 +1,6 @@
 const BaseModel = require("./base")
 const sharp = require("sharp")
 const s3 = require("../config/s3")
-const random = require("../config/random")
 const MAX_WIDTH = process.env.IMAGE_MAX_WIDTH - 0
 const MAX_HEIGHT = process.env.IMAGE_MAX_HEIGHT - 0
 
@@ -39,7 +38,7 @@ class Picture extends BaseModel {
 
     const file = await s3
       .upload({
-        Key: `${await random.string()}.jpeg`,
+        Key: `${this.url}.jpeg`,
         Body: image,
         Bucket: process.env.PICTURE_BUCKET,
         ACL: "public-read"

@@ -48,6 +48,7 @@ class User extends softDelete()(Password()(BaseModel)) {
       .query()
       .findOne({ email: normalize(email) })
       .whereNotDeleted()
+      .throwIfNotFound()
   }
 }
 
