@@ -32,7 +32,9 @@ Finally, anything of form `:var` is a URL parameter, and they should always be n
 
 ## Routes
 
-This API uses a REST design - that means each endpoint exposes a single "resource" - users, pictures, etc. When a request is successful, it returns a status code <300, and when there's resource(s) to return, it returns a JSON object of form `{ data: $resourceJSONobject }`.
+This API uses a REST design - that means each endpoint exposes a single "resource" - users, pictures, etc. When a 
+request is successful, it returns a status code <300, and when there's resource(s) to return, it returns a JSON 
+object representing the resource.
 
 - [POST `/sessions`](#login)
 - [DELETE `/sessions`](#logout)
