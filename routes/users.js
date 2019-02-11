@@ -14,6 +14,7 @@ module.exports = Router()
 
     // email verification
     const token = await random.string(24)
+    console.log(token)
     await redis.setex(`verify:${token}`, user.id, 86400)
 
     await ses.sendTemplatedEmail({

@@ -2427,7 +2427,7 @@ objection-db-errors@^1.0.0:
   dependencies:
     db-errors "^0.1.0"
 
-objection-password-argon2@^2.0.0:
+objection-password-argon2@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/objection-password-argon2/-/objection-password-argon2-2.1.0.tgz#17685ddcf7cb3c174ba7991a5e71529e64568f9b"
   integrity sha512-d69FHydE9d3omsy+kjOSNiBQlpMk82wWmtH9Ru53Ecv9hB7CT2wUVkj99AQYPMgFgN/bQiH/qgorAmFcd6oqFQ==

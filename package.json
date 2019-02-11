@@ -26,7 +26,7 @@
     "normalize-email": "^1.1.1",
     "objection": "^1.5.3",
     "objection-db-errors": "^1.0.0",
-    "objection-password-argon2": "^2.0.0",
+    "objection-password-argon2": "^2.1.0",
     "objection-soft-delete": "^1.0.5",
     "objection-visibility": "^0.4.0",
     "passport": "^0.4.0",

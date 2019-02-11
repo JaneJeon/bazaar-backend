@@ -1,9 +1,9 @@
 const BaseModel = require("./base")
-const Password = require("objection-password-argon2")
-const softDelete = require("objection-soft-delete")
+const password = require("objection-password-argon2")()
+const softDelete = require("objection-soft-delete")()
 const normalize = require("normalize-email")
 
-class User extends softDelete()(Password()(BaseModel)) {
+class User extends password(softDelete(BaseModel)) {
   static get jsonSchema() {
     return {
       type: "object",
@@ -31,14 +31,14 @@ class User extends softDelete()(Password()(BaseModel)) {
     return ["id", "username", "verified"]
   }
 
-  $beforeInsert(queryContext) {
-    super.$beforeInsert(queryContext)
+  async $beforeInsert(queryContext) {
+    await super.$beforeInsert(queryContext)
     this.username = this.username.toLowerCase()
     this.email = normalize(this.email)
   }
 
-  $beforeUpdate(opt, queryContext) {
-    super.$beforeUpdate(opt, queryContext)
+  async $beforeUpdate(opt, queryContext) {
+    await super.$beforeUpdate(opt, queryContext)
     if (this.username) this.username = this.username.toLowerCase()
     if (this.email) this.email = normalize(this.email)
   }
