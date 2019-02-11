@@ -35,17 +35,14 @@ app
       return
     }
 
-    if (!(err.code || err.status || err.statusCode)) {
+    if (!(err.status || err.statusCode)) {
       if (err instanceof ValidationError) err.statusCode = 400
       else if (err instanceof NotFoundError) err.statusCode = 404
       else if (err instanceof UniqueViolationError) err.statusCode = 409
-      else {
-        err.statusCode = 500
-        console.error(err)
-      }
+      else console.error(err)
     }
 
-    res.status(err.statusCode || err.status || err.code).send(err.message)
+    res.status(err.statusCode || err.status || 500).send(err.message)
   })
 
 app.listen(process.env.PORT, err => {
