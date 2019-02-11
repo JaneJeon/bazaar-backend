@@ -29,6 +29,12 @@ app
   .use(router)
   .use((req, res) => res.sendStatus(404))
   .use((err, req, res, next) => {
+    // errors can happen after the response is sent
+    if (res.headersSent) {
+      console.error(err)
+      return
+    }
+
     if (!(err.code || err.status || err.statusCode)) {
       if (err instanceof ValidationError) err.statusCode = 400
       else if (err instanceof NotFoundError) err.statusCode = 404

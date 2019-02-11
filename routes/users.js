@@ -14,15 +14,18 @@ module.exports = Router()
 
     // email verification
     const token = await random.string(24)
-    console.log(token)
-    await redis.setex(`verify:${token}`, user.id, 86400)
+    await redis.setex(`verify:${token}`, 86400, user.id)
 
-    await ses.sendTemplatedEmail({
-      Source: process.env.SENDER_ADDRESS,
-      Template: "verify",
-      Destination: { ToAddresses: [user.email] },
-      TemplateData: { url: `${process.env.FRONTEND_URL}/users/verify/${token}` }
-    })
+    await ses
+      .sendTemplatedEmail({
+        Source: process.env.SENDER_ADDRESS,
+        Template: "verify",
+        Destination: { ToAddresses: [user.email] },
+        TemplateData: JSON.stringify({
+          url: `${process.env.FRONTEND_URL}/users/verify/${token}`
+        })
+      })
+      .promise()
   })
   // verify user email
   .patch("/verify/:token", async (req, res) => {
@@ -42,14 +45,18 @@ module.exports = Router()
     res.end()
 
     const token = await random.string(24)
-    await redis.setex(`reset:${token}`, id, 86400)
+    await redis.setex(`reset:${token}`, 86400, id)
 
-    await ses.sendTemplatedEmail({
-      Source: process.env.SENDER_ADDRESS,
-      Template: "reset",
-      Destination: { ToAddresses: [req.body.email] },
-      TemplateData: { url: `${process.env.FRONTEND_URL}/users/reset/${token}` }
-    })
+    await ses
+      .sendTemplatedEmail({
+        Source: process.env.SENDER_ADDRESS,
+        Template: "reset",
+        Destination: { ToAddresses: [req.body.email] },
+        TemplateData: JSON.stringify({
+          url: `${process.env.FRONTEND_URL}/users/reset/${token}`
+        })
+      })
+      .promise()
   })
   .patch("/reset/:token", async (req, res) => {
     const id = await redis.get(`reset:${req.params.token}`)
