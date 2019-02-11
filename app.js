@@ -45,9 +45,7 @@ app
       }
     }
 
-    res
-      .status(err.statusCode || err.status || err.code)
-      .send({ error: err.message })
+    res.status(err.statusCode || err.status || err.code).send(err.message)
   })
 
 app.listen(process.env.PORT, err => {

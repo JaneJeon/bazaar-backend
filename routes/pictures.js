@@ -10,7 +10,7 @@ module.exports = Router()
     const url = req.file.path
     const picture = await Picture.query().insert({ title, description, url })
 
-    res.status(201).send({ picture })
+    res.status(201).send(picture)
   })
   // dashboard for this person
   .get("/explore", async (req, res) => {
@@ -20,5 +20,5 @@ module.exports = Router()
       .orderBy("id", "desc")
       .limit(process.env.PAGE_SIZE)
 
-    res.send({ pictures })
+    res.send(pictures)
   })

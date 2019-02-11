@@ -34,7 +34,7 @@ Finally, anything of form `:var` is a URL parameter, and they should always be n
 
 This API uses a REST design - that means each endpoint exposes a single "resource" - users, pictures, etc. When a 
 request is successful, it returns a status code <300, and when there's resource(s) to return, it returns a JSON 
-object representing the resource.
+object representing the resource(s) that you can access via `response.data.$resource` when using `axios`.
 
 - [POST `/sessions`](#login)
 - [DELETE `/sessions`](#logout)
@@ -84,7 +84,7 @@ It returns a maximum of 15 pictures. If you want to load more, you can include t
 
 ## Errors
 
-The API, on error, will return a status code and a JSON object containing the `error` parameter (which is the error message). The error message should be relayed to the user.
+The API, on error, will return a status code (`error.response.status`) and an error message (`error.response.data`). The error message should be relayed to the user.
 
 When a request is malformed (e.g. wrong/missing parameters), returns a 400 status code.
 
@@ -93,3 +93,4 @@ When a route and/or a resource is not found, returns a 404 status code.
 When there was a conflict in one of the parameters (e.g. username/email is already taken), returns a 409 status code.
 
 If there was a server-side error, it will return a 500 status code.
+

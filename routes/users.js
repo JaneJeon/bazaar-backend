@@ -10,7 +10,7 @@ module.exports = Router()
   .post("/", async (req, res) => {
     const { username, email, password } = req.body
     const user = await User.query().insert({ username, email, password })
-    req.login(user, () => res.status(201).send({ user: req.user }))
+    req.login(user, () => res.status(201).send(req.user))
 
     // email verification
     const token = await random.string(24)
