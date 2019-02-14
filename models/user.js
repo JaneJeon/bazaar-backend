@@ -2,6 +2,7 @@ const BaseModel = require("./base")
 const password = require("objection-password-argon2")()
 const softDelete = require("objection-soft-delete")()
 const normalize = require("normalize-email")
+const { createHash } = require("crypto")
 
 class User extends password(softDelete(BaseModel)) {
   static get jsonSchema() {
@@ -20,27 +21,39 @@ class User extends password(softDelete(BaseModel)) {
           minLength: process.env.MIN_PASSWORD_LENGTH
         },
         deleted: { type: "boolean" },
-        verified: { type: "boolean" }
+        verified: { type: "boolean" },
+        name: { type: "string", maxLength: process.env.MAX_NAME_LENGTH },
+        avatar: { type: "string" },
+        location: {
+          type: "string",
+          maxLength: process.env.MAX_LOCATION_LENGTH
+        },
+        bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH }
       },
       required: ["username", "email", "password"],
       additionalProperties: false
     }
   }
 
-  static get visible() {
-    return ["id", "username", "verified"]
+  static get hidden() {
+    return ["password", "deleted"]
   }
 
   async $beforeInsert(queryContext) {
     await super.$beforeInsert(queryContext)
     this.username = this.username.toLowerCase()
     this.email = normalize(this.email)
+    this.avatar = this.gravatar
   }
 
   async $beforeUpdate(opt, queryContext) {
     await super.$beforeUpdate(opt, queryContext)
     if (this.username) this.username = this.username.toLowerCase()
     if (this.email) this.email = normalize(this.email)
+    if (this.gravatar === null) this.avatar = this.gravatar
+    else if (this.gravatar) {
+      // TODO
+    }
   }
 
   static async findByEmail(email) {
@@ -49,6 +62,12 @@ class User extends password(softDelete(BaseModel)) {
       .findOne({ email: normalize(email) })
       .whereNotDeleted()
       .throwIfNotFound()
+  }
+
+  get gravatar() {
+    return `https://gravatar.com/avatar/${createHash("md5")
+      .update(this.email)
+      .digest("hex")}/?s=${process.env.AVATAR_SIZE}&d=retro`
   }
 }
 
