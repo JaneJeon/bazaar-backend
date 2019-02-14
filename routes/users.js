@@ -1,7 +1,7 @@
 const { Router } = require("express")
 const { User } = require("../models")
 const redis = require("../config/redis")
-const random = require("../config/random")
+const random = require("../lib/random")
 const ses = require("../config/ses")
 const assert = require("http-assert")
 

@@ -3,10 +3,10 @@ require("dotenv").config({ path: join(__dirname, "..", ".env") })
 
 const tableName = require("pluralize")("picture")
 const n = Math.floor(process.env.PAGE_SIZE * 2.5)
-const random = require("../config/random")
+const random = require("../lib/random")
 const axios = require("axios")
 const fs = require("fs")
-const { Picture } = require("../models")
+const { Art } = require("../models")
 const faker = require("faker")
 
 exports.seed = async knex => {
@@ -42,7 +42,7 @@ exports.seed = async knex => {
   // insert picture models
   for (let i = 0; i < n; i++) {
     promises.push(
-      Picture.query().insert({
+      Art.query().insert({
         title: faker.random.words(5),
         description: faker.random.words(20),
         url: paths[i]

@@ -1,8 +1,10 @@
 const BaseModel = require("./base")
 const password = require("objection-password-argon2")()
 const softDelete = require("objection-soft-delete")()
-const normalize = require("normalize-email")
 const { createHash } = require("crypto")
+const normalize = require("normalize-email")
+const { clean } = require("../lib/string")
+const image = require("../lib/image")
 
 class User extends password(softDelete(BaseModel)) {
   static get jsonSchema() {
@@ -39,21 +41,31 @@ class User extends password(softDelete(BaseModel)) {
     return ["password", "deleted"]
   }
 
+  get gravatar() {
+    return `https://gravatar.com/avatar/${createHash("md5")
+      .update(this.email)
+      .digest("hex")}/?s=${process.env.AVATAR_SIZE}&d=retro`
+  }
+
+  async processInput() {
+    if (this.username) this.username = this.username.toLowerCase()
+    if (this.email) this.email = normalize(this.email)
+    if (this.name) this.name = clean(this.name)
+    if (this.location) this.location = clean(this.location)
+    if (this.bio) this.bio = clean(this.bio)
+    if (this.avatar === null) this.avatar = this.gravatar
+    else if (this.avatar)
+      this.avatar = await image.upload(this.avatar, "avatar", "cover")
+  }
+
   async $beforeInsert(queryContext) {
     await super.$beforeInsert(queryContext)
-    this.username = this.username.toLowerCase()
-    this.email = normalize(this.email)
-    this.avatar = this.gravatar
+    await this.processInput()
   }
 
   async $beforeUpdate(opt, queryContext) {
     await super.$beforeUpdate(opt, queryContext)
-    if (this.username) this.username = this.username.toLowerCase()
-    if (this.email) this.email = normalize(this.email)
-    if (this.gravatar === null) this.avatar = this.gravatar
-    else if (this.gravatar) {
-      // TODO
-    }
+    await this.processInput()
   }
 
   static async findByEmail(email) {
@@ -62,12 +74,6 @@ class User extends password(softDelete(BaseModel)) {
       .findOne({ email: normalize(email) })
       .whereNotDeleted()
       .throwIfNotFound()
-  }
-
-  get gravatar() {
-    return `https://gravatar.com/avatar/${createHash("md5")
-      .update(this.email)
-      .digest("hex")}/?s=${process.env.AVATAR_SIZE}&d=retro`
   }
 }
 
