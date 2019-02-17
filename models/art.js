@@ -61,12 +61,12 @@ class Art extends BaseModel {
 
   async $beforeInsert(queryContext) {
     await super.$beforeInsert(queryContext)
-
-    this.url = await image.upload(this.url, "picture", "inside")
+    await this.processInput()
   }
 
-  static async extractURLs(files) {
-    return files.map(file => file.path)
+  async $beforeUpdate(opt, queryContext) {
+    await super.$beforeUpdate(opt, queryContext)
+    await this.processInput()
   }
 }
 

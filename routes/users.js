@@ -6,7 +6,6 @@ const ses = require("../config/ses")
 const assert = require("http-assert")
 
 module.exports = Router()
-  // CREATE user - i.e. sign up
   .post("/", async (req, res) => {
     const { username, email, password } = req.body
     const user = await User.query().insert({ username, email, password })
