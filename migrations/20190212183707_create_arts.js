@@ -5,7 +5,7 @@ exports.up = knex =>
     table.increments()
     table.text("title").notNullable()
     table.text("description")
-    table.specificType("pictures", "TEXT[]").notNullable()
+    table.jsonb("pictures").notNullable()
     table
       .integer("artist")
       .notNullable()

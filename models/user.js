@@ -37,6 +37,19 @@ class User extends password(softDelete(BaseModel)) {
     }
   }
 
+  static get relationMappings() {
+    return {
+      arts: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: require("./user"),
+        join: {
+          from: "users.id",
+          to: "arts.artist"
+        }
+      }
+    }
+  }
+
   static get hidden() {
     return ["password", "deleted"]
   }
