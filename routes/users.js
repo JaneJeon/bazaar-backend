@@ -6,6 +6,14 @@ const ses = require("../config/ses")
 const assert = require("http-assert")
 
 module.exports = Router()
+  // user info
+  .get("/:userId", async (req, res) => {
+    const user = await User.query()
+      .findById(req.params.userId)
+      .throwIfNotFound()
+
+    res.send(user)
+  })
   .post("/", async (req, res) => {
     const { username, email, password } = req.body
     const user = await User.query().insert({ username, email, password })
