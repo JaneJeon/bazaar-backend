@@ -2,8 +2,8 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "watch": "nodemon app",
-    "secret": "node -e \"require('./config/random').string(24).then(console.log)\"",
+    "watch": "DEBUG=knex nodemon app",
+    "secret": "node -e \"require('./lib/random').string(24).then(console.log)\"",
     "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex knex migrate:rollback --knexfile ./config/database.js",
     "seed": "DEBUG=knex knex seed:run --knexfile ./config/database.js"

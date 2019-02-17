@@ -1,12 +1,19 @@
 const { Router } = require("express")
 const { User } = require("../models")
 const redis = require("../config/redis")
-const random = require("../config/random")
+const random = require("../lib/random")
 const ses = require("../config/ses")
 const assert = require("http-assert")
 
 module.exports = Router()
-  // CREATE user - i.e. sign up
+  // user info
+  .get("/:userId", async (req, res) => {
+    const user = await User.query()
+      .findById(req.params.userId)
+      .throwIfNotFound()
+
+    res.send(user)
+  })
   .post("/", async (req, res) => {
     const { username, email, password } = req.body
     const user = await User.query().insert({ username, email, password })

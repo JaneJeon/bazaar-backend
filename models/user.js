@@ -1,7 +1,10 @@
 const BaseModel = require("./base")
 const password = require("objection-password-argon2")()
 const softDelete = require("objection-soft-delete")()
+const { createHash } = require("crypto")
 const normalize = require("normalize-email")
+const { clean } = require("../lib/string")
+const image = require("../lib/image")
 
 class User extends password(softDelete(BaseModel)) {
   static get jsonSchema() {
@@ -20,27 +23,62 @@ class User extends password(softDelete(BaseModel)) {
           minLength: process.env.MIN_PASSWORD_LENGTH
         },
         deleted: { type: "boolean" },
-        verified: { type: "boolean" }
+        verified: { type: "boolean" },
+        name: { type: "string", maxLength: process.env.MAX_NAME_LENGTH },
+        avatar: { type: "string" },
+        location: {
+          type: "string",
+          maxLength: process.env.MAX_LOCATION_LENGTH
+        },
+        bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH }
       },
       required: ["username", "email", "password"],
       additionalProperties: false
     }
   }
 
-  static get visible() {
-    return ["id", "username", "verified"]
+  static get relationMappings() {
+    return {
+      arts: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: require("./user"),
+        join: {
+          from: "users.id",
+          to: "arts.artist"
+        }
+      }
+    }
+  }
+
+  static get hidden() {
+    return ["password", "deleted"]
+  }
+
+  get gravatar() {
+    return `https://gravatar.com/avatar/${createHash("md5")
+      .update(this.email)
+      .digest("hex")}/?s=${process.env.AVATAR_SIZE}&d=retro`
+  }
+
+  async processInput() {
+    if (this.username) this.username = this.username.toLowerCase()
+    if (this.email) this.email = normalize(this.email)
+    if (this.name) this.name = clean(this.name)
+    if (this.location) this.location = clean(this.location)
+    if (this.bio) this.bio = clean(this.bio)
+    if (this.avatar === null) this.avatar = this.gravatar
+    else if (this.avatar)
+      this.avatar = await image.upload(this.avatar, "avatar", "cover")
   }
 
   async $beforeInsert(queryContext) {
     await super.$beforeInsert(queryContext)
-    this.username = this.username.toLowerCase()
-    this.email = normalize(this.email)
+    await this.processInput()
   }
 
   async $beforeUpdate(opt, queryContext) {
     await super.$beforeUpdate(opt, queryContext)
-    if (this.username) this.username = this.username.toLowerCase()
-    if (this.email) this.email = normalize(this.email)
+    await this.processInput()
   }
 
   static async findByEmail(email) {

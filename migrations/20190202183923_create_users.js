@@ -20,6 +20,10 @@ exports.up = knex =>
       .boolean("verified")
       .notNullable()
       .defaultTo(false)
+    table.text("avatar")
+    table.text("name")
+    table.text("location")
+    table.text("bio")
 
     table.timestamps(true, true)
   })
