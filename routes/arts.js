@@ -5,13 +5,14 @@ const POSTGRES_MAX_INT = 2147483647
 
 module.exports = Router()
   .get("/", async (req, res) => {
-    const arts = await req.user
-      .$relatedQuery("arts")
-      .where("id", "<", req.body.after || POSTGRES_MAX_INT)
+    const arts = await Art.query()
+      .where({ artist: req.params.userId })
+      .andWhere("id", "<", req.body.after || POSTGRES_MAX_INT)
       .limit(process.env.PAGE_SIZE)
 
     res.send(arts)
   })
+  .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .post(
     "/",
     upload.array("picture", process.env.MAX_PICTURE_ATTACHMENTS),
