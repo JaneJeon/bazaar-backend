@@ -12,6 +12,16 @@ module.exports = Router()
 
     res.send(arts)
   })
+  // dashboard for this person
+  .get("/explore", async (req, res) => {
+    // FOR NOW, we're using id as the bookmark
+    const pictures = await Art.query()
+      .where("id", "<", req.body.after || POSTGRES_MAX_INT)
+      .orderBy("id", "desc")
+      .limit(process.env.PAGE_SIZE)
+
+    res.send(pictures)
+  })
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .post(
     "/",
@@ -26,13 +36,3 @@ module.exports = Router()
       res.status(201).send(art)
     }
   )
-  // dashboard for this person
-  .get("/explore", async (req, res) => {
-    // FOR NOW, we're using id as the bookmark
-    const pictures = await Art.query()
-      .where("id", "<", req.body.after || POSTGRES_MAX_INT)
-      .orderBy("id", "desc")
-      .limit(process.env.PAGE_SIZE)
-
-    res.send(pictures)
-  })

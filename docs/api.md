@@ -96,7 +96,7 @@ The `:userId` currently doesn't matter, BUT you are required to pass user inform
 
 ### <a name="discover"></a>GET `/users/:userId/arts/explore`
 
-This is the "discover page" that returns pictures "curated" for the user. Hence, you are required to pass user information. Currently, it returns the most recent pictures in anti-chronological order.
+This is the "discover page" that returns pictures "curated" for the user. Hence, you are encouraged to pass user information as the `userId`. But people who are not signed in CAN request from this endpoint, but they'd need to pass a "0" for the `userId`. Currently, it returns the most recent pictures in anti-chronological order.
 
 It returns a maximum of 15 pictures. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen picture (i.e. the `id` of the last object in the pictures array returned).
 
