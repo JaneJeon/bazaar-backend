@@ -49,12 +49,12 @@ object representing the resource(s) that you can access via `response.data` when
 - [PATCH `/users/verify/:token`](#verifyuser)
 - [PATCH `/users/reset`](#requestreset)
 - [PATCH `/users/reset/:token`](#passwordreset)
-- [GET `/arts`](#myart)
+- [GET `/users/:userId/arts`](#myart)
 - [POST `/users/:userId/arts`](#createpicture)
 - [GET `/users/:userId/arts/explore`](#discover)
 
 ### <a name="login"></a>POST `/sessions`
-This endpoint is used to login existing users. Params `username` and `password` are expected. On success, returns status code 201 with a cookie.
+This endpoint is used to login existing users. Params `username` and `password` are expected. On success, returns status code 201 with a cookie. Also returns an instance of the user object.
 
 ### <a name="logout"></a>DELETE `/sessions`
 
