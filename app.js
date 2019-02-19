@@ -1,4 +1,4 @@
-require("dotenv").config()
+require("./")
 require("express-async-errors")
 require("./config/passport")
 
