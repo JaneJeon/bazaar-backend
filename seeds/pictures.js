@@ -1,7 +1,7 @@
 const { join } = require("path")
 require("dotenv").config({ path: join(__dirname, "..", ".env") })
 
-const tableName = require("pluralize")("picture")
+const tableName = require("pluralize")("art")
 const n = Math.floor(process.env.PAGE_SIZE * 2.5)
 const random = require("../lib/random")
 const axios = require("axios")
