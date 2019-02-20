@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { User } = require("../models")
+const { User, Art } = require("../models")
 const redis = require("../config/redis")
 const random = require("../lib/random")
 const ses = require("../config/ses")
@@ -13,6 +13,14 @@ module.exports = Router()
       .throwIfNotFound()
 
     res.send(user)
+  })
+  .get("/:userId/arts", async (req, res) => {
+    const arts = await Art.query()
+      .where({ artist: req.params.userId })
+      .andWhere("id", "<", req.body.after || POSTGRES_MAX_INT)
+      .limit(process.env.PAGE_SIZE)
+
+    res.send(arts)
   })
   .post("/", async (req, res) => {
     const { username, email, password } = req.body
