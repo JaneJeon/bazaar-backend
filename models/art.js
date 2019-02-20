@@ -23,7 +23,7 @@ class Art extends BaseModel {
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
         price: { type: "number", exclusiveMinimum: 0 },
-        tags: { type: "array", items: { type: "string", pattern: "\\w+" } },
+        tags: { type: "array", items: { type: "string" } },
         medium: { type: "string", maxLength: process.env.MAX_MEDIUM_LENGTH }
       },
       required: ["title", "pictures"],
@@ -37,7 +37,7 @@ class Art extends BaseModel {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: require("./user"),
         join: {
-          from: "arts.artist",
+          from: "arts.user_id",
           to: "users.id"
         }
       }
@@ -48,12 +48,14 @@ class Art extends BaseModel {
     if (this.title) this.title = clean(this.title)
     if (this.description) {
       this.description = clean(this.description, false)
-      this.tags = this.description.match(/#\w+/g)
+      this.tags = this.description
+        .match(/#\w+/g)
+        .map(str => str.substr(1).toLowerCase())
     }
     if (this.pictures)
       this.pictures = await Promise.all(
         this.pictures.map(
-          async picture => await image.upload(picture, "picture", "inside")
+          async picture => await image.upload(picture, "PICTURE", "inside")
         )
       )
     if (this.medium) this.medium = clean(this.medium)

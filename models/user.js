@@ -41,10 +41,10 @@ class User extends password(softDelete(BaseModel)) {
     return {
       arts: {
         relation: BaseModel.HasManyRelation,
-        modelClass: require("./user"),
+        modelClass: require("./art"),
         join: {
           from: "users.id",
-          to: "arts.artist"
+          to: "arts.user_id"
         }
       }
     }
@@ -68,7 +68,7 @@ class User extends password(softDelete(BaseModel)) {
     if (this.bio) this.bio = clean(this.bio)
     if (this.avatar === null) this.avatar = this.gravatar
     else if (this.avatar)
-      this.avatar = await image.upload(this.avatar, "avatar", "cover")
+      this.avatar = await image.upload(this.avatar, "AVATAR", "cover")
   }
 
   async $beforeInsert(queryContext) {

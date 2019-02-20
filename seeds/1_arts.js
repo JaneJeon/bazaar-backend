@@ -1,16 +1,12 @@
-const { join } = require("path")
-require("dotenv").config({ path: join(__dirname, "..", ".env") })
-
 const tableName = require("pluralize")("art")
-const n = Math.floor(process.env.PAGE_SIZE * 2.5)
+const n = (process.env.PAGE_SIZE - -1) * 2 // 2 pictures per art
 const random = require("../lib/random")
 const axios = require("axios")
 const fs = require("fs")
-const { Art } = require("../models")
+const { User, Art } = require("../models")
 const faker = require("faker")
 
 exports.seed = async knex => {
-  // obviously this is going to be different when users (and FK) are involved
   await knex(tableName).del()
 
   // save pictures
@@ -39,17 +35,24 @@ exports.seed = async knex => {
   await Promise.all(promises) // and they still feel oh so wasted on myself
   promises = []
 
+  // fetch a user, any user
+  const user = await User.query().first()
+
   // insert picture models
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < n / 2; i++) {
     promises.push(
-      Art.query().insert({
+      user.$relatedQuery("arts").insert({
         title: faker.random.words(5),
-        description: faker.random.words(20),
-        url: paths[i]
+        description: `${faker.random.words(
+          20
+        )} #${faker.random.word()} #${faker.random.word()}`,
+        price: faker.random.number(500) + 1,
+        medium: faker.random.word(),
+        pictures: [paths[2 * i], paths[2 * i + 1]]
       })
     )
   }
 
-  const users = await Promise.all(promises)
-  console.log(users)
+  await Promise.all(promises)
+  console.log(`Created ${n / 2} art pieces for user ${user.id}`)
 }

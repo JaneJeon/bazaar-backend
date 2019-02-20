@@ -7,11 +7,11 @@ exports.up = knex =>
     table.text("description")
     table.jsonb("pictures").notNullable()
     table
-      .integer("artist")
+      .integer("user_id")
       .notNullable()
       .references("users.id")
     table.integer("price")
-    table.specificType("tags", "TEXT[]")
+    table.jsonb("tags")
     table.text("medium")
 
     table.timestamps(true, true)

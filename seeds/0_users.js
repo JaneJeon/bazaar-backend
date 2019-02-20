@@ -1,5 +1,3 @@
-require("../")
-
 const tableName = require("pluralize")("user")
 const { User } = require("../models")
 const n = 3
@@ -12,7 +10,7 @@ exports.seed = async knex => {
   for (let i = 0; i < n; i++) {
     promises.push(
       User.query().insert({
-        username: faker.internet.userName(),
+        username: faker.random.alphaNumeric(15),
         password: faker.internet.password(9),
         email: faker.internet.email()
       })

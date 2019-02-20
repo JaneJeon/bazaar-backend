@@ -1,4 +1,3 @@
-require("./")
 require("express-async-errors")
 require("./config/passport")
 
