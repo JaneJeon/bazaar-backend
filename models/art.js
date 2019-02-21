@@ -37,7 +37,7 @@ class Art extends BaseModel {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: require("./user"),
         join: {
-          from: "arts.user_id",
+          from: "arts.artist_id",
           to: "users.id"
         }
       }

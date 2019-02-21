@@ -44,7 +44,7 @@ class User extends password(softDelete(BaseModel)) {
         modelClass: require("./art"),
         join: {
           from: "users.id",
-          to: "arts.user_id"
+          to: "arts.artist_id"
         }
       }
     }
