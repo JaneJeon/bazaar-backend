@@ -3,7 +3,7 @@ const password = require("objection-password-argon2")()
 const softDelete = require("objection-soft-delete")()
 const { createHash } = require("crypto")
 const normalize = require("normalize-email")
-const { clean } = require("../lib/string")
+const { clean } = require("../lib/text")
 const image = require("../lib/image")
 
 class User extends password(softDelete(BaseModel)) {

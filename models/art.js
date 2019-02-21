@@ -1,5 +1,5 @@
 const BaseModel = require("./base")
-const { clean } = require("../lib/string")
+const { clean, extractTags } = require("../lib/text")
 const image = require("../lib/image")
 
 class Art extends BaseModel {
@@ -48,7 +48,7 @@ class Art extends BaseModel {
     if (this.title) this.title = clean(this.title)
     if (this.description) {
       this.description = clean(this.description, false)
-      this.tags = this.description.match(/#\w+/g).map(str => str.toLowerCase())
+      this.tags = extractTags(this.description)
     }
     if (this.pictures)
       this.pictures = await Promise.all(
