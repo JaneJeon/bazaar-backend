@@ -1,9 +1,9 @@
 const tableName = require("pluralize")("art")
 const n = (process.env.PAGE_SIZE - -1) * 2 // 2 pictures per art
-const random = require("../lib/random")
+const { sync: uid } = require("uid-safe")
 const axios = require("axios")
 const fs = require("fs")
-const { User, Art } = require("../models")
+const { User } = require("../models")
 const faker = require("faker")
 
 exports.seed = async knex => {
@@ -14,7 +14,7 @@ exports.seed = async knex => {
   const paths = []
 
   for (let i = 0; i < n; i++) {
-    const path = `/tmp/${await random.string()}.jpeg`
+    const path = `/tmp/${uid(16)}.jpeg`
     paths.push(path)
 
     const response = await axios({

@@ -1,7 +1,7 @@
 const { Router } = require("express")
 const { User, Art } = require("../models")
 const redis = require("../config/redis")
-const random = require("../lib/random")
+const { sync: uid } = require("uid-safe")
 const ses = require("../config/ses")
 const assert = require("http-assert")
 
@@ -28,7 +28,7 @@ module.exports = Router()
     req.login(user, () => res.status(201).send(req.user))
 
     // email verification
-    const token = await random.string(24)
+    const token = uid(24)
     await redis.setex(`verify:${token}`, 86400, user.id)
 
     await ses
@@ -59,7 +59,7 @@ module.exports = Router()
     const id = await User.findByEmail(email)
     res.end()
 
-    const token = await random.string(24)
+    const token = uid(24)
     await redis.setex(`reset:${token}`, 86400, id)
 
     await ses

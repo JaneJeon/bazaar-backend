@@ -3,7 +3,7 @@
   "scripts": {
     "start": "node -r dotenv/config app",
     "watch": "DEBUG=knex nodemon -r dotenv/config app",
-    "secret": "node -e \"require('./lib/random').string(24).then(console.log)\"",
+    "secret": "node -e \"console.log(require('uid-safe').sync(24))\"",
     "migrate": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:rollback --knexfile ./config/database.js",
     "seed": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex seed:run --knexfile ./config/database.js"
@@ -34,7 +34,8 @@
     "pg": "^7.8.0",
     "pluralize": "^7.0.0",
     "rate-limit-redis": "^1.6.0",
-    "sharp": "^0.21.3"
+    "sharp": "^0.21.3",
+    "uid-safe": "^2.1.5"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
@@ -57,6 +58,7 @@
     "@types/pluralize": "^0.0.29",
     "@types/sharp": "^0.21.2",
     "@types/supertest": "^2.0.7",
+    "@types/uid-safe": "^2.1.2",
     "axios": "^0.18.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
