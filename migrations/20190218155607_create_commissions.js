@@ -10,17 +10,15 @@ exports.up = knex =>
     table.integer("artist_id").references("users.id")
 
     table.float("price").notNullable()
-    table
-      .text("price_unit")
-      .notNullable()
-      .defaultTo("$")
-    table.date("deadline").notNullable()
-    table.integer("num_updates").notNullable()
+    table.text("price_unit").notNullable()
+    table.datetime("deadline").notNullable()
+    table.integer("num_updates")
     table.text("copyright").notNullable()
 
     table.float("width")
     table.float("height")
     table.text("size_unit")
+    table.jsonb("tags")
     table.text("medium")
     table.text("style")
     table.text("description").notNullable()

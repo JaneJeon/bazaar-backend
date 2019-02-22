@@ -13,6 +13,7 @@ exports.up = knex =>
     table.integer("price")
     table.jsonb("tags")
     table.text("medium")
+    table.text("style")
 
     table.timestamps(true, true)
   })
