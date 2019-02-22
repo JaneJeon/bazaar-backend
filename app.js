@@ -35,8 +35,10 @@ app
     }
 
     if (!(err.status || err.statusCode)) {
-      if (err instanceof ValidationError) err.statusCode = 400
-      else if (err instanceof NotFoundError) err.statusCode = 404
+      if (err instanceof ValidationError) {
+        err.statusCode = 400
+        err.message = err.data
+      } else if (err instanceof NotFoundError) err.statusCode = 404
       else if (err instanceof UniqueViolationError) err.statusCode = 409
       else console.error(err)
     }
