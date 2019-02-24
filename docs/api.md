@@ -71,7 +71,7 @@ Returns all of the art for a user. Also used for profile. Optionally can pass an
 
 ### <a name="createuser"></a>POST `/users`
 
-This endpoint is used to create a user. Params `username`, `email`, and `password` are expected. On success, returns status code 201 with a JSON object representing the user, which contains the fields `id`, `username`, and `verified`.
+This endpoint is used to create a user. Params `username`, `email`, and `password` are expected. On success, returns status code 201 with a JSON object representing the user, which contains the fields `id`, `email`, `username`, and `verified`.
 
 Additionally, an email is sent out to the user's email asking for verification containing a link to `/users/verify/:token` when their account is created successfully.
 
@@ -101,7 +101,7 @@ Get a single art by id.
 
 This endpoint is used to upload a picture. The request body should be sent as multi-part form data, instead of JSON. Params `title` and `picture` are expected (you are required to upload at least 1 picture), and you can optionally also pass `description` (from which hashtags are parsed), `price`, and `medium`. The `pictures` field should contain the picture file(s).
 
-Upon success, returns a 201 with a JSON object representing the user, which contains the fields `id`, `title`, `description`,  `pictures`, `price`, `tags`, and `medium`. The `pictures` array contain links to the pictures in the art.
+Upon success, returns a 201 with a JSON object representing the user, which contains the fields `id`, `title`, `description`,  `pictures`, `price`, `tags`, and `artist_id`. The `pictures` array contain links to the pictures in the art.
 
 You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
 
