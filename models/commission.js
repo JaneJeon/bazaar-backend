@@ -10,14 +10,14 @@ class Commission extends BaseModel {
         price_unit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date-time" }, // ISO format
         num_updates: { type: "integer", minimum: 0, maximum: 5 },
-        // TODO: this should be a dropdown
-        copyright: { type: "string" },
+        copyright: {
+          type: "string",
+          enum: ["artist owns the right", "buyer owns the right"]
+        },
         width: { type: "number", exclusiveMinimum: 0 },
         height: { type: "number", exclusiveMinimum: 0 },
         size_unit: { type: "string", enum: ["px", "in", "cm"], default: "px" },
         tags: { type: "array", items: { type: "string" } },
-        medium: { type: "string", maxLength: process.env.MAX_MEDIUM_LENGTH },
-        style: { type: "string", maxLength: process.env.MAX_STYLE_LENGTH },
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
@@ -42,7 +42,6 @@ class Commission extends BaseModel {
   }
 
   processInput() {
-    // TODO: deadline?
     if (this.medium) this.medium = text.clean(this.medium)
     if (this.style) this.style = text.clean(this.style)
     if (this.description) {

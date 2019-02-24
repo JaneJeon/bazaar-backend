@@ -19,8 +19,6 @@ exports.up = knex =>
     table.float("height")
     table.text("size_unit")
     table.jsonb("tags")
-    table.text("medium")
-    table.text("style")
     table.text("description").notNullable()
 
     table.timestamps(true, true)

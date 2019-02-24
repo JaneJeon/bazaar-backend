@@ -23,9 +23,7 @@ class Art extends BaseModel {
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
         price: { type: "number", exclusiveMinimum: 0 },
-        tags: { type: "array", items: { type: "string" } },
-        medium: { type: "string", maxLength: process.env.MAX_MEDIUM_LENGTH },
-        style: { type: "string", maxLength: process.env.MAX_STYLE_LENGTH }
+        tags: { type: "array", items: { type: "string" } }
       },
       required: ["title", "pictures"],
       additionalProperties: false
