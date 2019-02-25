@@ -30,19 +30,6 @@ class Art extends BaseModel {
     }
   }
 
-  static get relationMappings() {
-    return {
-      artist: {
-        relation: BaseModel.BelongsToOneRelation,
-        modelClass: require("./user"),
-        join: {
-          from: "arts.artist_id",
-          to: "users.id"
-        }
-      }
-    }
-  }
-
   async processInput() {
     if (this.title) this.title = text.clean(this.title)
     if (this.description) {

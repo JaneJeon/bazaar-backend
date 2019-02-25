@@ -54,6 +54,14 @@ class User extends password(softDelete(BaseModel)) {
           from: "users.id",
           to: "commissions.buyer_id"
         }
+      },
+      commissionRequests: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: require("./commission"),
+        join: {
+          from: "users.id",
+          to: "commissions.artist_id"
+        }
       }
     }
   }

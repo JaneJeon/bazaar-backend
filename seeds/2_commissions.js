@@ -7,7 +7,7 @@ exports.seed = async knex => {
   const [buyer, artist] = await User.query()
 
   // doing just one because I'm lazy
-  buyer.$relatedQuery("commissions").insert({
+  await buyer.$relatedQuery("commissions").insert({
     artist_id: artist.id,
     price: 42,
     price_unit: "USD",

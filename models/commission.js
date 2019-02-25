@@ -34,19 +34,6 @@ class Commission extends BaseModel {
     }
   }
 
-  static get relationMappings() {
-    return {
-      buyer: {
-        relation: BaseModel.BelongsToOneRelation,
-        modelClass: require("./user"),
-        join: {
-          from: "commissions.buyer_id",
-          to: "users.id"
-        }
-      }
-    }
-  }
-
   processInput() {
     if (this.medium) this.medium = text.clean(this.medium)
     if (this.style) this.style = text.clean(this.style)
