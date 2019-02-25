@@ -5,8 +5,13 @@ const fs = require("fs")
 const oldPath = path.join(path.dirname(__dirname), ".env")
 const newPath = path.join(path.dirname(__dirname), ".env.example")
 
-let oldFile = fs.readFileSync(oldPath).toString()
+let oldFile
 const newFile = fs.readFileSync(newPath).toString()
+try {
+  oldFile = fs.readFileSync(oldPath).toString()
+} catch (err) {
+  fs.writeFileSync(oldPath, newFile)
+}
 
 const oldEnv = dotenv.parse(oldFile)
 const newEnv = dotenv.parse(newFile)
