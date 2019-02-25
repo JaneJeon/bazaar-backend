@@ -15,13 +15,16 @@ email links). Major blobs
 (mostly pictures) are to be stored 
 in `S3` (via `aws-sdk`).
 
-## Setup
+## Setup (this is to be run every time the application updates)
 
 1. Install postgres and create a database
 2. Install redis
-3. Copy `.env.example` into `.env` and modify the environment variables as needed
+3. Run `yarn update-env` and modify the environment variables in `.env` as needed
 4. `yarn` to install dependencies
-5. `yarn watch`
+5. `yarn rollback`
+6. `yarn migrate`
+7. (optional) `yarn seed` if you want to populate the database with sample entries
+8. `yarn watch` for development, `yarn start` for production
 
 ## Deployment
 

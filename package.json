@@ -6,7 +6,8 @@
     "secret": "node -e \"console.log(require('uid-safe').sync(24))\"",
     "migrate": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:rollback --knexfile ./config/database.js",
-    "seed": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex seed:run --knexfile ./config/database.js"
+    "seed": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex seed:run --knexfile ./config/database.js",
+    "update-env": "node scripts/update-env"
   },
   "dependencies": {
     "aws-sdk": "^2.395.0",
