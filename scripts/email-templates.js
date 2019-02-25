@@ -1,6 +1,6 @@
 const { join } = require("path")
 require("dotenv").config({ path: join(__dirname, "..", ".env") })
-const ses = require("../config/ses")
+const ses = require("../lib/ses")
 ;(async () => {
   try {
     await ses

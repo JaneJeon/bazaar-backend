@@ -2,7 +2,7 @@ const { Router } = require("express")
 const { User, Art } = require("../models")
 const redis = require("../config/redis")
 const { sync: uid } = require("uid-safe")
-const ses = require("../config/ses")
+const ses = require("../lib/ses")
 const assert = require("http-assert")
 
 module.exports = Router()

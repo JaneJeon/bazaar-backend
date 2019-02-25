@@ -35,8 +35,6 @@ class Commission extends BaseModel {
   }
 
   processInput() {
-    if (this.medium) this.medium = text.clean(this.medium)
-    if (this.style) this.style = text.clean(this.style)
     if (this.description) {
       this.description = text.clean(this.description, false)
       this.tags = text.extractTags(this.description)
