@@ -24,7 +24,12 @@ module.exports = Router()
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .get("/me", async (req, res) => {
     if (req.query.as == "artist") {
-      const commissions = await req.user.$relatedQuery("commissionRequests")
+      const q = req.user.$relatedQuery("commissionRequests")
+      let commissions
+
+      if (req.query.show != "all") commissions = await q
+      else commissions = await q.whereNot("status", "rejected")
+
       res.send(commissions)
     } else {
       const commissions = await req.user.$relatedQuery("commissions")
