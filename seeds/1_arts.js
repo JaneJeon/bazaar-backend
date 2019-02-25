@@ -47,7 +47,6 @@ exports.seed = async knex => {
           20
         )} #${faker.random.word()} #${faker.random.word()}`,
         price: faker.random.number(500) + 1,
-        medium: faker.random.word(),
         pictures: [paths[2 * i], paths[2 * i + 1]]
       })
     )

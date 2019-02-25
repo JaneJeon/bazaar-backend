@@ -1,5 +1,5 @@
 const BaseModel = require("./base")
-const { clean } = require("../lib/string")
+const text = require("../lib/text")
 const image = require("../lib/image")
 
 class Art extends BaseModel {
@@ -23,32 +23,18 @@ class Art extends BaseModel {
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
         price: { type: "number", exclusiveMinimum: 0 },
-        tags: { type: "array", items: { type: "string" } },
-        medium: { type: "string", maxLength: process.env.MAX_MEDIUM_LENGTH }
+        tags: { type: "array", items: { type: "string" } }
       },
       required: ["title", "pictures"],
       additionalProperties: false
     }
   }
 
-  static get relationMappings() {
-    return {
-      artist: {
-        relation: BaseModel.BelongsToOneRelation,
-        modelClass: require("./user"),
-        join: {
-          from: "arts.user_id",
-          to: "users.id"
-        }
-      }
-    }
-  }
-
   async processInput() {
-    if (this.title) this.title = clean(this.title)
+    if (this.title) this.title = text.clean(this.title)
     if (this.description) {
-      this.description = clean(this.description, false)
-      this.tags = this.description.match(/#\w+/g).map(str => str.toLowerCase())
+      this.description = text.clean(this.description, false)
+      this.tags = text.extractTags(this.description)
     }
     if (this.pictures)
       this.pictures = await Promise.all(
@@ -56,7 +42,7 @@ class Art extends BaseModel {
           async picture => await image.upload(picture, "PICTURE", "inside")
         )
       )
-    if (this.medium) this.medium = clean(this.medium)
+    if (this.medium) this.medium = text.clean(this.medium)
   }
 
   async $beforeInsert(queryContext) {

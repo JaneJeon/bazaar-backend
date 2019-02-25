@@ -1,6 +1,6 @@
 const tableName = require("pluralize")("user")
-const { User } = require("../models")
 const n = 3
+const { User } = require("../models")
 const faker = require("faker")
 
 exports.seed = async knex => {

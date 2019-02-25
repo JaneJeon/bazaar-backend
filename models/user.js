@@ -3,7 +3,7 @@ const password = require("objection-password-argon2")()
 const softDelete = require("objection-soft-delete")()
 const { createHash } = require("crypto")
 const normalize = require("normalize-email")
-const { clean } = require("../lib/string")
+const { clean } = require("../lib/text")
 const image = require("../lib/image")
 
 class User extends password(softDelete(BaseModel)) {
@@ -44,7 +44,23 @@ class User extends password(softDelete(BaseModel)) {
         modelClass: require("./art"),
         join: {
           from: "users.id",
-          to: "arts.user_id"
+          to: "arts.artist_id"
+        }
+      },
+      commissions: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: require("./commission"),
+        join: {
+          from: "users.id",
+          to: "commissions.buyer_id"
+        }
+      },
+      commissionRequests: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: require("./commission"),
+        join: {
+          from: "users.id",
+          to: "commissions.artist_id"
         }
       }
     }
