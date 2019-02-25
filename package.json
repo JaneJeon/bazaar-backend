@@ -7,12 +7,12 @@
     "migrate": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:rollback --knexfile ./config/database.js",
     "seed": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex seed:run --knexfile ./config/database.js",
+    "migrate-email": "node scripts/email-templates",
     "update-env": "node scripts/update-env",
     "clean": "rm -f *.log; rm -rf node_modules"
   },
   "dependencies": {
     "aws-sdk": "^2.395.0",
-    "body-parser": "^1.18.3",
     "cookie-session": "^2.0.0-beta.3",
     "cors": "^2.8.5",
     "db-errors": "^0.1.1",
@@ -40,11 +40,11 @@
     "uid-safe": "^2.1.5"
   },
   "devDependencies": {
-    "@types/body-parser": "^1.17.0",
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
     "@types/cookie-session": "^2.0.36",
     "@types/cors": "^2.8.4",
+    "@types/debug": "^4.1.2",
     "@types/dotenv": "^6.1.0",
     "@types/express": "^4.16.1",
     "@types/express-rate-limit": "^3.3.0",
@@ -64,6 +64,7 @@
     "axios": "^0.18.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "debug": "^4.1.1",
     "faker": "^4.1.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.9",

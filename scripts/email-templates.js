@@ -1,6 +1,7 @@
 const { join } = require("path")
 require("dotenv").config({ path: join(__dirname, "..", ".env") })
 const ses = require("../lib/ses")
+const debug = require("debug")("email")
 ;(async () => {
   try {
     await ses
@@ -17,7 +18,7 @@ const ses = require("../lib/ses")
       })
       .promise()
   } catch (err) {
-    console.error(err)
+    debug(err)
   }
 
   try {
@@ -34,6 +35,6 @@ const ses = require("../lib/ses")
       })
       .promise()
   } catch (err) {
-    console.error(err)
+    debug(err)
   }
 })()
