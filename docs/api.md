@@ -53,6 +53,9 @@ object representing the resource(s) that you can access via `response.data` when
 - [GET `/arts`](#discover)
 - [GET `/arts/:artId`](#getart)
 - [POST `/arts`](#createpicture)
+- [GET `/commissions`](#cboard)
+- [GET `/commissions/:commissionId`](#getc)
+- [POST `/commissions`](#makec)
 
 ### <a name="login"></a>POST `/sessions`
 This endpoint is used to login existing users. Params `username` and `password` are expected. On success, returns status code 201 with a cookie. Also returns an instance of the user object.
@@ -89,7 +92,7 @@ When a user accesses a page of form `/users/reset/:token`, a PATCH request shoul
 
 ### <a name="discover"></a>GET `/arts`
 
-This is the "discover page". Currently, it returns the most recent pictures in anti-chronological order. You can personalize the results by passing in the user cookie.
+This is the "discover page". Currently, it returns the most recent pictures in anti-chronological order.
 
 It returns a maximum of 15 pictures. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen picture (i.e. the `id` of the last object in the pictures array returned).
 
@@ -104,6 +107,20 @@ This endpoint is used to upload a picture. The request body should be sent as mu
 Upon success, returns a 201 with a JSON object representing the user, which contains the fields `id`, `title`, `description`,  `pictures`, `price`, `tags`, and `artist_id`. The `pictures` array contain links to the pictures in the art.
 
 You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
+
+### <a name="cboard"></a>GET `/commissions`
+
+This is the commission board. Currently, it returns the most recent commissions in anti-chronological order.
+
+It returns a maximum of 15 commissions. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen commission (i.e. the `id` of the last object in the commissions array returned).
+
+### <a name="getc"></a>GET `/commissions/:commissionId`
+
+Get a single commission by `id`
+
+### <a name="makec"></a>POST `/commissions`
+
+Create a commissions object.
 
 ## Errors
 
