@@ -3,7 +3,7 @@ const n = (process.env.PAGE_SIZE - -1) * 2 // 2 pictures per art
 const random = require("../lib/random")
 const axios = require("axios")
 const fs = require("fs")
-const { User, Art } = require("../models")
+const { User } = require("../models")
 const faker = require("faker")
 
 exports.seed = async knex => {
@@ -47,7 +47,6 @@ exports.seed = async knex => {
           20
         )} #${faker.random.word()} #${faker.random.word()}`,
         price: faker.random.number(500) + 1,
-        medium: faker.random.word(),
         pictures: [paths[2 * i], paths[2 * i + 1]]
       })
     )

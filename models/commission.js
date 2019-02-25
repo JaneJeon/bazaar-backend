@@ -6,6 +6,12 @@ class Commission extends BaseModel {
     return {
       type: "object",
       properties: {
+        artist_id: { type: "integer", exclusiveMinimum: 0 },
+        status: {
+          type: "string",
+          enum: ["created", "accepted", "rejected", "completed", "cancelled"],
+          default: "created"
+        },
         price: { type: "number", exclusiveMinimum: 0 },
         price_unit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date-time" }, // ISO format

@@ -8,6 +8,7 @@ exports.up = knex =>
       .references("users.id")
       .notNullable()
     table.integer("artist_id").references("users.id")
+    table.text("status").notNullable()
 
     table.float("price").notNullable()
     table.text("price_unit").notNullable()
