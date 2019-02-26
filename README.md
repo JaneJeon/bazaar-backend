@@ -24,8 +24,9 @@ in `S3` (via `aws-sdk`).
 6. `yarn` to install dependencies for development, `yarn install --production` for production
 7. `yarn rollback`
 8. `yarn migrate`
-9. (optional) `yarn seed` if you want to populate the database with sample entries
-10. `yarn watch` to run the server for development, `yarn start` for production
+9. `yarn`
+10. (optional) `yarn seed` if you want to populate the database with sample entries
+11. `yarn watch` to run the server for development, `yarn start` for production
 
 ## Deployment
 

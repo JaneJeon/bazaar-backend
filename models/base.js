@@ -7,6 +7,29 @@ class BaseModel extends visibility(DbErrors(Model)) {
   static get tableName() {
     return plural(this.name.toLowerCase())
   }
+
+  static get modelPaths() {
+    return [__dirname]
+  }
+
+  static async queryById(id) {
+    let q = this.prototype.query().findById(id)
+    // soft delete
+    if (this.prototype.namedFilters.hasOwnProperty("deleted"))
+      q = q.whereNotDeleted()
+
+    return q.throwIfNotFound()
+  }
+
+  // paginate by id
+  static async paginate(after) {
+    return this.prototype
+      .query()
+      .skipUndefined()
+      .where("id", "<", after)
+      .orderBy("id", "desc")
+      .limit(process.env.PAGE_SIZE)
+  }
 }
 
 module.exports = BaseModel

@@ -1,44 +1,35 @@
 const { Router } = require("express")
 const assert = require("http-assert")
 const { Commission } = require("../models")
-const POSTGRES_MAX_INT = 2147483647
 
 module.exports = Router()
   .get("/", async (req, res) => {
-    // FOR NOW, we're using id as the bookmark
     // FOR NOW, the results are not personalized
-    const commissions = await Commission.query()
-      .where("id", "<", req.body.after || POSTGRES_MAX_INT)
-      .orderBy("id", "desc")
-      .limit(process.env.PAGE_SIZE)
+    const commissions = await Commission.paginate(req.body.after)
 
     res.send(commissions)
   })
   .get("/:commissionId", async (req, res) => {
-    const commission = await Commission.query().findById(
-      req.params.commissionId
-    )
+    const commission = await Commission.queryById(req.params.commissionId)
 
     res.send(commission)
   })
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .get("/me", async (req, res) => {
+    let q
     if (req.query.as == "artist") {
-      const q = req.user.$relatedQuery("commissionRequests")
-      let commissions
-
-      if (req.query.show != "all") commissions = await q
-      else commissions = await q.whereNot("status", "rejected")
-
-      res.send(commissions)
+      q = req.user.$relatedQuery("commissionsAsArtist")
+      if (req.query.show != "all") q = q.whereNot("status", "rejected")
     } else {
-      const commissions = await req.user.$relatedQuery("commissions")
-      res.send(commissions)
+      q = req.user.$relatedQuery("commissionsAsBuyer")
     }
+
+    const commissions = await q
+
+    res.send(commissions)
   })
   .post("/", async (req, res) => {
-    delete req.body.status
-    delete req.body.tags
+    assert(req.body.status === undefined && req.body.tags === undefined, 400)
 
     const commission = await req.user
       .$relatedQuery("commissions")

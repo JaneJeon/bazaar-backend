@@ -1,23 +1,24 @@
 const { Router } = require("express")
-const { User, Art } = require("../models")
+const { User } = require("../models")
 const redis = require("../config/redis")
 const { sync: uid } = require("uid-safe")
-const ses = require("../config/ses")
+const ses = require("../lib/ses")
 const assert = require("http-assert")
 
 module.exports = Router()
   // user info
   .get("/:userId", async (req, res) => {
-    const user = await User.query()
-      .findById(req.params.userId)
-      .throwIfNotFound()
+    const user = await User.queryById(req.params.userId)
 
     res.send(user)
   })
   .get("/:userId/arts", async (req, res) => {
-    const arts = await Art.query()
-      .where({ artist: req.params.userId })
-      .andWhere("id", "<", req.body.after || POSTGRES_MAX_INT)
+    const artist = await User.queryById(req.params.userId)
+
+    const arts = await artist
+      .$relatedQuery("arts")
+      .skipUndefined()
+      .where("id", "<", req.body.after)
       .limit(process.env.PAGE_SIZE)
 
     res.send(arts)
@@ -45,7 +46,6 @@ module.exports = Router()
   // verify user email
   .patch("/verify/:token", async (req, res) => {
     const id = await redis.get(`verify:${req.params.token}`)
-    assert(id, 404)
     await User.query()
       .patch({ verified: true })
       .where({ id })
@@ -55,8 +55,7 @@ module.exports = Router()
   })
   // password reset when user forgets their password while logging in
   .patch("/reset", async (req, res) => {
-    assert(req.body.email, 400)
-    const id = await User.findByEmail(email)
+    const id = await User.findByEmail(req.body.email)
     res.end()
 
     const token = uid(24)
@@ -75,7 +74,6 @@ module.exports = Router()
   })
   .patch("/reset/:token", async (req, res) => {
     const id = await redis.get(`reset:${req.params.token}`)
-    assert(id, 404)
     await User.query()
       .patch({ password })
       .where({ id })

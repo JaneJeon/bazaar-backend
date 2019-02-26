@@ -1,14 +1,17 @@
-const tableName = "commissions"
+const tableName = "negotiations"
 
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {
-    table.increments()
     table
-      .integer("buyer_id")
+      .integer("commission_id")
+      .references("commissions.id")
+      .notNullable()
+    table
+      .integer("artist_id")
       .references("users.id")
       .notNullable()
-    table.integer("artist_id").references("users.id")
-    table.text("status").notNullable()
+    table.text("user_type").notNullable()
+    table.boolean("accepted").notNullable()
 
     table.float("price").notNullable()
     table.text("price_unit").notNullable()
@@ -19,14 +22,10 @@ exports.up = knex =>
     table.float("width")
     table.float("height")
     table.text("size_unit")
-    table.jsonb("tags")
-    table.text("description").notNullable()
 
     table.timestamps(true, true)
-    table
-      .boolean("deleted")
-      .notNullable()
-      .defaultTo(false)
+
+    table.primary(["commission_id", "artist_id", "user_type"])
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)
