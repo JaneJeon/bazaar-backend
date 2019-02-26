@@ -1,7 +1,8 @@
 const BaseModel = require("./base")
+const softDelete = require("objection-soft-delete")()
 const text = require("../lib/text")
 
-class Commission extends BaseModel {
+class Commission extends softDelete(BaseModel) {
   static get jsonSchema() {
     return {
       type: "object",
@@ -32,6 +33,23 @@ class Commission extends BaseModel {
       required: ["price", "price_unit", "deadline", "copyright", "description"],
       additionalProperties: false
     }
+  }
+
+  static get relationMappings() {
+    return {
+      negotiations: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "negotiation",
+        join: {
+          from: "commissions.id",
+          to: "negotiations.commission_id"
+        }
+      }
+    }
+  }
+
+  static get hidden() {
+    return ["deleted"]
   }
 
   processInput() {

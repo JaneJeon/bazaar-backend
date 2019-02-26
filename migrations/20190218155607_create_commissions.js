@@ -1,4 +1,4 @@
-const tableName = require("pluralize")("commission")
+const tableName = "commissions"
 
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {
@@ -23,6 +23,10 @@ exports.up = knex =>
     table.text("description").notNullable()
 
     table.timestamps(true, true)
+    table
+      .boolean("deleted")
+      .notNullable()
+      .defaultTo(false)
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)

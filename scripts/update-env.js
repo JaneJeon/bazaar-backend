@@ -12,7 +12,7 @@ try {
   oldFile = fs.readFileSync(oldPath).toString()
 } catch (err) {
   debug(err)
-  fs.writeFileSync(oldPath, newFile)
+  return fs.writeFileSync(oldPath, newFile)
 }
 
 const oldEnv = dotenv.parse(oldFile)

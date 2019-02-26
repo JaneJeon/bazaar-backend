@@ -5,20 +5,13 @@ const assert = require("http-assert")
 
 module.exports = Router()
   .get("/", async (req, res) => {
-    // FOR NOW, we're using id as the bookmark
     // FOR NOW, the results are not personalized
-    const arts = await Art.query()
-      .skipUndefined()
-      .where("id", "<", req.body.after)
-      .orderBy("id", "desc")
-      .limit(process.env.PAGE_SIZE)
+    const arts = await Art.paginate(req.body.after)
 
     res.send(arts)
   })
   .get("/:artId", async (req, res) => {
-    const art = await Art.query()
-      .findById(req.params.artId)
-      .throwIfNotFound()
+    const art = await Art.queryById(req.params.artId)
 
     res.send(art)
   })

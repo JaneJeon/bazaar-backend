@@ -8,18 +8,12 @@ const assert = require("http-assert")
 module.exports = Router()
   // user info
   .get("/:userId", async (req, res) => {
-    const user = await User.query()
-      .findById(req.params.userId)
-      .whereNotDeleted()
-      .throwIfNotFound()
+    const user = await User.queryById(req.params.userId)
 
     res.send(user)
   })
   .get("/:userId/arts", async (req, res) => {
-    const artist = await User.query()
-      .findById(req.params.userId)
-      .whereNotDeleted()
-      .throwIfNotFound()
+    const artist = await User.queryById(req.params.userId)
 
     const arts = await artist
       .$relatedQuery("arts")

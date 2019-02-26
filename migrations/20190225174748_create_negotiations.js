@@ -1,20 +1,16 @@
-const tableName = require("pluralize")("negotiation")
+const tableName = "negotiations"
 
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {
-    table.increments()
     table
       .integer("commission_id")
       .references("commissions.id")
       .notNullable()
     table
-      .integer("buyer_id")
-      .references("users.id")
-      .notNullable()
-    table
       .integer("artist_id")
       .references("users.id")
       .notNullable()
+    table.text("user_type").notNullable()
     table.boolean("accepted").notNullable()
 
     table.float("price").notNullable()
@@ -28,6 +24,8 @@ exports.up = knex =>
     table.text("size_unit")
 
     table.timestamps(true, true)
+
+    table.primary(["commission_id", "artist_id", "user_type"])
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)

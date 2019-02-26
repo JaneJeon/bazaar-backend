@@ -14,7 +14,6 @@ const errorHandler = require("./config/error")
 
 const app = express()
 if (process.env.NODE_ENV == "production") app.enable("trust proxy")
-// noinspection JSUnusedLocalSymbols
 app
   .use(helmet())
   .use(cors({ origin: process.env.FRONTEND_URL }))

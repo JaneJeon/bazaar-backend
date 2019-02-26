@@ -1,4 +1,4 @@
-const tableName = require("pluralize")("art")
+const tableName = "arts"
 
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {

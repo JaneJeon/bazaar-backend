@@ -1,4 +1,4 @@
-const tableName = require("pluralize")("user")
+const tableName = "users"
 
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {
@@ -13,19 +13,20 @@ exports.up = knex =>
       .unique()
     table.text("password").notNullable()
     table
-      .boolean("deleted")
-      .notNullable()
-      .defaultTo(false)
-    table
       .boolean("verified")
       .notNullable()
       .defaultTo(false)
+
     table.text("avatar")
     table.text("name")
     table.text("location")
     table.text("bio")
 
     table.timestamps(true, true)
+    table
+      .boolean("deleted")
+      .notNullable()
+      .defaultTo(false)
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)
