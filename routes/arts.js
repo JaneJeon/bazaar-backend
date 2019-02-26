@@ -2,21 +2,23 @@ const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art } = require("../models")
 const assert = require("http-assert")
-const POSTGRES_MAX_INT = 2147483647
 
 module.exports = Router()
   .get("/", async (req, res) => {
     // FOR NOW, we're using id as the bookmark
     // FOR NOW, the results are not personalized
     const arts = await Art.query()
-      .where("id", "<", req.body.after || POSTGRES_MAX_INT)
+      .skipUndefined()
+      .where("id", "<", req.body.after)
       .orderBy("id", "desc")
       .limit(process.env.PAGE_SIZE)
 
     res.send(arts)
   })
   .get("/:artId", async (req, res) => {
-    const art = await Art.query().findById(req.params.artId)
+    const art = await Art.query()
+      .findById(req.params.artId)
+      .throwIfNotFound()
 
     res.send(art)
   })

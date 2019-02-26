@@ -1,23 +1,23 @@
 const { Router } = require("express")
 const assert = require("http-assert")
 const { Commission } = require("../models")
-const POSTGRES_MAX_INT = 2147483647
 
 module.exports = Router()
   .get("/", async (req, res) => {
     // FOR NOW, we're using id as the bookmark
     // FOR NOW, the results are not personalized
     const commissions = await Commission.query()
-      .where("id", "<", req.body.after || POSTGRES_MAX_INT)
+      .skipUndefined()
+      .where("id", "<", req.body.after)
       .orderBy("id", "desc")
       .limit(process.env.PAGE_SIZE)
 
     res.send(commissions)
   })
   .get("/:commissionId", async (req, res) => {
-    const commission = await Commission.query().findById(
-      req.params.commissionId
-    )
+    const commission = await Commission.query()
+      .findById(req.params.commissionId)
+      .throwIfNotFound()
 
     res.send(commission)
   })
