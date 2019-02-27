@@ -13,9 +13,9 @@ exports.up = knex =>
     table.text("user_type").notNullable()
     table.boolean("accepted").notNullable()
 
-    table.float("price").notNullable()
+    table.integer("price").notNullable()
     table.text("price_unit").notNullable()
-    table.datetime("deadline").notNullable()
+    table.date("deadline").notNullable()
     table.integer("num_updates")
     table.text("copyright").notNullable()
 

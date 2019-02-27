@@ -10,9 +10,9 @@ exports.up = knex =>
     table.integer("artist_id").references("users.id")
     table.text("status").notNullable()
 
-    table.float("price").notNullable()
+    table.integer("price").notNullable()
     table.text("price_unit").notNullable()
-    table.datetime("deadline").notNullable()
+    table.date("deadline").notNullable()
     table.integer("num_updates")
     table.text("copyright").notNullable()
 
