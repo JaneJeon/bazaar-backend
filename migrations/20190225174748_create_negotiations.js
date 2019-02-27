@@ -12,6 +12,7 @@ exports.up = knex =>
       .notNullable()
     table.text("user_type").notNullable()
     table.boolean("accepted").notNullable()
+    table.boolean("finalized").notNullable()
 
     table.integer("price").notNullable()
     table.text("price_unit").notNullable()

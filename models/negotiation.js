@@ -12,6 +12,7 @@ class Negotiation extends BaseModel {
         artistId: { type: "string" },
         userType: { type: "string", enum: ["artist", "buyer"] },
         accepted: { type: "boolean", default: false },
+        finalized: { type: "boolean", default: false },
         price: { type: "integer", minimum: 5 },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
@@ -30,7 +31,7 @@ class Negotiation extends BaseModel {
   }
 
   static get autoFields() {
-    return ["userType", "accepted"]
+    return ["userType", "accepted", "finalized"]
   }
 }
 

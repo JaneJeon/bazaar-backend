@@ -1,9 +1,8 @@
 const BaseModel = require("./base")
-const softDelete = require("objection-soft-delete")()
 const text = require("../lib/text")
 const pickBy = require("lodash/pickBy")
 
-class Commission extends softDelete(BaseModel) {
+class Commission extends BaseModel {
   static get jsonSchema() {
     return {
       type: "object",
@@ -12,9 +11,10 @@ class Commission extends softDelete(BaseModel) {
         isPrivate: { type: "boolean", default: false },
         status: {
           type: "string",
-          enum: ["created", "accepted", "rejected", "completed", "cancelled"],
-          default: "created"
+          enum: ["open", "accepted", "rejected", "completed", "cancelled"],
+          default: "open"
         },
+        cancelledBy: { type: "string", enum: ["artist", "buyer"] },
         price: { type: "integer", minimum: 5 },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
@@ -30,8 +30,7 @@ class Commission extends softDelete(BaseModel) {
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
-        },
-        deleted: { type: "boolean" }
+        }
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
@@ -52,11 +51,7 @@ class Commission extends softDelete(BaseModel) {
   }
 
   static get autoFields() {
-    return ["isPrivate", "status", "tags", "deleted"]
-  }
-
-  static get hidden() {
-    return ["deleted"]
+    return ["isPrivate", "status", "cancelledBy", "tags"]
   }
 
   static get negotiationFields() {

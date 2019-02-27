@@ -24,14 +24,14 @@ module.exports = Router()
       req.query.as == "buyer"
         ? user.$relatedQuery("commissionsAsBuyer")
         : user.$relatedQuery("commissionsAsArtist")
+
     // if you're looking at others' commissions, you can only see public ones
     if (req.user.id != user.id) q = q.where("is_private", false)
 
     const commissions = await q
       .skipUndefined()
+      .where("status", req.query.status)
       .where("id", "<", req.query.after)
-      .whereNotDeleted()
-      .orderBy("rejected", "desc")
       .orderBy("id", "desc")
       .limit(process.env.PAGE_SIZE)
 

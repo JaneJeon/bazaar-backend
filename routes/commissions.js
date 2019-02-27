@@ -3,9 +3,28 @@ const assert = require("http-assert")
 const { Commission } = require("../models")
 
 module.exports = Router()
+  // commission board
   .get("/", async (req, res) => {
     // FOR NOW, the results are not personalized
-    const commissions = await Commission.paginate(req.query.after)
+    const commissions = await Commission.query()
+      .skipUndefined()
+      .where("is_private", false)
+      .where("status", "open")
+      .where("id", "<", req.query.after)
+      .orderBy("id", "desc")
+      .limit(process.env.PAGE_SIZE)
+
+    res.send(commissions)
+  })
+  // get commissions where the buyer specifically requested the artist
+  .get("/forMe", async (req, res) => {
+    const commissions = await Commission.query()
+      .skipUndefined()
+      .where("artist_id", req.user.id)
+      .where("status", req.query.status)
+      .where("id", "<", req.query.after)
+      .orderBy("id", "desc")
+      .limit(process.env.PAGE_SIZE)
 
     res.send(commissions)
   })
