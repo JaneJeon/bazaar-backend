@@ -28,6 +28,10 @@ class Negotiation extends BaseModel {
       additionalProperties: false
     }
   }
+
+  static get autoFields() {
+    return ["user_type", "accepted"]
+  }
 }
 
 module.exports = Negotiation

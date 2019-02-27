@@ -9,6 +9,7 @@ class Commission extends softDelete(BaseModel) {
       type: "object",
       properties: {
         artist_id: { type: "integer", minimum: 1 },
+        is_private: { type: "boolean", default: false },
         status: {
           type: "string",
           enum: ["created", "accepted", "rejected", "completed", "cancelled"],
@@ -29,7 +30,8 @@ class Commission extends softDelete(BaseModel) {
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
-        }
+        },
+        deleted: { type: "boolean" }
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
@@ -47,6 +49,10 @@ class Commission extends softDelete(BaseModel) {
         }
       }
     }
+  }
+
+  static get autoFields() {
+    return ["is_private", "status", "tags", "deleted"]
   }
 
   static get hidden() {
@@ -67,6 +73,7 @@ class Commission extends softDelete(BaseModel) {
   }
 
   processInput() {
+    if (this.artist_id) this.is_private = true
     if (this.description) {
       this.description = text.clean(this.description, false)
       this.tags = text.extractTags(this.description)

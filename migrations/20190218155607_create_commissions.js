@@ -8,6 +8,7 @@ exports.up = knex =>
       .references("users.id")
       .notNullable()
     table.integer("artist_id").references("users.id")
+    table.boolean("is_private").notNullable()
     table.text("status").notNullable()
 
     table.integer("price").notNullable()

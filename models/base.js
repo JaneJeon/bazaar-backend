@@ -2,6 +2,7 @@ const { Model } = require("objection")
 const { DbErrors } = require("objection-db-errors")
 const { default: visibility } = require("objection-visibility")
 const { plural } = require("pluralize")
+const assert = require("http-assert")
 
 class BaseModel extends visibility(DbErrors(Model)) {
   static get tableName() {
@@ -12,6 +13,14 @@ class BaseModel extends visibility(DbErrors(Model)) {
     return [__dirname]
   }
 
+  // some fields shouldn't be manually set
+  static async filterRequest(req) {
+    if (this.autoFields)
+      this.autoFields.forEach(field =>
+        assert(req.body[field] === undefined, 400)
+      )
+  }
+
   static get isSoftDelete() {
     return this.namedFilters && this.namedFilters.hasOwnProperty("deleted")
   }
@@ -19,6 +28,12 @@ class BaseModel extends visibility(DbErrors(Model)) {
   static async findById(id) {
     let q = this.query().findById(id)
     if (this.isSoftDelete) q = q.whereNotDeleted()
+    return q.throwIfNotFound()
+  }
+
+  async findById(ref, id) {
+    let q = this.$relatedQuery(ref).findById(id)
+    if (this.constructor.isSoftDelete) q = q.whereNotDeleted()
     return q.throwIfNotFound()
   }
 

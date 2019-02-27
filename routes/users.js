@@ -19,8 +19,9 @@ module.exports = Router()
     res.send(arts)
   })
   .post("/", async (req, res) => {
-    const { username, email, password } = req.body
-    const user = await User.query().insert({ username, email, password })
+    User.filterRequest(req)
+
+    const user = await User.query().insert(req.body)
     req.login(user, () => res.status(201).send(req.user))
 
     // email verification

@@ -66,6 +66,10 @@ class User extends password(softDelete(BaseModel)) {
     }
   }
 
+  static get autoFields() {
+    return ["deleted", "verified", "avatar"]
+  }
+
   static get hidden() {
     return ["password", "deleted"]
   }

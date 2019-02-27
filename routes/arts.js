@@ -20,11 +20,10 @@ module.exports = Router()
     "/",
     upload.array("picture", process.env.MAX_PICTURE_ATTACHMENTS),
     async (req, res) => {
-      const { title, description, price, medium } = req.body
-      const pictures = req.files.map(file => file.path)
-      const art = await req.user
-        .$relatedQuery("arts")
-        .insert({ title, description, price, medium, pictures })
+      Art.filterRequest(req.body)
+      req.body.pictures = req.files.map(file => file.path)
+
+      const art = await req.user.$relatedQuery("arts").insert(req.body)
 
       res.status(201).send(art)
     }
