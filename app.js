@@ -16,7 +16,7 @@ const app = express()
 if (process.env.NODE_ENV == "production") app.enable("trust proxy")
 app
   .use(helmet())
-  .use(cors({ origin: process.env.FRONTEND_URL }))
+  .use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
   .use(express.json())
   .use(cookieSession({ secret: process.env.SESSION_SECRET, sameSite: "lax" }))
   .use(passport.initialize())
