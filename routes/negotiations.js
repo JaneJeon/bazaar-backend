@@ -7,12 +7,12 @@ module.exports = Router()
     req.commission = await Commission.findById(req.params.commissionId)
 
     // if it's private, only the artist and the buyer can access it
-    if (req.commission.is_private) {
+    if (req.commission.isPrivate) {
       assert(req.user && req.user.verified, 401)
       next(
         assert(
-          req.user.id == req.commission.buyer_id ||
-            req.user.id == req.commission.artist_id,
+          req.user.id == req.commission.buyerId ||
+            req.user.id == req.commission.artistId,
           403
         )
       )
@@ -38,7 +38,7 @@ module.exports = Router()
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .post("/", async (req, res) => {
     // buyer can't create negotiation with themselves, duh
-    assert(req.user.id != req.commission.buyer_id, 403)
+    assert(req.user.id != req.commission.buyerId, 403)
     Negotiation.filterRequest(req)
 
     // negotiation forms for buyer and artist

@@ -7,11 +7,11 @@ exports.seed = async knex => {
 
   // doing just one because I'm lazy
   await buyer.$relatedQuery("commissionsAsBuyer").insert({
-    artist_id: artist.id,
+    artistId: artist.id,
     price: 42,
-    price_unit: "USD",
+    priceUnit: "USD",
     deadline: "2019-03-05",
-    num_updates: 2,
+    numUpdates: 2,
     copyright: "buyer owns the right",
     description: "hello #test1 @test2"
   })

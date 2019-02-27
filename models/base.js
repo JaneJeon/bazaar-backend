@@ -1,4 +1,4 @@
-const { Model } = require("objection")
+const { Model, snakeCaseMappers } = require("objection")
 const { DbErrors } = require("objection-db-errors")
 const { default: visibility } = require("objection-visibility")
 const { plural } = require("pluralize")
@@ -7,6 +7,10 @@ const assert = require("http-assert")
 class BaseModel extends visibility(DbErrors(Model)) {
   static get tableName() {
     return plural(this.name.toLowerCase())
+  }
+
+  static get columnNameMappers() {
+    return snakeCaseMappers()
   }
 
   static get modelPaths() {
