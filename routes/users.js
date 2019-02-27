@@ -28,7 +28,13 @@ module.exports = Router()
     // if you're looking at others' commissions, you can only see public ones
     if (req.user.id != user.id) q = q.where("is_private", false)
 
-    const commissions = await q.whereNotDeleted().orderBy("rejected", "desc")
+    const commissions = await q
+      .skipUndefined()
+      .where("id", "<", req.query.after)
+      .whereNotDeleted()
+      .orderBy("rejected", "desc")
+      .orderBy("id", "desc")
+      .limit(process.env.PAGE_SIZE)
 
     res.send(commissions)
   })
