@@ -1,3 +1,5 @@
+const log = require("../lib/log")
+const pick = require("lodash/pick")
 const { MulterError } = require("multer")
 const { ValidationError, NotFoundError } = require("objection")
 const {
@@ -9,10 +11,15 @@ const {
   DataError
 } = require("objection-db-errors")
 
+const logError = err => {
+  err.stack = err.stack.slice(0, err.stack.lastIndexOf("at newFn")).trimRight()
+  log.error(pick(err, ["message", "name", "data", "stack"]))
+}
+
 module.exports = (err, res) => {
   // errors can happen after the response is sent when sending email
   if (res.headersSent) {
-    console.error(err)
+    logError(err)
     return
   }
 
@@ -57,7 +64,7 @@ module.exports = (err, res) => {
     err.type = "UnknownError"
   }
 
-  if (err.statusCode == 500) console.error(err)
+  if (err.statusCode == 500) logError(err)
 
   res.status(err.statusCode).send({
     message: err.message,
