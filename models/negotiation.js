@@ -12,9 +12,9 @@ class Negotiation extends BaseModel {
         artist_id: { type: "integer", minimum: 1 },
         user_type: { type: "string", enum: ["artist", "buyer"] },
         accepted: { type: "boolean", default: false },
-        price: { type: "number", exclusiveMinimum: 0 },
+        price: { type: "integer", minimum: 5 },
         price_unit: { type: "string", enum: ["USD"], default: "USD" },
-        deadline: { type: "string", format: "date-time" }, // ISO format
+        deadline: { type: "string", format: "date" }, // ISO format
         num_updates: { type: "integer", minimum: 0, maximum: 5 },
         copyright: {
           type: "string",
@@ -24,7 +24,7 @@ class Negotiation extends BaseModel {
         height: { type: "number", exclusiveMinimum: 0 },
         size_unit: { type: "string", enum: ["px", "in", "cm"], default: "px" }
       },
-      required: ["user_type", "price", "price_unit", "deadline", "copyright"],
+      required: ["artist_id", "user_type", "price", "deadline", "copyright"],
       additionalProperties: false
     }
   }

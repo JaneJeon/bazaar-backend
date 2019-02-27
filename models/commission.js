@@ -1,21 +1,22 @@
 const BaseModel = require("./base")
 const softDelete = require("objection-soft-delete")()
 const text = require("../lib/text")
+const pickBy = require("lodash/pickBy")
 
 class Commission extends softDelete(BaseModel) {
   static get jsonSchema() {
     return {
       type: "object",
       properties: {
-        artist_id: { type: "integer", exclusiveMinimum: 0 },
+        artist_id: { type: "integer", minimum: 1 },
         status: {
           type: "string",
           enum: ["created", "accepted", "rejected", "completed", "cancelled"],
           default: "created"
         },
-        price: { type: "number", exclusiveMinimum: 0 },
+        price: { type: "integer", minimum: 5 },
         price_unit: { type: "string", enum: ["USD"], default: "USD" },
-        deadline: { type: "string", format: "date-time" }, // ISO format
+        deadline: { type: "string", format: "date" }, // ISO format
         num_updates: { type: "integer", minimum: 0, maximum: 5 },
         copyright: {
           type: "string",
@@ -30,7 +31,7 @@ class Commission extends softDelete(BaseModel) {
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
         }
       },
-      required: ["price", "price_unit", "deadline", "copyright", "description"],
+      required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
     }
   }
@@ -52,6 +53,19 @@ class Commission extends softDelete(BaseModel) {
     return ["deleted"]
   }
 
+  static get negotiationFields() {
+    return [
+      "price",
+      "price_unit",
+      "deadline",
+      "num_updates",
+      "copyright",
+      "width",
+      "height",
+      "size_unit"
+    ]
+  }
+
   processInput() {
     if (this.description) {
       this.description = text.clean(this.description, false)
@@ -67,6 +81,24 @@ class Commission extends softDelete(BaseModel) {
   $beforeUpdate(opt, queryContext) {
     super.$beforeUpdate(opt, queryContext)
     this.processInput()
+  }
+
+  async negotiate(artist_id, obj) {
+    const base = pickBy(
+      this,
+      (v, k) => v !== null && this.constructor.negotiationFields.includes(k)
+    )
+    base.artist_id = artist_id
+    base.deadline = this.deadline.toISOString().substr(0, 10)
+
+    return Promise.all([
+      this.$relatedQuery("negotiations").insert(
+        Object.assign(base, { user_type: "buyer" })
+      ),
+      this.$relatedQuery("negotiations").insert(
+        Object.assign(base, { user_type: "artist" }, obj)
+      )
+    ])
   }
 }
 

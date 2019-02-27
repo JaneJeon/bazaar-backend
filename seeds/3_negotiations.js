@@ -4,6 +4,8 @@ exports.seed = async knex => {
   await knex("negotiations").del()
 
   // two different artists bid on the commission
-  const [_, artist1, artist2] = await User.query()
-  const commission = await Commission.query().findOne()
+  const [buyer, artist] = await User.query()
+  const commission = await Commission.query().first()
+
+  await commission.negotiate(artist.id, { price: 43, num_updates: 1 })
 }

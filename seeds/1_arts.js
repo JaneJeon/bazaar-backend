@@ -1,5 +1,4 @@
-const tableName = require("pluralize")("art")
-const n = (process.env.PAGE_SIZE - -1) * 2 // 2 pictures per art
+const n = 4
 const { sync: uid } = require("uid-safe")
 const axios = require("axios")
 const fs = require("fs")
@@ -7,7 +6,7 @@ const { User } = require("../models")
 const faker = require("faker")
 
 exports.seed = async knex => {
-  await knex(tableName).del()
+  await knex("arts").del()
 
   // save pictures
   let promises = []
@@ -53,5 +52,4 @@ exports.seed = async knex => {
   }
 
   await Promise.all(promises)
-  console.log(`Created ${n / 2} art pieces for user ${user.id}`)
 }
