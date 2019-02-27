@@ -46,7 +46,6 @@ class Art extends BaseModel {
           async picture => await image.upload(picture, "PICTURE", "inside")
         )
       )
-    if (this.medium) this.medium = text.clean(this.medium)
   }
 
   async $beforeInsert(queryContext) {

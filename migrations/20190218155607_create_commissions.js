@@ -4,10 +4,10 @@ exports.up = knex =>
   knex.schema.createTable(tableName, table => {
     table.increments()
     table
-      .integer("buyer_id")
+      .text("buyer_id")
       .references("users.id")
       .notNullable()
-    table.integer("artist_id").references("users.id")
+    table.text("artist_id").references("users.id")
     table.boolean("is_private").notNullable()
     table.text("status").notNullable()
 

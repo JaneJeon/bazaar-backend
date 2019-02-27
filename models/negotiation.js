@@ -9,7 +9,7 @@ class Negotiation extends BaseModel {
     return {
       type: "object",
       properties: {
-        artist_id: { type: "integer", minimum: 1 },
+        artist_id: { type: "string" },
         user_type: { type: "string", enum: ["artist", "buyer"] },
         accepted: { type: "boolean", default: false },
         price: { type: "integer", minimum: 5 },

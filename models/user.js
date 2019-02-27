@@ -11,9 +11,10 @@ class User extends password(softDelete(BaseModel)) {
     return {
       type: "object",
       properties: {
+        id: { type: "string" },
         username: {
           type: "string",
-          minLength: 1,
+          minLength: process.env.MIN_USERNAME_LENGTH,
           maxLength: process.env.MAX_USERNAME_LENGTH,
           pattern: "^\\w+$"
         },
@@ -67,7 +68,7 @@ class User extends password(softDelete(BaseModel)) {
   }
 
   static get autoFields() {
-    return ["deleted", "verified", "avatar"]
+    return ["id", "deleted", "verified", "avatar"]
   }
 
   static get hidden() {
@@ -81,7 +82,7 @@ class User extends password(softDelete(BaseModel)) {
   }
 
   async processInput() {
-    if (this.username) this.username = this.username.toLowerCase()
+    if (this.username) this.id = this.username.toLowerCase()
     if (this.email) this.email = normalize(this.email)
     if (this.name) this.name = clean(this.name)
     if (this.location) this.location = clean(this.location)
@@ -106,6 +107,11 @@ class User extends password(softDelete(BaseModel)) {
       .findOne({ email: normalize(email) })
       .whereNotDeleted()
       .throwIfNotFound()
+  }
+
+  static async findByUsername(username, self) {
+    const userId = username.toLowerCase()
+    return self && self.id == userId ? self : this.findById(userId)
   }
 }
 
