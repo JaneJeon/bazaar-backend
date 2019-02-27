@@ -34,4 +34,5 @@ managing the process with `pm2`).
 
 ## Authors
 
-Sungil Ahn
+Sungil Ahn  
+Ryan Hall
