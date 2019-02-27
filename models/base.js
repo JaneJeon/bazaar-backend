@@ -12,23 +12,30 @@ class BaseModel extends visibility(DbErrors(Model)) {
     return [__dirname]
   }
 
-  static async queryById(id) {
-    let q = this.constructor.query().findById(id)
-    // soft delete
-    if (this.prototype.namedFilters.hasOwnProperty("deleted"))
-      q = q.whereNotDeleted()
+  static get isSoftDelete() {
+    return this.namedFilters && this.namedFilters.hasOwnProperty("deleted")
+  }
 
+  static async findById(id) {
+    let q = this.query().findById(id)
+    if (this.isSoftDelete) q = q.whereNotDeleted()
     return q.throwIfNotFound()
   }
 
-  // paginate by id
   static async paginate(after) {
-    return this.constructor
-      .query()
+    let q = this.query()
       .skipUndefined()
       .where("id", "<", after)
-      .orderBy("id", "desc")
-      .limit(process.env.PAGE_SIZE)
+    if (this.isSoftDelete) q = q.whereNotDeleted()
+    return q.orderBy("id", "desc").limit(process.env.PAGE_SIZE)
+  }
+
+  async paginate(ref, after) {
+    let q = this.$relatedQuery(ref)
+      .skipUndefined()
+      .where("id", "<", after)
+    if (this.constructor.isSoftDelete) q = q.whereNotDeleted()
+    return q.orderBy("id", "desc").limit(process.env.PAGE_SIZE)
   }
 }
 

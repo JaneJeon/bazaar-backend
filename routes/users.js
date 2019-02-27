@@ -4,29 +4,17 @@ const redis = require("../config/redis")
 const { sync: uid } = require("uid-safe")
 const ses = require("../lib/ses")
 const assert = require("http-assert")
-const normalize = require("normalize-email")
 
 module.exports = Router()
   // user info
   .get("/:userId", async (req, res) => {
-    const user = await User.query()
-      .findById(req.params.userId)
-      .whereNotDeleted()
-      .throwIfNotFound()
+    const user = await User.findById(req.params.userId)
 
     res.send(user)
   })
   .get("/:userId/arts", async (req, res) => {
-    const artist = await User.query()
-      .findById(req.params.userId)
-      .whereNotDeleted()
-      .throwIfNotFound()
-
-    const arts = await artist
-      .$relatedQuery("arts")
-      .skipUndefined()
-      .where("id", "<", req.query.after)
-      .limit(process.env.PAGE_SIZE)
+    const artist = await User.findById(req.params.userId)
+    const arts = await artist.paginate("arts", req.query.after)
 
     res.send(arts)
   })
@@ -62,10 +50,7 @@ module.exports = Router()
   })
   // password reset when user forgets their password while logging in
   .patch("/reset", async (req, res) => {
-    const id = await User.query()
-      .findOne({ email: normalize(req.body.email) })
-      .whereNotDeleted()
-      .throwIfNotFound()
+    const id = await User.findByEmail(req.body.email)
     res.end()
 
     const token = uid(24)
