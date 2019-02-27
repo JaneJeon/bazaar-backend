@@ -13,7 +13,7 @@ class BaseModel extends visibility(DbErrors(Model)) {
   }
 
   static async queryById(id) {
-    let q = this.prototype.query().findById(id)
+    let q = this.constructor.query().findById(id)
     // soft delete
     if (this.prototype.namedFilters.hasOwnProperty("deleted"))
       q = q.whereNotDeleted()
@@ -23,7 +23,7 @@ class BaseModel extends visibility(DbErrors(Model)) {
 
   // paginate by id
   static async paginate(after) {
-    return this.prototype
+    return this.constructor
       .query()
       .skipUndefined()
       .where("id", "<", after)
