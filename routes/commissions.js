@@ -5,12 +5,20 @@ const { Commission } = require("../models")
 module.exports = Router()
   .get("/", async (req, res) => {
     // FOR NOW, the results are not personalized
-    const commissions = await Commission.paginate(req.body.after)
+    const commissions = await Commission.query()
+      .skipUndefined()
+      .where("id", "<", req.query.after)
+      .whereNotDeleted()
+      .orderBy("id", "desc")
+      .limit(process.env.PAGE_SIZE)
 
     res.send(commissions)
   })
   .get("/:commissionId", async (req, res) => {
-    const commission = await Commission.queryById(req.params.commissionId)
+    const commission = await Commission.query()
+      .findById(req.params.commissionId)
+      .whereNotDeleted()
+      .throwIfNotFound()
 
     res.send(commission)
   })
@@ -24,7 +32,7 @@ module.exports = Router()
       q = req.user.$relatedQuery("commissionsAsBuyer")
     }
 
-    const commissions = await q
+    const commissions = await q.whereNotDeleted()
 
     res.send(commissions)
   })
