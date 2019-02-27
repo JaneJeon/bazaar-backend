@@ -10,6 +10,7 @@ const {
   CheckViolationError,
   DataError
 } = require("objection-db-errors")
+const { HttpError } = require("http-errors")
 
 const logError = err => {
   err.stack = err.stack.slice(0, err.stack.lastIndexOf("at newFn")).trimRight()
@@ -59,8 +60,8 @@ module.exports = (err, res) => {
   } else if (err instanceof DBError) {
     err.statusCode = 500
     err.type = "UnknownDatabaseError"
-  } else {
-    if (!err.statusCode) err.statusCode = 500
+  } else if (!(err instanceof HttpError)) {
+    err.statusCode = 500
     err.type = "UnknownError"
   }
 
