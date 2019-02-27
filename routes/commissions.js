@@ -29,7 +29,7 @@ module.exports = Router()
     res.send(commissions)
   })
   .post("/", async (req, res) => {
-    assert(req.body.status === undefined && req.body.tags === undefined, 400)
+    Commission.filterRequest(req)
 
     const commission = await req.user
       .$relatedQuery("commissions")

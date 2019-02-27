@@ -66,6 +66,10 @@ class User extends password(softDelete(BaseModel)) {
     }
   }
 
+  static get autoFields() {
+    return ["deleted", "verified", "avatar"]
+  }
+
   static get hidden() {
     return ["password", "deleted"]
   }
@@ -98,8 +102,7 @@ class User extends password(softDelete(BaseModel)) {
   }
 
   static async findByEmail(email) {
-    return this.constructor
-      .query()
+    return this.query()
       .findOne({ email: normalize(email) })
       .whereNotDeleted()
       .throwIfNotFound()

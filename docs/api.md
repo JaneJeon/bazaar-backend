@@ -142,4 +142,3 @@ When a route and/or a resource is not found, returns a 404 status code.
 When there was a conflict in one of the parameters (e.g. username/email is already taken), returns a 409 status code.
 
 If there was a server-side error, it will return a 500 status code.
-

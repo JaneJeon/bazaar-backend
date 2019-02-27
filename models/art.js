@@ -30,6 +30,10 @@ class Art extends BaseModel {
     }
   }
 
+  static get autoFields() {
+    return ["pictures", "tags"]
+  }
+
   async processInput() {
     if (this.title) this.title = text.clean(this.title)
     if (this.description) {

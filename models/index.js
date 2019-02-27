@@ -4,7 +4,8 @@ const knexfile = require("../config/database")
 const User = require("./user")
 const Art = require("./art")
 const Commission = require("./commission")
+const Negotiation = require("./negotiation")
 
 Model.knex(knex(knexfile)) // yo dawg
 
-module.exports = { User, Art, Commission }
+module.exports = { User, Art, Commission, Negotiation }

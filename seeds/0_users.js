@@ -1,10 +1,9 @@
-const tableName = require("pluralize")("user")
 const n = 3
 const { User } = require("../models")
 const faker = require("faker")
 
 exports.seed = async knex => {
-  await knex(tableName).del()
+  await knex("users").del()
 
   const promises = []
   for (let i = 0; i < n; i++) {
