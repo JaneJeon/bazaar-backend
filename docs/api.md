@@ -121,9 +121,9 @@ Get a single commission by `id`
 
 ### <a name="getcme"></a>GET `/commissions/me`
 
-Get all the commisions related to a user. This request must contain a query appended to the end of the url. This query has one param 'as' which contains the value of artist or buyer depending on which types of commissions you are trying to look at. ('/me/?as=artist') 
+Get all the commisions related to a user. This request must contain a query appended to the end of the url. This query has one param `as` which contains the value of artist or buyer depending on which types of commissions you are trying to look at. `/me/?as=artist` 
 
-For artist commissions, a second parameter, 'show' must also be included with the value 'all' if you want to view rejected commissions or 'current' if you want to exclude these commissions. ('/me/?as=artist&show=all')
+For artist commissions, a second parameter, `show` must also be included with the value 'all' if you want to view rejected commissions or 'current' if you want to exclude these commissions. `/me/?as=artist&show=all`
 
 You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
 
