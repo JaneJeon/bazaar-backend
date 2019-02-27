@@ -7,7 +7,7 @@ exports.up = knex =>
     table.text("description")
     table.jsonb("pictures").notNullable()
     table
-      .integer("artist_id")
+      .text("artist_id")
       .notNullable()
       .references("users.id")
     table.integer("price")

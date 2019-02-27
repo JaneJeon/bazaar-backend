@@ -2,13 +2,10 @@ const tableName = "users"
 
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {
-    table.increments()
+    table.text("id").primary()
+    table.text("username").notNullable()
     table
       .text("email")
-      .notNullable()
-      .unique()
-    table
-      .text("username")
       .notNullable()
       .unique()
     table.text("password").notNullable()

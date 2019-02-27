@@ -15,19 +15,6 @@ module.exports = Router()
     res.send(commission)
   })
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
-  .get("/me", async (req, res) => {
-    let q
-    if (req.query.as == "artist") {
-      q = req.user.$relatedQuery("commissionsAsArtist")
-      if (req.query.show != "all") q = q.whereNot("status", "rejected")
-    } else {
-      q = req.user.$relatedQuery("commissionsAsBuyer")
-    }
-
-    const commissions = await q.whereNotDeleted()
-
-    res.send(commissions)
-  })
   .post("/", async (req, res) => {
     Commission.filterRequest(req)
 

@@ -8,7 +8,7 @@ class Commission extends softDelete(BaseModel) {
     return {
       type: "object",
       properties: {
-        artist_id: { type: "integer", minimum: 1 },
+        artist_id: { type: "string" },
         is_private: { type: "boolean", default: false },
         status: {
           type: "string",

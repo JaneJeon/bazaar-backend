@@ -13,12 +13,13 @@ class BaseModel extends visibility(DbErrors(Model)) {
     return [__dirname]
   }
 
+  static get autoFields() {
+    return []
+  }
+
   // some fields shouldn't be manually set
   static async filterRequest(req) {
-    if (this.autoFields)
-      this.autoFields.forEach(field =>
-        assert(req.body[field] === undefined, 400)
-      )
+    this.autoFields.forEach(field => assert(req.body[field] === undefined, 400))
   }
 
   static get isSoftDelete() {

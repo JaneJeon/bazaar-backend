@@ -7,16 +7,36 @@ const assert = require("http-assert")
 
 module.exports = Router()
   // user info
-  .get("/:userId", async (req, res) => {
-    const user = await User.findById(req.params.userId)
+  .get("/:username", async (req, res) => {
+    const user = await User.findByUsername(req.params.username)
 
     res.send(user)
   })
-  .get("/:userId/arts", async (req, res) => {
-    const artist = await User.findById(req.params.userId)
-    const arts = await artist.paginate("arts", req.query.after)
+  .get("/:username/arts", async (req, res) => {
+    const user = await User.findByUsername(req.params.username)
+    const arts = await user.paginate("arts", req.query.after)
 
     res.send(arts)
+  })
+  .get("/:username/commissions", async (req, res) => {
+    const user = await User.findByUsername(req.params.username)
+
+    let q =
+      req.query.as == "buyer"
+        ? user.$relatedQuery("commissionsAsBuyer")
+        : user.$relatedQuery("commissionsAsArtist")
+    // if you're looking at others' commissions, you can only see public ones
+    if (req.user.id != user.id) q = q.where("is_private", false)
+
+    const commissions = await q
+      .skipUndefined()
+      .where("id", "<", req.query.after)
+      .whereNotDeleted()
+      .orderBy("rejected", "desc")
+      .orderBy("id", "desc")
+      .limit(process.env.PAGE_SIZE)
+
+    res.send(commissions)
   })
   .post("/", async (req, res) => {
     User.filterRequest(req)
@@ -51,11 +71,11 @@ module.exports = Router()
   })
   // password reset when user forgets their password while logging in
   .patch("/reset", async (req, res) => {
-    const id = await User.findByEmail(req.body.email)
+    const user = await User.findByEmail(req.body.email)
     res.end()
 
     const token = uid(24)
-    await redis.setex(`reset:${token}`, 86400, id)
+    await redis.setex(`reset:${token}`, 86400, user.id)
 
     await ses
       .sendTemplatedEmail({
