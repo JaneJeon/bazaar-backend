@@ -9,28 +9,28 @@ class Negotiation extends BaseModel {
     return {
       type: "object",
       properties: {
-        artist_id: { type: "string" },
-        user_type: { type: "string", enum: ["artist", "buyer"] },
+        artistId: { type: "string" },
+        userType: { type: "string", enum: ["artist", "buyer"] },
         accepted: { type: "boolean", default: false },
         price: { type: "integer", minimum: 5 },
-        price_unit: { type: "string", enum: ["USD"], default: "USD" },
+        priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
-        num_updates: { type: "integer", minimum: 0, maximum: 5 },
+        numUpdates: { type: "integer", minimum: 0, maximum: 5 },
         copyright: {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
         },
         width: { type: "number", exclusiveMinimum: 0 },
         height: { type: "number", exclusiveMinimum: 0 },
-        size_unit: { type: "string", enum: ["px", "in", "cm"], default: "px" }
+        sizeUnit: { type: "string", enum: ["px", "in", "cm"], default: "px" }
       },
-      required: ["artist_id", "user_type", "price", "deadline", "copyright"],
+      required: ["artistId", "userType", "price", "deadline", "copyright"],
       additionalProperties: false
     }
   }
 
   static get autoFields() {
-    return ["user_type", "accepted"]
+    return ["userType", "accepted"]
   }
 }
 
