@@ -18,7 +18,7 @@ module.exports = Router()
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .post(
     "/",
-    upload.array("picture", process.env.MAX_PICTURE_ATTACHMENTS),
+    upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),
     async (req, res) => {
       Art.filterRequest(req.body)
       req.body.pictures = req.files.map(file => file.path)
