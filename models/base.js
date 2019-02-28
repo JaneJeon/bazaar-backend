@@ -30,32 +30,32 @@ class BaseModel extends visibility(DbErrors(Model)) {
     return this.namedFilters && this.namedFilters.hasOwnProperty("deleted")
   }
 
-  static async findById(id) {
-    let q = this.query().findById(id)
+  static async findById(id, trx) {
+    let q = this.query(trx).findById(id)
     if (this.isSoftDelete) q = q.whereNotDeleted()
     return q.throwIfNotFound()
   }
 
-  async findById(ref, id) {
-    let q = this.$relatedQuery(ref).findById(id)
+  async findById(ref, id, trx) {
+    let q = this.$relatedQuery(ref, trx).findById(id)
     if (this.constructor.isSoftDelete) q = q.whereNotDeleted()
     return q.throwIfNotFound()
   }
 
-  static async paginate(after) {
+  static async paginate(after, sortField = "id", n = process.env.PAGE_SIZE) {
     let q = this.query()
       .skipUndefined()
-      .where("id", "<", after)
+      .where(sortField, "<", after)
     if (this.isSoftDelete) q = q.whereNotDeleted()
-    return q.orderBy("id", "desc").limit(process.env.PAGE_SIZE)
+    return q.orderBy(sortField, "desc").limit(n)
   }
 
-  async paginate(ref, after) {
+  async paginate(ref, after, sortField = "id", n = process.env.PAGE_SIZE) {
     let q = this.$relatedQuery(ref)
       .skipUndefined()
-      .where("id", "<", after)
+      .where(sortField, "<", after)
     if (this.constructor.isSoftDelete) q = q.whereNotDeleted()
-    return q.orderBy("id", "desc").limit(process.env.PAGE_SIZE)
+    return q.orderBy(sortField, "desc").limit(n)
   }
 }
 

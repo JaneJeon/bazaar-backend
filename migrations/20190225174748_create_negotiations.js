@@ -10,7 +10,7 @@ exports.up = knex =>
       .text("artist_id")
       .references("users.id")
       .notNullable()
-    table.text("user_type").notNullable()
+    table.boolean("is_artist").notNullable()
     table.boolean("accepted").notNullable()
     table.boolean("finalized").notNullable()
 
