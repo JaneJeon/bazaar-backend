@@ -66,7 +66,7 @@ module.exports = Router()
     // this us so disgusting
     await transaction(Negotiation.knex(), async trx => {
       const negotiationId = Negotiation.generateId(req.params)
-      const idx = req.isArtist + 1
+      const idx = req.isArtist + 0
       const negotiations = await req.commission
         .$relatedQuery("negotiations", trx)
         .where("negotiation_id", negotiationId)
