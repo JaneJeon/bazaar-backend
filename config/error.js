@@ -59,10 +59,10 @@ module.exports = (err, res) => {
     }
   } else if (err instanceof DBError) {
     err.statusCode = 500
-    err.type = "UnknownDatabaseError"
+    err.name = "UnknownDatabaseError"
   } else if (!(err instanceof HttpError)) {
     err.statusCode = 500
-    err.type = "UnknownError"
+    err.name = "UnknownError"
   }
 
   if (err.statusCode == 500) logError(err)
