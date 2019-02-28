@@ -2,7 +2,7 @@ const BaseModel = require("./base")
 
 class Negotiation extends BaseModel {
   static get idColumn() {
-    return ["commission_id", "artist_id", "user_type"]
+    return ["commission_id", "artist_id", "is_artist"]
   }
 
   static get jsonSchema() {

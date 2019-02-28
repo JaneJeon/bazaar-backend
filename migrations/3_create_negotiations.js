@@ -26,7 +26,7 @@ exports.up = knex =>
 
     table.timestamps(true, true)
 
-    table.primary(["commission_id", "artist_id", "user_type"])
+    table.primary(["commission_id", "artist_id"])
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)
