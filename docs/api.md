@@ -55,8 +55,12 @@ object representing the resource(s) that you can access via `response.data` when
 - [POST `/arts`](#createpicture)
 - [GET `/commissions`](#cboard)
 - [GET `/commissions/:commissionId`](#getc)
-- [GET `/commissions/me`](#getcme)
+- [GET `/commissions/forMe`](#getcme)
 - [POST `/commissions`](#makec)
+- [GET `/negotiations`](#neg)
+- [GET `/negotiations/:artistName`](#negart)
+- [POST `/negotiations/`](#negpost)
+- [PATCH `/negotiations/:artistName`](#negpatch)
 
 ### <a name="login"></a>POST `/sessions`
 This endpoint is used to login existing users. Params `username` and `password` are expected. On success, returns status code 201 with a cookie. Also returns an instance of the user object.
@@ -119,7 +123,7 @@ It returns a maximum of 15 commissions. If you want to load more, you can includ
 
 Get a single commission by `id`
 
-### <a name="getcme"></a>GET `/commissions/me`
+### <a name="getcme"></a>GET `/commissions/forMe`
 
 Get all the commisions related to a user. This request must contain a query appended to the end of the url. This query has one param `as` which contains the value of artist or buyer depending on which types of commissions you are trying to look at. `/me/?as=artist` 
 
@@ -129,7 +133,25 @@ You are required to pass user information (i.e. user must be logged in and you g
 
 ### <a name="makec"></a>POST `/commissions`
 
-Create a commissions object.
+Create a commissions object. Required fields are `price`, `deadline`, `copyright`, `description`.  Successful posting returns a error 201 code and a JSON object representing the commission.
+
+You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
+
+
+### <a name="neg"></a>GET `/negotiations`
+
+
+
+### <a name="negart"></a>GET `/negotiations/:artistName`
+
+
+
+### <a name="negpost"></a>POST `/negotiations`
+
+
+### <a name="negpatch"></a>PATCH `/negotiations/:artistName`
+
+
 
 ## Errors
 
