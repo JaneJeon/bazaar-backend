@@ -37,6 +37,19 @@ class Negotiation extends BaseModel {
     }
   }
 
+  static get relationMappings() {
+    return {
+      chats: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "chat",
+        join: {
+          from: "negotiations.negotiation_id",
+          to: "chats.negotiation_id"
+        }
+      }
+    }
+  }
+
   static get autoFields() {
     return ["isArtist", "accepted", "finalized"]
   }
