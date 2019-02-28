@@ -39,6 +39,14 @@ class Commission extends BaseModel {
 
   static get relationMappings() {
     return {
+      commission_negotiations: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "commission_negotiation",
+        join: {
+          from: "commissions.id",
+          to: "commission_negotiations.commission_id"
+        }
+      },
       negotiations: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: "negotiation",
@@ -48,7 +56,7 @@ class Commission extends BaseModel {
             from: "commission_negotiations.commission_id",
             to: "commission_negotiations.id"
           },
-          to: "negotiations.commission_negotiations_id"
+          to: "negotiations.commission_negotiation_id"
         }
       }
     }
@@ -90,21 +98,23 @@ class Commission extends BaseModel {
   }
 
   async negotiate(artistId, obj, trx) {
+    const cn = await this.$relatedQuery("commission_negotiations", trx).insert({
+      artistId
+    })
+
     const base = pickBy(
       this,
       (v, k) => v !== null && this.constructor.negotiationFields.includes(k)
     )
-    base.artistId = artistId
+    // YYYY-MM-DD
     base.deadline = this.deadline.toISOString().substr(0, 10)
 
-    return Promise.all([
-      this.$relatedQuery("negotiations", trx).insert(
-        Object.assign(base, { isArtist: false })
-      ),
-      this.$relatedQuery("negotiations", trx).insert(
+    return cn
+      .$relatedQuery("negotiations", trx)
+      .insert([
+        Object.assign(base, { isArtist: false }),
         Object.assign(base, { isArtist: true }, obj)
-      )
-    ])
+      ])
   }
 }
 
