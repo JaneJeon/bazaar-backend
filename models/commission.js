@@ -95,8 +95,8 @@ class Commission extends BaseModel {
     base.deadline = this.deadline.toISOString().substr(0, 10)
 
     return this.$relatedQuery("negotiations", trx).insert([
-      Object.assign(base, { isArtist: false }),
-      Object.assign(base, { isArtist: true })
+      Object.assign({ isArtist: false }, base),
+      Object.assign({ isArtist: true }, base)
     ])
   }
 }
