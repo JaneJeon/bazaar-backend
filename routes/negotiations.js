@@ -51,11 +51,10 @@ module.exports = Router()
   .post("/", async (req, res) => {
     // buyer can't create negotiation with themselves, duh
     assert(req.user.id != req.commission.buyerId, 403)
-    Negotiation.filterRequest(req.body)
 
     // negotiation forms for buyer and artist
     const negotiations = await transaction(Negotiation.knex(), async trx => {
-      return req.commission.negotiate(req.user.id, req.body, trx)
+      return req.commission.negotiate(req.user.id, trx)
     })
 
     res.send(negotiations)

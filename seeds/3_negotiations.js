@@ -7,5 +7,5 @@ exports.seed = async knex => {
   const [buyer, artist] = await User.query()
   const commission = await Commission.query().first()
 
-  await commission.negotiate(artist.id, { price: 43, numUpdates: 1 })
+  await commission.negotiate(artist.id)
 }

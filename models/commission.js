@@ -85,7 +85,7 @@ class Commission extends BaseModel {
     this.processInput()
   }
 
-  async negotiate(artistId, obj, trx) {
+  async negotiate(artistId, trx) {
     const base = pickBy(
       this,
       (v, k) => v !== null && this.constructor.negotiationFields.includes(k)
@@ -96,7 +96,7 @@ class Commission extends BaseModel {
 
     return this.$relatedQuery("negotiations", trx).insert([
       Object.assign(base, { isArtist: false }),
-      Object.assign(base, { isArtist: true }, obj)
+      Object.assign(base, { isArtist: true })
     ])
   }
 }
