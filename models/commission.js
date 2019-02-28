@@ -90,16 +90,13 @@ class Commission extends BaseModel {
       this,
       (v, k) => v !== null && this.constructor.negotiationFields.includes(k)
     )
-    base.artistId = artistId
+    base.negotiationId = `${this.id}/${artistId}`
+    // YYYY-MM-DD
     base.deadline = this.deadline.toISOString().substr(0, 10)
 
-    return Promise.all([
-      this.$relatedQuery("negotiations", trx).insert(
-        Object.assign(base, { isArtist: false })
-      ),
-      this.$relatedQuery("negotiations", trx).insert(
-        Object.assign(base, { isArtist: true }, obj)
-      )
+    return this.$relatedQuery("negotiations", trx).insert([
+      Object.assign(base, { isArtist: false }),
+      Object.assign(base, { isArtist: true }, obj)
     ])
   }
 }

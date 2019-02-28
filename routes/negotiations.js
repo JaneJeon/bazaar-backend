@@ -23,19 +23,27 @@ module.exports = Router()
     assert(!req.isArtist, 403)
 
     // return this commission's negotiations
-    const negotiations = await req.commission.paginate(
-      "negotiations",
-      req.query.after,
-      "updated_at",
-      process.env.PAGE_SIZE * 2
-    )
+    // TODO: for now, negotiations are in pairs, so it's tricky to extract
+    //  both of them when sorting by anything other than id.
+    //  Therefore, we're returning the artists' forms only.
+    //  This may change if I ever decide to change the underlying db structure
+    //  to accommodate both parties' forms in one record (as a JSON field) -
+    //  however, that is tricky since I'd need to update the whole "forms"
+    //  field at once even when we're changing only one party's form!!
+    const negotiations = await req.commission
+      .$relatedQuery("negotiations")
+      .skipUndefined()
+      .where("is_artist", true)
+      .where("updated_at", "<", after)
+      .orderBy("updated_at", "desc")
+      .limit(process.env.PAGE_SIZE)
 
     res.send(negotiations)
   })
   .get("/:artistName", async (req, res) => {
     const negotiations = await req.commission
       .$relatedQuery("negotiations")
-      .where("artist_id", req.params.artistName.toLowerCase())
+      .where("negotiation_id", Negotiation.generateId(req.params))
 
     res.send(negotiations)
   })
@@ -43,7 +51,7 @@ module.exports = Router()
   .post("/", async (req, res) => {
     // buyer can't create negotiation with themselves, duh
     assert(req.user.id != req.commission.buyerId, 403)
-    Negotiation.filterRequest(req)
+    Negotiation.filterRequest(req.body)
 
     // negotiation forms for buyer and artist
     const negotiations = await transaction(Negotiation.knex(), async trx => {
@@ -57,11 +65,11 @@ module.exports = Router()
 
     // this us so disgusting
     await transaction(Negotiation.knex(), async trx => {
-      const artistId = req.params.artistName.toLowerCase()
+      const negotiationId = Negotiation.generateId(req.params)
       const idx = req.isArtist + 1
       const negotiations = await req.commission
         .$relatedQuery("negotiations", trx)
-        .where("artist_id", artistId)
+        .where("negotiation_id", negotiationId)
 
       // disallow updates when accepted
       assert(!negotiations[idx].finalized, 405, "Cannot change finalized forms")
@@ -102,7 +110,7 @@ module.exports = Router()
         await req.commission
           .$relatedQuery("negotiations", trx)
           .patch({ finalized: true })
-          .where("artist_id", artistId)
+          .where("negotiation_id", negotiationId)
     })
 
     res.end()

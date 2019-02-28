@@ -1,12 +1,16 @@
 const { Model, snakeCaseMappers } = require("objection")
 const { DbErrors } = require("objection-db-errors")
 const { default: visibility } = require("objection-visibility")
+const memoize = require("lodash/memoize")
 const { plural } = require("pluralize")
+const { snakeCase } = require("objection/lib/utils/identifierMapping")
 const assert = require("http-assert")
+
+const snake_plural = memoize(str => plural(snakeCase(str)))
 
 class BaseModel extends visibility(DbErrors(Model)) {
   static get tableName() {
-    return plural(this.name.toLowerCase())
+    return snake_plural(this.name)
   }
 
   static get columnNameMappers() {
@@ -22,8 +26,8 @@ class BaseModel extends visibility(DbErrors(Model)) {
   }
 
   // some fields shouldn't be manually set
-  static async filterRequest(req) {
-    this.autoFields.forEach(field => assert(req.body[field] === undefined, 400))
+  static async filterRequest(body) {
+    this.autoFields.forEach(field => assert(body[field] === undefined, 400))
   }
 
   static get isSoftDelete() {
@@ -50,12 +54,12 @@ class BaseModel extends visibility(DbErrors(Model)) {
     return q.orderBy(sortField, "desc").limit(n)
   }
 
-  async paginate(ref, after, sortField = "id", n = process.env.PAGE_SIZE) {
+  async paginate(ref, after, sortField = "id") {
     let q = this.$relatedQuery(ref)
       .skipUndefined()
       .where(sortField, "<", after)
     if (this.constructor.isSoftDelete) q = q.whereNotDeleted()
-    return q.orderBy(sortField, "desc").limit(n)
+    return q.orderBy(sortField, "desc").limit(process.env.PAGE_SIZE)
   }
 }
 
