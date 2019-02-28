@@ -35,7 +35,7 @@ module.exports = Router()
   })
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .post("/", async (req, res) => {
-    Commission.filterRequest(req)
+    Commission.filterRequest(req.body)
 
     const commission = await req.user
       .$relatedQuery("commissions")

@@ -3,9 +3,11 @@ const tableName = "negotiations"
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {
     table
-      .integer("commission_negotiation_id")
-      .references("commission_negotiations.id")
+      .integer("commission_id")
+      .references("commissions.id")
       .notNullable()
+    table.text("negotiation_id").notNullable()
+
     table.boolean("is_artist").notNullable()
     table.boolean("accepted").notNullable()
     table.boolean("finalized").notNullable()
@@ -22,7 +24,7 @@ exports.up = knex =>
 
     table.timestamps(true, true)
 
-    table.primary(["commission_negotiation_id", "is_artist"])
+    table.text(["negotiation_id", "is_artist"])
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)

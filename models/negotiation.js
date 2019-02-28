@@ -2,13 +2,14 @@ const BaseModel = require("./base")
 
 class Negotiation extends BaseModel {
   static get idColumn() {
-    return ["commission_negotiation_id", "is_artist"]
+    return ["negotiation_id", "is_artist"]
   }
 
   static get jsonSchema() {
     return {
       type: "object",
       properties: {
+        negotiationId: { type: "string" },
         isArtist: { type: "boolean" },
         accepted: { type: "boolean", default: false },
         finalized: { type: "boolean", default: false },
@@ -31,6 +32,10 @@ class Negotiation extends BaseModel {
 
   static get autoFields() {
     return ["isArtist", "accepted", "finalized"]
+  }
+
+  static generateId(params) {
+    return `${params.commission_id}/${params.artist_name.toLowerCase()}`
   }
 }
 

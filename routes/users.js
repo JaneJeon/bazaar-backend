@@ -38,7 +38,7 @@ module.exports = Router()
     res.send(commissions)
   })
   .post("/", async (req, res) => {
-    User.filterRequest(req)
+    User.filterRequest(req.body)
 
     const user = await User.query().insert(req.body)
     req.login(user, () => res.status(201).send(req.user))
