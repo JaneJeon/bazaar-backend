@@ -1,14 +1,21 @@
-const tableName = "negotiations"
+const tableName = "chats"
 
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {
     table.increments()
+
+    table.text("negotiation_id").notNullable()
     table
-      .text("negotiation_id")
-      .references("negotiations.negotiation_id")
+      .boolean("dummy_field")
       .notNullable()
+      .defaultTo(true)
     table
-      .integer("user_id")
+      .foreign(["negotiation_id", "dummy_field"])
+      .references(["negotiation_id", "is_artist"])
+      .on("negotiations")
+
+    table
+      .text("user_id")
       .references("users.id")
       .notNullable()
 
