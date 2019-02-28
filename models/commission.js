@@ -40,11 +40,15 @@ class Commission extends BaseModel {
   static get relationMappings() {
     return {
       negotiations: {
-        relation: BaseModel.HasManyRelation,
+        relation: BaseModel.ManyToManyRelation,
         modelClass: "negotiation",
         join: {
           from: "commissions.id",
-          to: "negotiations.commission_id"
+          through: {
+            from: "commission_negotiations.commission_id",
+            to: "commission_negotiations.id"
+          },
+          to: "negotiations.commission_negotiations_id"
         }
       }
     }

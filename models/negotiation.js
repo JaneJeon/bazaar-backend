@@ -2,14 +2,13 @@ const BaseModel = require("./base")
 
 class Negotiation extends BaseModel {
   static get idColumn() {
-    return ["commission_id", "artist_id", "is_artist"]
+    return ["commission_negotiation_id", "is_artist"]
   }
 
   static get jsonSchema() {
     return {
       type: "object",
       properties: {
-        artistId: { type: "string" },
         isArtist: { type: "boolean" },
         accepted: { type: "boolean", default: false },
         finalized: { type: "boolean", default: false },
@@ -25,14 +24,7 @@ class Negotiation extends BaseModel {
         height: { type: "number", exclusiveMinimum: 0 },
         sizeUnit: { type: "string", enum: ["px", "in", "cm"], default: "px" }
       },
-      required: [
-        "artistId",
-        "isArtist",
-        "price",
-        "priceUnit",
-        "deadline",
-        "copyright"
-      ],
+      required: ["isArtist", "price", "priceUnit", "deadline", "copyright"],
       additionalProperties: false
     }
   }

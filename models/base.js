@@ -1,12 +1,16 @@
 const { Model, snakeCaseMappers } = require("objection")
 const { DbErrors } = require("objection-db-errors")
 const { default: visibility } = require("objection-visibility")
+const memoize = require("lodash/memoize")
 const { plural } = require("pluralize")
+const { snakeCase } = require("objection/lib/utils/identifierMapping")
 const assert = require("http-assert")
+
+const snake_plural = memoize(str => plural(snakeCase(str)))
 
 class BaseModel extends visibility(DbErrors(Model)) {
   static get tableName() {
-    return plural(this.name.toLowerCase())
+    return snake_plural(this.name)
   }
 
   static get columnNameMappers() {
