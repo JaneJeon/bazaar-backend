@@ -9,7 +9,7 @@ class Negotiation extends BaseModel {
     return {
       type: "object",
       properties: {
-        artistId: { type: "string" },
+        negotiationId: { type: "string" },
         isArtist: { type: "boolean" },
         accepted: { type: "boolean", default: false },
         finalized: { type: "boolean", default: false },
@@ -26,7 +26,7 @@ class Negotiation extends BaseModel {
         sizeUnit: { type: "string", enum: ["px", "in", "cm"], default: "px" }
       },
       required: [
-        "artistId",
+        "negotiationId",
         "isArtist",
         "price",
         "priceUnit",
