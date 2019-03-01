@@ -1,6 +1,6 @@
 const { Router } = require("express")
 const { User } = require("../models")
-const token = require("../models/token")
+const tempToken = require("../models/temp-token")
 const ses = require("../lib/ses")
 const assert = require("http-assert")
 
@@ -44,7 +44,7 @@ module.exports = Router()
     req.login(user, () => res.status(201).send(req.user))
 
     // email verification
-    const token = await token.generate("verify", user.id, user.id)
+    const token = await tempToken.generate("verify", user.id, user.id)
 
     await ses
       .sendTemplatedEmail({
@@ -59,21 +59,21 @@ module.exports = Router()
   })
   // verify user email
   .patch("/verify/:token", async (req, res) => {
-    const id = await token.fetch("verify", req.params.token)
+    const id = await tempToken.fetch("verify", req.params.token)
     await User.query()
       .patch({ verified: true })
       .where({ id })
 
     res.end()
 
-    await token.consume("verify", id)
+    await tempToken.consume("verify", id)
   })
   // password reset when user forgets their password while logging in
   .patch("/reset", async (req, res) => {
     const user = await User.findByEmail(req.body.email)
     res.end()
 
-    const token = await token.generate("reset", user.id, user.id)
+    const token = await tempToken.generate("reset", user.id, user.id)
 
     await ses
       .sendTemplatedEmail({
@@ -87,13 +87,13 @@ module.exports = Router()
       .promise()
   })
   .patch("/reset/:token", async (req, res) => {
-    const id = await token.fetch("reset", req.params.token)
+    const id = await tempToken.fetch("reset", req.params.token)
     await User.query()
       .patch({ password })
       .where({ id })
 
     res.end()
 
-    await token.consume("reset", id)
+    await tempToken.consume("reset", id)
   })
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))

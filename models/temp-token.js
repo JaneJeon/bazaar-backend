@@ -16,7 +16,7 @@ exports.consume = (prefix, key) =>
     stream.on("data", tokens => {
       if (tokens.length) {
         stream.pause()
-        redis.unlink(tokens).then(stream.resume)
+        redis.unlink(tokens).then(() => stream.resume())
       }
     })
     stream.on("end", resolve)
