@@ -26,14 +26,11 @@ class Commission extends BaseModel {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
         },
-        width: { type: "number", exclusiveMinimum: 0 },
-        height: { type: "number", exclusiveMinimum: 0 },
-        sizeUnit: { type: "string", enum: ["px", "in", "cm"], default: "px" },
-        tags: { type: "array", items: { type: "string" } },
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
-        }
+        },
+        tags: { type: "array", items: { type: "string" } }
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
@@ -67,16 +64,7 @@ class Commission extends BaseModel {
   }
 
   static get negotiationFields() {
-    return [
-      "price",
-      "priceUnit",
-      "deadline",
-      "numUpdates",
-      "copyright",
-      "width",
-      "height",
-      "sizeUnit"
-    ]
+    return ["price", "priceUnit", "deadline", "numUpdates", "copyright"]
   }
 
   processInput() {
@@ -159,7 +147,7 @@ class Commission extends BaseModel {
     const newFormsAreEqual = isEqual(newForms[0], newForms[1])
 
     // finalize only if both the forms are the same and they both accept
-    // todo: and mark the commission as private by setting the artist_id
+    // and mark the commission as private by setting the artist_id
     if (newForms[0].accepted && newForms[1].accepted && newFormsAreEqual)
       await Promise.all([
         this.$relatedQuery("negotiations", trx)

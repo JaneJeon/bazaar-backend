@@ -22,10 +22,6 @@ exports.up = knex =>
     table.integer("num_updates")
     table.text("copyright").notNullable()
 
-    table.float("width")
-    table.float("height")
-    table.text("size_unit")
-
     table.timestamps(true, true)
   })
 
