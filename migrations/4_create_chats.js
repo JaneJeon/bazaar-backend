@@ -20,7 +20,7 @@ exports.up = knex =>
       .references("users.id")
       .notNullable()
 
-    table.text("body").notNullable()
+    table.text("message").notNullable()
 
     table.timestamps(true, true)
   })

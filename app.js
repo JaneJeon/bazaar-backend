@@ -2,6 +2,7 @@ require("express-async-errors")
 require("./config/passport")
 
 const express = require("express")
+const expressWs = require("express-ws")
 const helmet = require("helmet")
 const cors = require("cors")
 const cookieSession = require("cookie-session")
@@ -11,6 +12,7 @@ const router = require("./routes")
 const errorHandler = require("./config/error")
 
 const app = express()
+expressWs(app)
 if (process.env.NODE_ENV == "production") app.enable("trust proxy")
 app
   .use(helmet())
