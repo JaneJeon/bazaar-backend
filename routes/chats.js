@@ -2,6 +2,7 @@ const { Router } = require("express")
 const { Commission } = require("../models")
 const assert = require("http-assert")
 const { pub, sub } = require("../lib/redis")
+const log = require("../lib/log")
 
 module.exports = Router()
   .use(async (req, res, next) => {
@@ -30,8 +31,13 @@ module.exports = Router()
   .ws("/", (ws, req) => {
     sub.on("message", (channel, message) => {
       // every time a message comes in from redis, post that
-      if (channel == "chat" && message.startsWith(req.path))
-        ws.send(message.substr(req.path.length + 1))
+      if (channel == "chat" && message.startsWith(req.path)) {
+        try {
+          ws.send(message.substr(req.path.length + 1))
+        } catch (err) {
+          log.error(err)
+        }
+      }
     })
   })
   .post("/", async (req, res) => {
