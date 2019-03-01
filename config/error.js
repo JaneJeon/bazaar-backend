@@ -60,7 +60,7 @@ module.exports = (err, res) => {
   } else if (err instanceof DBError) {
     err.statusCode = 500
     err.name = "UnknownDatabaseError"
-  } else if (!(err instanceof HttpError)) {
+  } else if (!(err.name == "AssertionError")) {
     err.statusCode = 500
     err.name = "UnknownError"
   }
