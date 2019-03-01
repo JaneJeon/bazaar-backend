@@ -20,10 +20,7 @@ class Negotiation extends BaseModel {
         copyright: {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
-        },
-        width: { type: "number", exclusiveMinimum: 0 },
-        height: { type: "number", exclusiveMinimum: 0 },
-        sizeUnit: { type: "string", enum: ["px", "in", "cm"], default: "px" }
+        }
       },
       required: [
         "artistId",
