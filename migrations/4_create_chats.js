@@ -4,14 +4,15 @@ exports.up = knex =>
   knex.schema.createTable(tableName, table => {
     table.increments()
 
-    table.text("negotiation_id").notNullable()
+    table.integer("commission_id").notNullable()
+    table.text("artist_id").notNullable()
     table
       .boolean("dummy_field")
       .notNullable()
       .defaultTo(true)
     table
-      .foreign(["negotiation_id", "dummy_field"])
-      .references(["negotiation_id", "is_artist"])
+      .foreign(["commission_id", "artist_id", "dummy_field"])
+      .references(["commission_id", "artist_id", "is_artist"])
       .on("negotiations")
 
     table

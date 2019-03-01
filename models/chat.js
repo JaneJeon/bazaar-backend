@@ -1,6 +1,10 @@
 const BaseModel = require("./base")
 
 class Chat extends BaseModel {
+  static get idColumn() {
+    return ["commission_id", "artist_id", "dummy_field"]
+  }
+
   static get jsonSchema() {
     return {
       type: "object",
