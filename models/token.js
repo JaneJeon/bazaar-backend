@@ -1,4 +1,4 @@
-const redis = require("../config/redis")
+const redis = require("../lib/redis")
 const { sync: uid } = require("uid-safe")
 
 exports.generate = async (prefix, key, value = 1, expire = 86400) => {

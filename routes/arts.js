@@ -4,6 +4,7 @@ const { Art } = require("../models")
 const assert = require("http-assert")
 
 module.exports = Router()
+  // the "discover" page
   .get("/", async (req, res) => {
     // FOR NOW, the results are not personalized
     const arts = await Art.paginate(req.query.after)

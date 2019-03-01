@@ -49,6 +49,15 @@ class Commission extends BaseModel {
           from: "commissions.id",
           to: "negotiations.commission_id"
         }
+      },
+      artistForms: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "negotiation",
+        join: {
+          from: "commissions.id",
+          to: "negotiations.commission_id"
+        },
+        filter: { isArtist: true }
       }
     }
   }
