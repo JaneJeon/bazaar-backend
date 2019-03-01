@@ -2,14 +2,14 @@ const BaseModel = require("./base")
 
 class Negotiation extends BaseModel {
   static get idColumn() {
-    return ["negotiation_id", "is_artist"]
+    return ["commission_id", "artist_id", "is_artist"]
   }
 
   static get jsonSchema() {
     return {
       type: "object",
       properties: {
-        negotiationId: { type: "string" },
+        artistId: { type: "string" },
         isArtist: { type: "boolean" },
         accepted: { type: "boolean", default: false },
         finalized: { type: "boolean", default: false },
@@ -26,7 +26,7 @@ class Negotiation extends BaseModel {
         sizeUnit: { type: "string", enum: ["px", "in", "cm"], default: "px" }
       },
       required: [
-        "negotiationId",
+        "artistId",
         "isArtist",
         "price",
         "priceUnit",
@@ -34,6 +34,23 @@ class Negotiation extends BaseModel {
         "copyright"
       ],
       additionalProperties: false
+    }
+  }
+
+  static get relationMappings() {
+    return {
+      chats: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "chat",
+        join: {
+          from: [
+            "negotiations.commission_id",
+            "negotiations.artist_id",
+            "negotiations.is_artist"
+          ],
+          to: ["chats.commission_id", "chats.artist_id", "chats.dummy_field"]
+        }
+      }
     }
   }
 

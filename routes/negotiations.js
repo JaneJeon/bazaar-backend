@@ -2,8 +2,6 @@ const { Router } = require("express")
 const { Commission, Negotiation } = require("../models")
 const assert = require("http-assert")
 const { transaction } = require("objection")
-const isEqual = require("lodash/isEqual")
-const pick = require("lodash/pick")
 
 module.exports = Router()
   .use(async (req, res, next) => {
@@ -40,21 +38,18 @@ module.exports = Router()
 
     res.send(negotiations)
   })
-  .get("/:artistName", async (req, res) => {
+  .get("/:artistId", async (req, res) => {
     const negotiations = await req.commission
       .$relatedQuery("negotiations")
-      .where("negotiation_id", Negotiation.generateId(req.params))
+      .where("artist_id", req.params.artistId)
 
     res.send(negotiations)
   })
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .post("/", async (req, res) => {
-    // buyer can't create negotiation with themselves, duh
-    assert(req.user.id != req.commission.buyerId, 403)
-
     // negotiation forms for buyer and artist
     const negotiations = await transaction(Negotiation.knex(), async trx => {
-      return req.commission.negotiate(req.user.id, trx)
+      return req.commission.requestNegotiation(req.user.id, trx)
     })
 
     res.send(negotiations)
@@ -62,55 +57,14 @@ module.exports = Router()
   .patch("/:artistName", async (req, res) => {
     Negotiation.filterRequest(req)
 
-    // this us so disgusting
-    await transaction(Negotiation.knex(), async trx => {
-      const negotiationId = Negotiation.generateId(req.params)
-      const idx = req.isArtist + 0
-      const negotiations = await req.commission
-        .$relatedQuery("negotiations", trx)
-        .where("negotiation_id", negotiationId)
-
-      // disallow updates when accepted
-      assert(!negotiations[idx].finalized, 405, "Cannot change finalized forms")
-
-      // disallow updates when accepted, except for changing accepted
-      assert(
-        !(negotiations[idx].accepted && (req.body || {}).accepted !== true),
-        405,
-        "Cannot change form when it's accepted"
+    const negotiations = await transaction(Negotiation.knex(), async trx => {
+      return req.commission.negotiate(
+        req.params.artistId,
+        req.isArtist + 0,
+        req.body,
+        trx
       )
-
-      const forms = negotiations.map(form =>
-        pick(form, Commission.negotiationFields)
-      )
-
-      // don't allow accepting when the values are different
-      assert(
-        !((req.body || {}).accepted && !isEqual(forms[0], forms[1])),
-        405,
-        "Cannot accept while the forms are different"
-      )
-
-      // do the actual update
-      negotiations[idx] = await negotiations[idx]
-        .$query(trx)
-        .patch(req.body)
-        .returning("*")
-        .first()
-
-      forms[idx] = pick(negotiations[idx], Commission.negotiationFields)
-
-      // finalize only if both the forms are the same and they both accept
-      if (
-        negotiations[0].accepted &&
-        negotiations[1].accepted &&
-        isEqual(forms)
-      )
-        await req.commission
-          .$relatedQuery("negotiations", trx)
-          .patch({ finalized: true })
-          .where("negotiation_id", negotiationId)
     })
 
-    res.end()
+    res.send(negotiations)
   })
