@@ -3,6 +3,7 @@
   "scripts": {
     "start": "node -r dotenv/config app",
     "watch": "DEBUG=knex nodemon -r dotenv/config app --trace-sync-io | pino-pretty -ct",
+    "test": "mocha --bail --exit --recursive",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
     "migrate": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:rollback --knexfile ./config/database.js",
@@ -48,8 +49,6 @@
     "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
-    "@types/chai-as-promised": "^7.1.0",
     "@types/cookie-session": "^2.0.36",
     "@types/cors": "^2.8.4",
     "@types/debug": "^4.1.2",
@@ -74,8 +73,6 @@
     "@types/supertest": "^2.0.7",
     "@types/uid-safe": "^2.1.2",
     "axios": "^0.18.0",
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
     "debug": "^4.1.1",
     "faker": "^4.1.0",
     "mocha": "^5.2.0",
