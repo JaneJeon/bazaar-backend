@@ -6,11 +6,11 @@ const { plural } = require("pluralize")
 const { snakeCase } = require("objection/lib/utils/identifierMapping")
 const assert = require("http-assert")
 
-const snake_plural = memoize(str => plural(snakeCase(str)))
+const snake_plural_memoized = memoize(str => plural(snakeCase(str)))
 
 class BaseModel extends visibility(DbErrors(Model)) {
   static get tableName() {
-    return snake_plural(this.name)
+    return snake_plural_memoized(this.name)
   }
 
   static get columnNameMappers() {
@@ -46,12 +46,12 @@ class BaseModel extends visibility(DbErrors(Model)) {
     return q.throwIfNotFound()
   }
 
-  static async paginate(after, sortField = "id", n = process.env.PAGE_SIZE) {
+  static async paginate(after, sortField = "id") {
     let q = this.query()
       .skipUndefined()
       .where(sortField, "<", after)
     if (this.isSoftDelete) q = q.whereNotDeleted()
-    return q.orderBy(sortField, "desc").limit(n)
+    return q.orderBy(sortField, "desc").limit(process.env.PAGE_SIZE)
   }
 
   async paginate(ref, after, sortField = "id") {

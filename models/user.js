@@ -109,8 +109,7 @@ class User extends password(softDelete(BaseModel)) {
       .throwIfNotFound()
   }
 
-  static async findByUsername(username, self) {
-    const userId = username.toLowerCase()
+  static async findByUserId(userId, self) {
     return self && self.id == userId ? self : this.findById(userId)
   }
 }

@@ -16,6 +16,12 @@ module.exports = Router()
 
     res.send(commissions)
   })
+  .get("/:commissionId", async (req, res) => {
+    const commission = await Commission.findById(req.params.commissionId)
+
+    res.send(commission)
+  })
+  .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   // get commissions where the buyer specifically requested the artist
   .get("/forMe", async (req, res) => {
     const commissions = await Commission.query()
@@ -28,12 +34,6 @@ module.exports = Router()
 
     res.send(commissions)
   })
-  .get("/:commissionId", async (req, res) => {
-    const commission = await Commission.findById(req.params.commissionId)
-
-    res.send(commission)
-  })
-  .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .post("/", async (req, res) => {
     Commission.filterRequest(req.body)
 
