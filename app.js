@@ -21,7 +21,8 @@ app
   .use(cookieSession({ secret: process.env.SESSION_SECRET, sameSite: "lax" }))
   .use(passport.initialize())
   .use(passport.session())
-  .use(rateLimiter)
+if (process.env.NODE_ENV == "production") app.use(rateLimiter)
+app
   .use(router)
   .use((req, res) => res.sendStatus(404))
   .use((err, req, res, next) => errorHandler(err, res))
