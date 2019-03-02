@@ -2,17 +2,20 @@ const request = require("supertest-session")
 const app = require("../../app")
 const session = request(app)
 const assert = require("assert")
+const testUser = { username: "Ricky Cranium", password: "123456789" }
+
+exports.user = testUser
 
 describe("user routes", () => {
-  let username = "Ricky Cranium"
-  let password = "123456789"
   let user
 
   describe("POST /users", () => {
     it("should sign up", done => {
       session
         .post("/users")
-        .send({ username, email: "success@simulator.amazonses.com", password })
+        .send(
+          Object.assign({ email: "success@simulator.amazonses.com" }, testUser)
+        )
         .expect(201)
         .end((err, res) => {
           if (err) return done(err)
@@ -30,8 +33,8 @@ describe("user routes", () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          assert(res.body.username == username)
-          assert(res.body.password != password)
+          assert(res.body.username == testUser.username)
+          assert(res.body.password != testUser.password)
           done()
         })
     })
