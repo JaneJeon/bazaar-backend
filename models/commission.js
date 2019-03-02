@@ -21,7 +21,7 @@ class Commission extends BaseModel {
         price: { type: "integer", minimum: 5 },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
-        numUpdates: { type: "integer", minimum: 0, maximum: 5 },
+        numUpdates: { type: "integer", minimum: 0, maximum: 5, default: 0 },
         copyright: {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
@@ -85,9 +85,9 @@ class Commission extends BaseModel {
     this.processInput()
   }
 
-  async requestNegotiation(artistId, trx) {
+  async requestNegotiation(isArtist, artistId, trx) {
     // buyer can't create negotiation with themselves, duh
-    assert(req.user.id != req.commission.buyerId, 403)
+    assert(isArtist, 403)
 
     const base = pickBy(
       this,

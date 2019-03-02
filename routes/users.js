@@ -7,18 +7,18 @@ const assert = require("http-assert")
 module.exports = Router()
   // user info
   .get("/:userId", async (req, res) => {
-    const user = await User.findByUsername(req.params.userId)
+    const user = await User.findByUserId(req.params.userId)
 
     res.send(user)
   })
   .get("/:userId/arts", async (req, res) => {
-    const user = await User.findByUsername(req.params.userId)
+    const user = await User.findByUserId(req.params.userId)
     const arts = await user.paginate("arts", req.query.after)
 
     res.send(arts)
   })
   .get("/:userId/commissions", async (req, res) => {
-    const user = await User.findByUsername(req.params.userId)
+    const user = await User.findByUserId(req.params.userId)
 
     let q =
       req.query.as == "buyer"

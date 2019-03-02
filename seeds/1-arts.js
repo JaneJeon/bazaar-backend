@@ -5,9 +5,7 @@ const fs = require("fs")
 const { User } = require("../models")
 const faker = require("faker")
 
-exports.seed = async knex => {
-  await knex("arts").del()
-
+exports.seed = async () => {
   // save pictures
   let promises = []
   const paths = []

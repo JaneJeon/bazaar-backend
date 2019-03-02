@@ -3,6 +3,10 @@ const { User } = require("../models")
 const faker = require("faker")
 
 exports.seed = async knex => {
+  await knex("chats").del()
+  await knex("negotiations").del()
+  await knex("commissions").del()
+  await knex("arts").del()
   await knex("users").del()
 
   const promises = []

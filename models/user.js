@@ -3,7 +3,7 @@ const password = require("objection-password-argon2")()
 const softDelete = require("objection-soft-delete")()
 const { createHash } = require("crypto")
 const normalize = require("normalize-email")
-const { clean } = require("../lib/text")
+const text = require("../lib/text")
 const image = require("../lib/image")
 
 class User extends password(softDelete(BaseModel)) {
@@ -16,7 +16,7 @@ class User extends password(softDelete(BaseModel)) {
           type: "string",
           minLength: process.env.MIN_USERNAME_LENGTH,
           maxLength: process.env.MAX_USERNAME_LENGTH,
-          pattern: "^\\w+$"
+          pattern: "^[\\w ]+$"
         },
         email: { type: "string", format: "email" },
         password: {
@@ -24,7 +24,7 @@ class User extends password(softDelete(BaseModel)) {
           minLength: process.env.MIN_PASSWORD_LENGTH
         },
         deleted: { type: "boolean" },
-        verified: { type: "boolean" },
+        verified: { type: "boolean", default: false },
         name: { type: "string", maxLength: process.env.MAX_NAME_LENGTH },
         avatar: { type: "string" },
         location: {
@@ -82,11 +82,11 @@ class User extends password(softDelete(BaseModel)) {
   }
 
   async processInput() {
-    if (this.username) this.id = this.username.toLowerCase()
+    if (this.username) this.id = text.slugify(this.username)
     if (this.email) this.email = normalize(this.email)
-    if (this.name) this.name = clean(this.name)
-    if (this.location) this.location = clean(this.location)
-    if (this.bio) this.bio = clean(this.bio)
+    if (this.name) this.name = text.clean(this.name)
+    if (this.location) this.location = text.clean(this.location)
+    if (this.bio) this.bio = text.clean(this.bio)
     if (this.avatar === null) this.avatar = this.gravatar
     else if (this.avatar)
       this.avatar = await image.upload(this.avatar, "AVATAR", "cover")

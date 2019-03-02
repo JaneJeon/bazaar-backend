@@ -47,7 +47,7 @@ module.exports = Router()
   .post("/", async (req, res) => {
     // negotiation forms for buyer and artist
     const negotiations = await transaction(Negotiation.knex(), async trx => {
-      return req.commission.requestNegotiation(req.user.id, trx)
+      return req.commission.requestNegotiation(req.isArtist, req.user.id, trx)
     })
 
     res.status(201).send(negotiations)
