@@ -16,20 +16,13 @@ class Negotiation extends BaseModel {
         price: { type: "integer", minimum: 5 },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
-        numUpdates: { type: "integer", minimum: 0, maximum: 5 },
+        numUpdates: { type: "integer", minimum: 0, maximum: 5, default: 0 },
         copyright: {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
         }
       },
-      required: [
-        "artistId",
-        "isArtist",
-        "price",
-        "priceUnit",
-        "deadline",
-        "copyright"
-      ],
+      required: ["artistId", "isArtist", "price", "deadline", "copyright"],
       additionalProperties: false
     }
   }

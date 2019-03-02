@@ -2,7 +2,8 @@ require("express-async-errors")
 require("./config/passport")
 
 const express = require("express")
-const expressWs = require("express-ws")
+const app = express()
+const expressWs = require("express-ws")(app)
 const helmet = require("helmet")
 const cors = require("cors")
 const cookieSession = require("cookie-session")
@@ -11,8 +12,6 @@ const rateLimiter = require("./config/ratelimit")
 const router = require("./routes")
 const errorHandler = require("./config/error")
 
-const app = express()
-expressWs(app)
 if (process.env.NODE_ENV == "production") app.enable("trust proxy")
 app
   .use(helmet())
@@ -30,3 +29,5 @@ app
 app.listen(process.env.PORT, err => {
   if (err) console.error(err)
 })
+
+module.exports = app

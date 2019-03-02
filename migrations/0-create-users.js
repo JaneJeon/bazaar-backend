@@ -9,10 +9,7 @@ exports.up = knex =>
       .notNullable()
       .unique()
     table.text("password").notNullable()
-    table
-      .boolean("verified")
-      .notNullable()
-      .defaultTo(false)
+    table.boolean("verified").notNullable()
 
     table.text("avatar")
     table.text("name")

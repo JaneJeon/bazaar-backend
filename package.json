@@ -3,6 +3,8 @@
   "scripts": {
     "start": "node -r dotenv/config app",
     "watch": "DEBUG=knex nodemon -r dotenv/config app --trace-sync-io | pino-pretty -ct",
+    "pretest": "yarn seed",
+    "test": "node -r dotenv/config node_modules/.bin/mocha --bail --exit --recursive",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
     "migrate": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:rollback --knexfile ./config/database.js",
@@ -41,6 +43,7 @@
     "pluralize": "^7.0.0",
     "rate-limit-redis": "^1.6.0",
     "sharp": "^0.21.3",
+    "supertest-session": "^3.3.0",
     "uid-safe": "^2.1.5"
   },
   "optionalDependencies": {
@@ -48,8 +51,6 @@
     "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
-    "@types/chai-as-promised": "^7.1.0",
     "@types/cookie-session": "^2.0.36",
     "@types/cors": "^2.8.4",
     "@types/debug": "^4.1.2",
@@ -71,18 +72,14 @@
     "@types/pino": "^5.8.5",
     "@types/pluralize": "^0.0.29",
     "@types/sharp": "^0.21.2",
-    "@types/supertest": "^2.0.7",
     "@types/uid-safe": "^2.1.2",
     "axios": "^0.18.0",
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
     "debug": "^4.1.1",
     "faker": "^4.1.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.9",
     "pino-pretty": "^2.5.0",
-    "prettier": "^1.16.3",
-    "supertest": "^3.4.2"
+    "prettier": "^1.16.3"
   },
   "prettier": {
     "semi": false
