@@ -25,4 +25,10 @@ describe("text", () => {
       )
     })
   })
+
+  describe("#slugify()", () => {
+    it("should lowercase and replace spaces with underscores", () => {
+      assert(text.slugify("Hello World") === "hello_world")
+    })
+  })
 })
