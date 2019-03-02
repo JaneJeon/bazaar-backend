@@ -1,5 +1,4 @@
 const log = require("../lib/log")
-const pick = require("lodash/pick")
 const { MulterError } = require("multer")
 const { ValidationError, NotFoundError } = require("objection")
 const {
@@ -10,11 +9,10 @@ const {
   CheckViolationError,
   DataError
 } = require("objection-db-errors")
-const { HttpError } = require("http-errors")
 
 const logError = err => {
   err.stack = err.stack.slice(0, err.stack.lastIndexOf("at newFn")).trimRight()
-  log.error(pick(err, ["message", "name", "data", "stack"]))
+  log.error(err)
 }
 
 module.exports = (err, res) => {
@@ -24,11 +22,7 @@ module.exports = (err, res) => {
     return
   }
 
-  if (
-    err instanceof MulterError ||
-    err instanceof ValidationError ||
-    err instanceof DataError
-  ) {
+  if ([MulterError, ValidationError, DataError].includes(err.constructor)) {
     err.statusCode = 400
   } else if (err instanceof NotNullViolationError) {
     err.statusCode = 400
@@ -60,7 +54,7 @@ module.exports = (err, res) => {
   } else if (err instanceof DBError) {
     err.statusCode = 500
     err.name = "UnknownDatabaseError"
-  } else if (!(err.name == "AssertionError")) {
+  } else if (!err.statusCode) {
     err.statusCode = 500
     err.name = "UnknownError"
   }

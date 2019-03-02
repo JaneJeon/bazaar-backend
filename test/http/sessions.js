@@ -1,21 +1,23 @@
-const { user } = require("./users")
-const request = require("supertest-session")
+const { agent } = require("supertest")
 const app = require("../../app")
-const session = request(app)
+const request = agent(app)
+const { testUser } = require("./users")
+
+exports.user = testUser
 
 describe("session routes", () => {
   describe("POST /sessions", () => {
-    it("should sign in", done => {
-      session
+    it("should sign in", async () => {
+      await request
         .post("/sessions")
-        .send(user)
-        .expect(201, done)
+        .send(testUser)
+        .expect(201)
     })
   })
 
   describe("DELETE /sessions", () => {
-    it("should sign out", done => {
-      session.delete("/sessions").expect(204, done)
+    it("should sign out", async () => {
+      await request.delete("/sessions").expect(204)
     })
   })
 })

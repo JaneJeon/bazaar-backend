@@ -40,10 +40,12 @@ class BaseModel extends visibility(DbErrors(Model)) {
     return q.throwIfNotFound()
   }
 
+  // not bothering with the whole soft-delete bullshit since it only
+  // applies to the current class, not the referenced one
   async findById(ref, id, trx) {
-    let q = this.$relatedQuery(ref, trx).findById(id)
-    if (this.constructor.isSoftDelete) q = q.whereNotDeleted()
-    return q.throwIfNotFound()
+    return this.$relatedQuery(ref, trx)
+      .findById(id)
+      .throwIfNotFound()
   }
 
   static async paginate(after, sortField = "id") {
@@ -55,11 +57,11 @@ class BaseModel extends visibility(DbErrors(Model)) {
   }
 
   async paginate(ref, after, sortField = "id") {
-    let q = this.$relatedQuery(ref)
+    return this.$relatedQuery(ref)
       .skipUndefined()
       .where(sortField, "<", after)
-    if (this.constructor.isSoftDelete) q = q.whereNotDeleted()
-    return q.orderBy(sortField, "desc").limit(process.env.PAGE_SIZE)
+      .orderBy(sortField, "desc")
+      .limit(process.env.PAGE_SIZE)
   }
 }
 

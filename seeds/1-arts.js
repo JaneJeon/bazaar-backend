@@ -2,6 +2,7 @@ const n = 4
 const { sync: uid } = require("uid-safe")
 const axios = require("axios")
 const fs = require("fs")
+const redis = require("../lib/redis")
 const { User } = require("../models")
 const faker = require("faker")
 
@@ -30,6 +31,8 @@ exports.seed = async () => {
   }
 
   await Promise.all(promises) // and they still feel oh so wasted on myself
+  await redis.flushall()
+  await redis.sadd("pictures", paths)
   promises = []
 
   // fetch a user, any user

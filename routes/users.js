@@ -7,18 +7,18 @@ const assert = require("http-assert")
 module.exports = Router()
   // user info
   .get("/:userId", async (req, res) => {
-    const user = await User.findByUserId(req.params.userId)
+    const user = await User.findByUserId(req.params.userId, req.user)
 
     res.send(user)
   })
   .get("/:userId/arts", async (req, res) => {
-    const user = await User.findByUserId(req.params.userId)
+    const user = await User.findByUserId(req.params.userId, req.user)
     const arts = await user.paginate("arts", req.query.after)
 
     res.send(arts)
   })
   .get("/:userId/commissions", async (req, res) => {
-    const user = await User.findByUserId(req.params.userId)
+    const user = await User.findByUserId(req.params.userId, req.user)
 
     let q =
       req.query.as == "buyer"
@@ -41,11 +41,11 @@ module.exports = Router()
     User.filterRequest(req.body)
 
     const user = await User.query().insert(req.body)
+    const token = await tempToken.generate("verify", user.id, user.id)
+
     req.login(user, () => res.status(201).send(req.user))
 
     // email verification
-    const token = await tempToken.generate("verify", user.id, user.id)
-
     await ses
       .sendTemplatedEmail({
         Source: process.env.SENDER_ADDRESS,
@@ -60,9 +60,8 @@ module.exports = Router()
   // verify user email
   .patch("/verify/:token", async (req, res) => {
     const id = await tempToken.fetch("verify", req.params.token)
-    await User.query()
-      .patch({ verified: true })
-      .where({ id })
+    const user = await User.findByUserId(id, req.user)
+    await user.$query().patch({ verified: true })
 
     res.end()
 
@@ -71,9 +70,9 @@ module.exports = Router()
   // password reset when user forgets their password while logging in
   .patch("/reset", async (req, res) => {
     const user = await User.findByEmail(req.body.email)
-    res.end()
-
     const token = await tempToken.generate("reset", user.id, user.id)
+
+    res.end()
 
     await ses
       .sendTemplatedEmail({
@@ -88,9 +87,8 @@ module.exports = Router()
   })
   .patch("/reset/:token", async (req, res) => {
     const id = await tempToken.fetch("reset", req.params.token)
-    await User.query()
-      .patch({ password })
-      .where({ id })
+    const user = await User.findByUserId(id, req.user)
+    await user.$query().patch({ password })
 
     res.end()
 
