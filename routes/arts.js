@@ -16,7 +16,7 @@ module.exports = Router()
 
     res.send(art)
   })
-  .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
+  .use((req, res, next) => next(assert(req.user, 401))) // TODO: re-add verified
   .post(
     "/",
     upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),

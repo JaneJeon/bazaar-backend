@@ -6,6 +6,7 @@ const log = require("../lib/log")
 
 module.exports = Router()
   .use(async (req, res, next) => {
+    // TODO: assert verified
     req.commission = await Commission.findById(req.params.commissionId)
     req.negotiation = await req.commission
       .$relatedQuery("negotiations")

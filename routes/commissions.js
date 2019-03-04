@@ -22,7 +22,7 @@ module.exports = Router()
 
     res.send(commission)
   })
-  .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
+  .use((req, res, next) => next(assert(req.user, 401))) // TODO: re-add verified
   // commissions by the user
   .get("/byMe", async (req, res) => {
     const commissions = await req.user
