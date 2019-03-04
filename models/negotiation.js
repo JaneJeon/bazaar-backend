@@ -1,4 +1,5 @@
 const BaseModel = require("./base")
+const { sync: uid } = require("uid-safe")
 
 class Negotiation extends BaseModel {
   static get idColumn() {
@@ -49,8 +50,8 @@ class Negotiation extends BaseModel {
     return ["isArtist", "accepted", "finalized", "updatedAt"]
   }
 
-  processInput(opt) {
-    this.updatedAt = `${+new Date()}/${this.id || opt.old.id}`
+  processInput() {
+    this.updatedAt = `${+new Date()}/${sync(7)}`
   }
 
   $beforeInsert(queryContext) {
@@ -60,7 +61,7 @@ class Negotiation extends BaseModel {
 
   $beforeUpdate(opt, queryContext) {
     super.$beforeUpdate(opt, queryContext)
-    this.processInput(opt)
+    this.processInput()
   }
 }
 
