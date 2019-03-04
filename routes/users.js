@@ -102,6 +102,5 @@ module.exports = Router()
   .delete("/", async (req, res) => {
     await req.user.$query().delete()
 
-    req.logout()
-    res.sendStatus(204)
+    req.session.destroy(err => res.sendStatus(204))
   })

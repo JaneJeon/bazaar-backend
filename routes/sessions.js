@@ -8,6 +8,5 @@ module.exports = Router()
   )
   // DELETE session
   .delete("/", (req, res) => {
-    req.logout()
-    res.sendStatus(204)
+    req.session.destroy(err => res.sendStatus(204))
   })
