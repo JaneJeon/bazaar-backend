@@ -134,9 +134,9 @@
   integrity sha512-s+RHKSGc3r0m3YEE2UXomJYrpQaY9cDmNDLU2XvG1/LAZsQ7y8emYkTLfcw/ByDtcsTyRQKwr76Bj4PkN2hfWg==
 
 "@types/ioredis@^4.0.8":
-  version "4.0.8"
-  resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-4.0.8.tgz#23f28c39ed2d2434ec7c70bd9e4b6d2dccb96c45"
-  integrity sha512-ZAXWkcij8wN+0eNNM1ofl8kzWvbPIwibBZcDa/8m32wqBcX7S4r+QRA59fob1OD1HQhEFVC16XFN8P5ZgSF1yQ==
+  version "4.0.9"
+  resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-4.0.9.tgz#45d986c8e1c71af9fa9acb8725db306744e1d94c"
+  integrity sha512-huquAKzRAQ2d58rUyOZn0lwkrJ9HKl2cm2ay++hiZDt2u/MwAe1Ca+Un8OEOODsu/dsrJ0UYtT6qfsB1JZ7gWg==
   dependencies:
     "@types/node" "*"
 
@@ -171,9 +171,9 @@
     "@types/express" "*"
 
 "@types/node@*":
-  version "11.9.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.9.5.tgz#011eece9d3f839a806b63973e228f85967b79ed3"
-  integrity sha512-vVjM0SVzgaOUpflq4GYBvCpozes8OgIIS5gVXVka+OfK3hvnkC1i93U8WiY2OtNE4XUWyyy/86Kf6e0IHTQw1Q==
+  version "11.10.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.10.4.tgz#3f5fc4f0f322805f009e00ab35a2ff3d6b778e42"
+  integrity sha512-wa09itaLE8L705aXd8F80jnFpxz3Y1/KRHfKsYL2bPc0XF+wEWu8sR9n5bmeu8Ba1N9z2GRNzm/YdHcghLkLKg==
 
 "@types/passport-local@^1.0.33":
   version "1.0.33"
@@ -290,9 +290,9 @@ accepts@~1.3.5:
     negotiator "0.6.1"
 
 ajv@^6.1.1:
-  version "6.8.1"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.8.1.tgz#0890b93742985ebf8973cd365c5b23920ce3cb20"
-  integrity sha512-eqxCp82P+JfqL683wwsL73XmFs1eG6qjw+RD3YHx+Jll1r0jNd4dh8QG9NYAeNGA/hnZjeEDgtTskgJULbxpWQ==
+  version "6.10.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.10.0.tgz#90d0d54439da587cd7e843bfb7045f50bd22bdf1"
+  integrity sha512-nffhOpkymDECQyR0mnsUtoCE8RlX38G0rYP+wgLWFyZuUyuuojSSvi/+euOiQBIn63whYwYVIIH1TvE3tu4OEg==
   dependencies:
     fast-deep-equal "^2.0.1"
     fast-json-stable-stringify "^2.0.0"
@@ -429,9 +429,9 @@ atob@^2.1.1:
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
 aws-sdk@^2.395.0:
-  version "2.400.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.400.0.tgz#21041439ceeba8e6339b7bed54f2f3703243bbef"
-  integrity sha512-FJjRXajLnI52F0C1E4nFARk/907x4ZuffwFd6jiBQfaepT03wsY1PcJNEQ5CNHYA2qxAx4HezL2pKySEX+g87g==
+  version "2.414.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.414.0.tgz#38f43a536fc47ecd407049565737a0fb009d4cc9"
+  integrity sha512-ZJvZei479gJdp0N2MKb1I0COcowNIN5L5cllooMV0RPztrianR72SyE1gquPeT7TA37l/fVuSmYat2dh4C2GTg==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -1185,9 +1185,9 @@ express-async-errors@^3.1.1:
   integrity sha512-h6aK1da4tpqWSbyCa3FxB/V6Ehd4EEB15zyQq9qe75OZBp0krinNKuH4rAY+S/U/2I36vdLAUFSjQJ+TFmODng==
 
 express-rate-limit@^3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-3.3.2.tgz#c5b2fc770d533878ce01a5dbbfadca340f3b8915"
-  integrity sha512-JZnnTf6ZX9ntQalCZiPHsOG9zhxyRGqfaur+WD4yIcdqzf5FJQao5dmxXbWHk093K8WRSYwNwnzkFXVYnBNudg==
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-3.4.0.tgz#c053ee294feac6d3529863de549438749fd83ef1"
+  integrity sha512-SktWQGHhTQfIOZykiVIaoqmHCptqq177fEbumVytWsMpEqe+g78IFrfzivJTimoCdMZ5+vYJ5/a/w1darXMv+A==
   dependencies:
     defaults "^1.0.3"
 
@@ -2561,16 +2561,7 @@ objection-visibility@^0.4.0:
   resolved "https://registry.yarnpkg.com/objection-visibility/-/objection-visibility-0.4.0.tgz#8ca3f02e3edc5e256efc3db24a3cf7d5225e0e92"
   integrity sha512-3LuUDj8sJ6GOwtH2WSOCsJv/N4h2JzYmhlFaz7tURtgHq0dk59AU7ModNUeTZV9madDhaFF6bbqsuZRxpyLNYg==
 
-objection@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/objection/-/objection-1.5.3.tgz#54cfc79313deac71bfdbb84f3e3b049482b8a7eb"
-  integrity sha512-8OgFjiFksmCk8GSfSRPKyYncOVGK3xBbcUoQTdR5EcqDy+Md45IfqV/CA/zpSwy43fU7afLajT4n/9MkrJk8MQ==
-  dependencies:
-    ajv "^6.1.1"
-    bluebird "^3.5.3"
-    lodash "^4.17.11"
-
-objection@^1.6.3:
+objection@^1.5.3, objection@^1.6.3:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/objection/-/objection-1.6.3.tgz#c4d08d3ba4a0995ada75e829dffc6ce21111b409"
   integrity sha512-NZ8jTP4AC9mmOOF3OyKl3dsA0ggOEUOVG3UQIEGDCdMs7RAX/VbIWtzkdCex2YR59Izgv3fco8sjHbOrGCEDIQ==
@@ -2631,10 +2622,10 @@ package-json@^4.0.0:
     registry-url "^3.0.3"
     semver "^5.1.0"
 
-packet-reader@0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/packet-reader/-/packet-reader-0.3.1.tgz#cd62e60af8d7fea8a705ec4ff990871c46871f27"
-  integrity sha1-zWLmCvjX/qinBexP+ZCHHEaHHyc=
+packet-reader@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/packet-reader/-/packet-reader-1.0.0.tgz#9238e5480dedabacfe1fe3f2771063f164157d74"
+  integrity sha512-HAKu/fG3HpHFO0AA8WE8q2g+gBJaZ9MG7fcKk+IJPLTGAD6Psw4443l+9DGRbOIh3/aXr7Phy0TjilYivJo5XQ==
 
 parse-filepath@^1.0.1:
   version "1.0.2"
@@ -2759,12 +2750,12 @@ pg-types@~2.0.0:
     postgres-interval "^1.1.0"
 
 pg@^7.8.0:
-  version "7.8.0"
-  resolved "https://registry.yarnpkg.com/pg/-/pg-7.8.0.tgz#541c25b3323d85f67ce7d4501a77470976868ce9"
-  integrity sha512-yS3C9YD+ft0H7G47uU0eKajgTieggCXdA+Fxhm5G+wionY6kPBa8BEVDwPLMxQvkRkv3/LXiFEqjZm9gfxdW+g==
+  version "7.8.1"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-7.8.1.tgz#327e25411784cffe067f1cd1ba275d506e92a82b"
+  integrity sha512-m9aIrOV4mgfo+1Ze+eNoJwaWZDvpeBz8Kzwi0zzqLC+tQBsQgIuu+FGPqzyRv9HFlS7tHO1I33LKp9gP5g7U4Q==
   dependencies:
     buffer-writer "2.0.0"
-    packet-reader "0.3.1"
+    packet-reader "1.0.0"
     pg-connection-string "0.1.3"
     pg-pool "^2.0.4"
     pg-types "~2.0.0"
@@ -2846,9 +2837,9 @@ postgres-date@~1.0.0:
   integrity sha1-4tiXAu/bJY/52c7g/pG9BpdSV6g=
 
 postgres-interval@^1.1.0:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/postgres-interval/-/postgres-interval-1.1.2.tgz#bf71ff902635f21cb241a013fc421d81d1db15a9"
-  integrity sha512-fC3xNHeTskCxL1dC8KOtxXt7YeFmlbTYtn7ul8MkVERuTmf7pI4DrkAxcw3kh1fQ9uz4wQmd03a1mRiXUZChfQ==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/postgres-interval/-/postgres-interval-1.2.0.tgz#b460c82cb1587507788819a06aa0fffdb3544695"
+  integrity sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==
   dependencies:
     xtend "^4.0.0"
 
