@@ -15,7 +15,7 @@ jobs:
       - image: circleci/postgres:11
         environment:
           POSTGRES_USER: knex
-          POSTGRES_DB: todo
+          POSTGRES_DB: bazaar
 
     working_directory: ~/repo
 
