@@ -83,7 +83,7 @@ module.exports = Router()
     const id = await tempToken.fetch("verify", req.params.token)
     assert(id == req.user.id, 403)
 
-    const user = await req.user.$query().patch({ verified: true })
+    const user = await req.user.patch({ verified: true })
 
     res.send(user)
 
@@ -93,7 +93,7 @@ module.exports = Router()
     const id = await tempToken.fetch("reset", req.params.token)
     assert(id == req.user.id, 403)
 
-    const user = await req.user.$query().patch({ password })
+    const user = await req.user.patch({ password })
 
     res.send(user)
 
