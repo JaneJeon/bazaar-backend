@@ -22,7 +22,8 @@ class Art extends BaseModel {
           minItems: 1,
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
-        price: { type: "number", exclusiveMinimum: 0 },
+        price: { type: "number", minimum: process.env.MIN_PRICE },
+        priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         tags: { type: "array", items: { type: "string" } }
       },
       required: ["title", "pictures"],
