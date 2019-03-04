@@ -1,6 +1,7 @@
 const BaseModel = require("./base")
 const text = require("../lib/text")
 const image = require("../lib/image")
+const assert = require("assert")
 
 class Art extends BaseModel {
   static get jsonSchema() {
@@ -22,7 +23,7 @@ class Art extends BaseModel {
           minItems: 1,
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
-        price: { type: "number", minimum: process.env.MIN_PRICE },
+        price: { type: "string", pattern: "^\\d+$" },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         tags: { type: "array", items: { type: "string" } }
       },
@@ -47,6 +48,10 @@ class Art extends BaseModel {
           async picture => await image.upload(picture, "PICTURE", "inside")
         )
       )
+    if (this.price) {
+      this.price -= 0
+      assert(this.price >= process.env.MIN_PRICE, 400)
+    }
   }
 
   async $beforeInsert(queryContext) {
