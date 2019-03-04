@@ -11,6 +11,7 @@ exports.up = knex =>
       .notNullable()
       .references("users.id")
     table.integer("price")
+    table.text("price_unit").notNullable()
     table.jsonb("tags")
 
     table.timestamps(true, true)
