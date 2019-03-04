@@ -71,10 +71,12 @@ module.exports = Router()
 
     res.send(user)
 
-    if (req.body.email)
+    if (req.body.email) {
+      const token = await tempToken.generate("reset", user.id, user.id)
       await user.sendEmail("verify", {
         url: `${process.env.FRONTEND_URL}/users/verify/${token}`
       })
+    }
   })
   // verify user email
   .patch("/verify/:token", async (req, res) => {
