@@ -1,8 +1,8 @@
 const { Router } = require("express")
 const { User } = require("../models")
 const tempToken = require("../models/temp-token")
-const ses = require("../lib/ses")
 const assert = require("http-assert")
+const upload = require("../config/multer")
 
 module.exports = Router()
   // user info
@@ -37,61 +37,71 @@ module.exports = Router()
 
     res.send(commissions)
   })
-  .post("/", async (req, res) => {
-    User.filterRequest(req.body)
+  .post("/", upload.single("avatar"), async (req, res) => {
+    User.filterPost(req.body)
 
-    const user = await User.query().insert(req.body)
+    if (this.file) req.body.avatar = this.file
+
+    const user = await User.insert(req.body)
     const token = await tempToken.generate("verify", user.id, user.id)
 
     req.login(user, () => res.status(201).send(req.user))
 
     // email verification
-    await ses
-      .sendTemplatedEmail({
-        Source: process.env.SENDER_ADDRESS,
-        Template: "verify",
-        Destination: { ToAddresses: [user.email] },
-        TemplateData: JSON.stringify({
-          url: `${process.env.FRONTEND_URL}/users/verify/${token}`
-        })
-      })
-      .promise()
-  })
-  // verify user email
-  .patch("/verify/:token", async (req, res) => {
-    const id = await tempToken.fetch("verify", req.params.token)
-    const user = await User.findByUserId(id, req.user)
-    await user.$query().patch({ verified: true })
-
-    res.end()
-
-    await tempToken.consume("verify", id)
+    await user.sendEmail("verify", {
+      url: `${process.env.FRONTEND_URL}/users/verify/${token}`
+    })
   })
   // password reset when user forgets their password while logging in
-  .patch("/reset", async (req, res) => {
+  .post("/reset", async (req, res) => {
     const user = await User.findByEmail(req.body.email)
     const token = await tempToken.generate("reset", user.id, user.id)
 
     res.end()
 
-    await ses
-      .sendTemplatedEmail({
-        Source: process.env.SENDER_ADDRESS,
-        Template: "reset",
-        Destination: { ToAddresses: [req.body.email] },
-        TemplateData: JSON.stringify({
-          url: `${process.env.FRONTEND_URL}/users/reset/${token}`
-        })
+    await user.sendEmail("reset", {
+      url: `${process.env.FRONTEND_URL}/users/reset/${token}`
+    })
+  })
+  .use((req, res, next) => next(req.user, 401))
+  .patch("/", upload.single("avatar"), async (req, res) => {
+    User.filterPatch(req)
+
+    if (this.file) req.body.avatar = this.file
+
+    const user = await req.user.patch(req.body)
+
+    res.send(user)
+
+    if (req.body.email)
+      await user.sendEmail("verify", {
+        url: `${process.env.FRONTEND_URL}/users/verify/${token}`
       })
-      .promise()
+  })
+  // verify user email
+  .patch("/verify/:token", async (req, res) => {
+    const id = await tempToken.fetch("verify", req.params.token)
+    assert(id == req.user.id, 403)
+
+    const user = await req.user.$query().patch({ verified: true })
+
+    res.send(user)
+
+    await tempToken.consume("verify", id)
   })
   .patch("/reset/:token", async (req, res) => {
     const id = await tempToken.fetch("reset", req.params.token)
-    const user = await User.findByUserId(id, req.user)
-    await user.$query().patch({ password })
+    assert(id == req.user.id, 403)
 
-    res.end()
+    const user = await req.user.$query().patch({ password })
+
+    res.send(user)
 
     await tempToken.consume("reset", id)
   })
-  .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
+  .delete("/", async (req, res) => {
+    await req.user.$query().delete()
+
+    req.logout()
+    res.sendStatus(204)
+  })
