@@ -22,8 +22,7 @@ module.exports = Router()
     upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),
     async (req, res) => {
       Art.filterPost(req.body)
-      assert(req.files, 400)
-      req.body.pictures = req.files.map(file => file.path)
+      req.body.pictures = Array.from(req.files).map(file => file.path)
 
       const art = await req.user.insert("arts", req.body)
 
