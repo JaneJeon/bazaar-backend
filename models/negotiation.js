@@ -1,5 +1,4 @@
 const BaseModel = require("./base")
-const assert = require("assert")
 
 class Negotiation extends BaseModel {
   static get idColumn() {
@@ -14,7 +13,7 @@ class Negotiation extends BaseModel {
         isArtist: { type: "boolean" },
         accepted: { type: "boolean", default: false },
         finalized: { type: "boolean", default: false },
-        price: { type: "string", pattern: "^\\d+$" },
+        price: { type: "integer", minimum: process.env.MIN_PRICE },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
         numUpdates: { type: "integer", minimum: 0, maximum: 5, default: 0 },
@@ -51,10 +50,6 @@ class Negotiation extends BaseModel {
   }
 
   processInput(opt) {
-    if (this.price) {
-      this.price -= 0
-      assert(this.price >= process.env.MIN_PRICE, 400)
-    }
     this.updatedAt = `${+new Date()}/${this.id || opt.old.id}`
   }
 

@@ -18,7 +18,7 @@ class Commission extends softDelete(BaseModel) {
           enum: ["open", "accepted", "rejected", "completed", "cancelled"],
           default: "open"
         },
-        price: { type: "integer", minimum: 5 },
+        price: { type: "integer", minimum: process.env.MIN_PRICE },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
         numUpdates: { type: "integer", minimum: 0, maximum: 5, default: 0 },
