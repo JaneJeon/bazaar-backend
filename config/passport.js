@@ -6,7 +6,7 @@ const text = require("../lib/text")
 passport.serializeUser((user, done) => done(null, user.id))
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id)
+    const user = await User.query().findById(id)
     if (!user) done(null, false)
     else done(null, user)
   } catch (err) {
@@ -16,7 +16,7 @@ passport.deserializeUser(async (id, done) => {
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
-    const user = await User.findById(text.slugify(username))
+    const user = await User.query().findById(text.slugify(username))
     return user && (await user.verifyPassword(password))
       ? done(null, user)
       : done(null, false)
