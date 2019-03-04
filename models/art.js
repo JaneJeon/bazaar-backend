@@ -30,7 +30,7 @@ class Art extends BaseModel {
     }
   }
 
-  static get autoFields() {
+  static get reservedPostFields() {
     return ["pictures", "tags"]
   }
 

@@ -267,6 +267,15 @@
     "@types/events" "*"
     "@types/node" "*"
 
+"@xyluet/objection-table-name@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@xyluet/objection-table-name/-/objection-table-name-2.0.0.tgz#13ac5a74639dc8858ae90ba9bc0c579694bae63e"
+  integrity sha512-Ffb5KSvtr1Q3ZdOGIcBV15VD2TmxnWAPBUsXCgOAQrqga8DAglt/aVpS2H3bU6/GNOrjOpMCZ1qpWkYqAEwdlQ==
+  dependencies:
+    lodash "^4.17.11"
+    objection "^1.6.3"
+    pluralize "^7.0.0"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -2556,6 +2565,15 @@ objection@^1.5.3:
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/objection/-/objection-1.5.3.tgz#54cfc79313deac71bfdbb84f3e3b049482b8a7eb"
   integrity sha512-8OgFjiFksmCk8GSfSRPKyYncOVGK3xBbcUoQTdR5EcqDy+Md45IfqV/CA/zpSwy43fU7afLajT4n/9MkrJk8MQ==
+  dependencies:
+    ajv "^6.1.1"
+    bluebird "^3.5.3"
+    lodash "^4.17.11"
+
+objection@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/objection/-/objection-1.6.3.tgz#c4d08d3ba4a0995ada75e829dffc6ce21111b409"
+  integrity sha512-NZ8jTP4AC9mmOOF3OyKl3dsA0ggOEUOVG3UQIEGDCdMs7RAX/VbIWtzkdCex2YR59Izgv3fco8sjHbOrGCEDIQ==
   dependencies:
     ajv "^6.1.1"
     bluebird "^3.5.3"

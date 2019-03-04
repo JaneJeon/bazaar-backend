@@ -39,7 +39,6 @@ module.exports = Router()
   })
   .post("/", upload.single("avatar"), async (req, res) => {
     User.filterPost(req.body)
-
     if (this.file) req.body.avatar = this.file
 
     const user = await User.insert(req.body)
@@ -66,7 +65,6 @@ module.exports = Router()
   .use((req, res, next) => next(req.user, 401))
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req)
-
     if (this.file) req.body.avatar = this.file
 
     const user = await req.user.patch(req.body)

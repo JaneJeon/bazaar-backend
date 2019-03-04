@@ -21,11 +21,30 @@ module.exports = Router()
     "/",
     upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),
     async (req, res) => {
-      Art.filterRequest(req.body)
+      Art.filterPost(req.body)
       req.body.pictures = req.files.map(file => file.path)
 
-      const art = await req.user.$relatedQuery("arts").insert(req.body)
+      const art = await req.user.insert("arts", req.body)
 
       res.status(201).send(art)
     }
   )
+  .patch(
+    "/:artId",
+    upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),
+    async (req, res) => {
+      Art.filterPatch(req.body)
+      if (this.files) req.body.pictures = req.files.map(file => file.path)
+
+      let art = await req.user.findById("arts", req.params.artId)
+      art = art.patch(req.body)
+
+      res.send(art)
+    }
+  )
+  .delete("/:artId", async (req, res) => {
+    const art = await req.user.findById("arts", req.params.artId)
+    await art.$query().delete()
+
+    res.sendStatus(204)
+  })
