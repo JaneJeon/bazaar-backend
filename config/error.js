@@ -59,7 +59,8 @@ module.exports = (err, res) => {
     err.name = "UnknownError"
   }
 
-  if (err.statusCode == 500) logError(err)
+  if (err.statusCode == 500 || process.env.NODE_ENV == "development")
+    logError(err)
 
   res.status(err.statusCode).send({
     message: err.message,
