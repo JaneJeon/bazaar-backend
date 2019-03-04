@@ -51,7 +51,7 @@ class Negotiation extends BaseModel {
   }
 
   processInput() {
-    this.updatedAt = `${+new Date()}/${sync(7)}`
+    this.updatedAt = `${+new Date()}/${uid(7)}`
   }
 
   $beforeInsert(queryContext) {
