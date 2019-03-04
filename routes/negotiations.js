@@ -46,9 +46,10 @@ module.exports = Router()
   .use((req, res, next) => next(assert(req.user && req.user.verified, 401)))
   .post("/", async (req, res) => {
     // negotiation forms for buyer and artist
-    const negotiations = await transaction(Negotiation.knex(), async trx => {
-      return req.commission.requestNegotiation(req.isArtist, req.user.id, trx)
-    })
+    const negotiations = await req.commission.beginNegotiation(
+      req.isArtist,
+      req.user.id
+    )
 
     res.status(201).send(negotiations)
   })

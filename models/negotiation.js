@@ -1,4 +1,5 @@
 const BaseModel = require("./base")
+const assert = require("assert")
 
 class Negotiation extends BaseModel {
   static get idColumn() {
@@ -13,14 +14,15 @@ class Negotiation extends BaseModel {
         isArtist: { type: "boolean" },
         accepted: { type: "boolean", default: false },
         finalized: { type: "boolean", default: false },
-        price: { type: "integer", minimum: 5 },
+        price: { type: "string", pattern: "^\\d+$" },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
         numUpdates: { type: "integer", minimum: 0, maximum: 5, default: 0 },
         copyright: {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
-        }
+        },
+        updatedAt: { type: "string" }
       },
       required: ["artistId", "isArtist", "price", "deadline", "copyright"],
       additionalProperties: false
@@ -45,7 +47,25 @@ class Negotiation extends BaseModel {
   }
 
   static get autoFields() {
-    return ["isArtist", "accepted", "finalized"]
+    return ["isArtist", "accepted", "finalized", "updatedAt"]
+  }
+
+  processInput(opt) {
+    if (this.price) {
+      this.price -= 0
+      assert(this.price >= process.env.MIN_PRICE, 400)
+    }
+    this.updatedAt = `${+new Date()}/${this.id || opt.old.id}`
+  }
+
+  $beforeInsert(queryContext) {
+    super.$beforeInsert(queryContext)
+    this.processInput()
+  }
+
+  $beforeUpdate(opt, queryContext) {
+    super.$beforeUpdate(opt, queryContext)
+    this.processInput(opt)
   }
 }
 

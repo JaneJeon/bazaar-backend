@@ -31,26 +31,30 @@ describe("art routes", () => {
   describe("POST /arts", async () => {
     const pictures = await redis.smembers("pictures")
 
-    it("should reject users that aren't signed in or verified", async () => {
-      await request
-        .post("/arts")
-        .field("title", "hello")
-        .field("description", "blah blah #foo @bar")
-        .attach("pictures", pictures[0])
-        .attach("pictures", pictures[1])
-        .expect(401)
+    context("when unauthenticated or not verified", () => {
+      it("should reject", async () => {
+        await request
+          .post("/arts")
+          .field("title", "hello")
+          .field("description", "blah blah #foo @bar")
+          .attach("pictures", pictures[0])
+          .attach("pictures", pictures[1])
+          .expect(401)
+      })
     })
 
-    it("should create art for verified users", async () => {
-      await request.post("/sessions").send(user)
+    context("when user is verified", () => {
+      it("should create art", async () => {
+        await request.post("/sessions").send(user)
 
-      await request
-        .post("/arts")
-        .field("title", "hello")
-        .field("description", "blah blah #foo @bar")
-        .attach("pictures", pictures[0])
-        .attach("pictures", pictures[1])
-        .expect(201)
+        await request
+          .post("/arts")
+          .field("title", "hello")
+          .field("description", "blah blah #foo @bar")
+          .attach("pictures", pictures[0])
+          .attach("pictures", pictures[1])
+          .expect(201)
+      })
     })
   })
 })
