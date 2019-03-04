@@ -46,7 +46,7 @@ exports.seed = async () => {
         description: `${faker.random.words(
           20
         )} #${faker.random.word()} #${faker.random.word()}`,
-        price: faker.random.number(500) + 1,
+        price: faker.random.number(500) + 1 + "",
         pictures: [paths[2 * i], paths[2 * i + 1]]
       })
     )
