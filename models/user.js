@@ -55,7 +55,8 @@ class User extends password(softDelete(BaseModel)) {
         join: {
           from: "users.id",
           to: "commissions.buyer_id"
-        }
+        },
+        filter: { deleted: false }
       },
       commissionsAsArtist: {
         relation: BaseModel.HasManyRelation,
@@ -77,7 +78,7 @@ class User extends password(softDelete(BaseModel)) {
   }
 
   static get hidden() {
-    return ["password", "deleted"]
+    return ["password"]
   }
 
   async processInput(opt) {

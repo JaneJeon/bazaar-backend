@@ -23,7 +23,6 @@ module.exports = Router()
     const commissions = await user
       .$relatedQuery("commissionsAsBuyer")
       .skipUndefined()
-      .whereNotDeleted()
       .where("status", "open")
       .where("is_private", false)
       .where("id", "<", req.query.after)
