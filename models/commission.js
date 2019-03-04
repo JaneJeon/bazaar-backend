@@ -1,11 +1,12 @@
 const BaseModel = require("./base")
+const softDelete = require("objection-soft-delete")()
 const text = require("../lib/text")
 const assert = require("http-assert")
 const pickBy = require("lodash/pickBy")
 const pick = require("lodash/pick")
 const isEqual = require("lodash/isEqual")
 
-class Commission extends BaseModel {
+class Commission extends softDelete(BaseModel) {
   static get jsonSchema() {
     return {
       type: "object",
@@ -17,7 +18,6 @@ class Commission extends BaseModel {
           enum: ["open", "accepted", "rejected", "completed", "cancelled"],
           default: "open"
         },
-        cancelledBy: { type: "string", enum: ["artist", "buyer"] },
         price: { type: "integer", minimum: 5 },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         deadline: { type: "string", format: "date" }, // ISO format
@@ -30,7 +30,8 @@ class Commission extends BaseModel {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
         },
-        tags: { type: "array", items: { type: "string" } }
+        tags: { type: "array", items: { type: "string" } },
+        deleted: { type: "boolean" }
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
@@ -59,8 +60,8 @@ class Commission extends BaseModel {
     }
   }
 
-  static get autoFields() {
-    return ["isPrivate", "status", "cancelledBy", "tags"]
+  static get reservedPostFields() {
+    return ["isPrivate", "status", "cancelledBy", "tags", "deleted"]
   }
 
   static get negotiationFields() {
@@ -85,7 +86,7 @@ class Commission extends BaseModel {
     this.processInput()
   }
 
-  async requestNegotiation(isArtist, artistId, trx) {
+  async beginNegotiation(isArtist, artistId) {
     // buyer can't create negotiation with themselves, duh
     assert(isArtist, 403)
 
@@ -96,7 +97,7 @@ class Commission extends BaseModel {
     // YYYY-MM-DD
     base.deadline = this.deadline.toISOString().substr(0, 10)
 
-    return this.$relatedQuery("negotiations", trx).insert([
+    return this.insert("negotiations", [
       // auto-accept for the buyer
       Object.assign({ artistId, isArtist: false, accepted: true }, base),
       Object.assign({ artistId, isArtist: true }, base)
@@ -105,10 +106,9 @@ class Commission extends BaseModel {
 
   // I'm half turned on and half grossed out by this
   async negotiate(artistId, idx, changes = {}, trx) {
-    const negotiations = await this.$relatedQuery("negotiations", trx).where(
-      "artist_id",
-      artistId
-    )
+    let negotiations = await this.$relatedQuery("negotiations", trx)
+      .where("artist_id", artistId)
+      .orderBy("isArtist")
 
     // disallow updates when finalized
     assert(!negotiations[idx].finalized, 405, "Cannot change finalized forms")
@@ -135,25 +135,20 @@ class Commission extends BaseModel {
     )
 
     // do the actual update
-    negotiations[idx] = await negotiations[idx]
-      .$query(trx)
-      .patch(changes)
-      .returning("*")
-      .first()
+    negotiations[idx] = await negotiations[idx].patch(changes, trx)
 
-    const newForms = negotiations.map(form =>
-      pick(form, Commission.negotiationFields)
-    )
-    const newFormsAreEqual = isEqual(newForms[0], newForms[1])
+    forms[idx] = pick(negotiations[idx], Commission.negotiationFields)
+    const newFormsAreEqual = isEqual(forms[0], forms[1])
 
     // finalize only if both the forms are the same and they both accept
     // and mark the commission as private by setting the artist_id
     if (newForms[0].accepted && newForms[1].accepted && newFormsAreEqual)
-      await Promise.all([
+      [negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
           .patch({ finalized: true })
-          .where("artist_id", artistId),
-        this.$query(trx).patch({ artistId })
+          .where("artist_id", artistId)
+          .returning("*"),
+        this.patch({ artistId }, trx)
       ])
 
     return negotiations

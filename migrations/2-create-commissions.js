@@ -10,7 +10,6 @@ exports.up = knex =>
     table.text("artist_id").references("users.id")
     table.boolean("is_private").notNullable()
     table.text("status").notNullable()
-    table.text("cancelled_by")
 
     table.integer("price").notNullable()
     table.text("price_unit").notNullable()
@@ -22,6 +21,10 @@ exports.up = knex =>
     table.text("description").notNullable()
 
     table.timestamps(true, true)
+    table
+      .boolean("deleted")
+      .notNullable()
+      .defaultTo(false)
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)

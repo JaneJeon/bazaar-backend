@@ -6,7 +6,7 @@ const assert = require("http-assert")
 module.exports = Router()
   // the "discover" page
   .get("/", async (req, res) => {
-    // FOR NOW, the results are not personalized
+    // TODO: FOR NOW, the results are not personalized
     const arts = await Art.paginate(req.query.after)
 
     res.send(arts)
@@ -37,7 +37,7 @@ module.exports = Router()
       if (this.files) req.body.pictures = req.files.map(file => file.path)
 
       let art = await req.user.findById("arts", req.params.artId)
-      art = art.patch(req.body)
+      art = await art.patch(req.body)
 
       res.send(art)
     }

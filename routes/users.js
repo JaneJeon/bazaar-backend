@@ -17,22 +17,17 @@ module.exports = Router()
 
     res.send(arts)
   })
+  // a user's public commission listing
   .get("/:userId/commissions", async (req, res) => {
     const user = await User.findByUserId(req.params.userId, req.user)
-
-    let q =
-      req.query.as == "buyer"
-        ? user.$relatedQuery("commissionsAsBuyer")
-        : user.$relatedQuery("commissionsAsArtist")
-
-    // if you're looking at others' commissions, you can only see public ones
-    if (req.user.id != user.id) q = q.where("is_private", false)
-
-    const commissions = await q
+    const commissions = await user
+      .$relatedQuery("commissionsAsBuyer")
       .skipUndefined()
-      .where("status", req.query.status)
+      .whereNotDeleted()
+      .where("status", "open")
+      .where("is_private", false)
       .where("id", "<", req.query.after)
-      .orderBy("id", "desc")
+      .orderBy("id")
       .limit(process.env.PAGE_SIZE)
 
     res.send(commissions)
