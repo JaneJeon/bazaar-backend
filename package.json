@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "watch": "DEBUG=knex node -r dotenv/config app | pino-pretty -ct",
+    "watch": "DEBUG=knex node -r dotenv/config node_modules/.bin/nodemon app | pino-pretty -ct",
     "pretest": "yarn seed",
     "test": "node -r dotenv/config node_modules/.bin/mocha --bail --exit --recursive",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
@@ -78,6 +78,7 @@
     "debug": "^4.1.1",
     "faker": "^4.1.0",
     "mocha": "^5.2.0",
+    "nodemon": "^1.18.10",
     "pino-pretty": "^2.5.0",
     "prettier": "^1.16.3"
   },
