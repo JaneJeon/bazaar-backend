@@ -67,7 +67,7 @@ module.exports = Router()
     res.send(user)
 
     if (req.body.email) {
-      const token = await tempToken.generate("reset", user.id, user.id)
+      const token = await tempToken.generate("verify", user.id, user.id)
       await user.sendEmail("verify", {
         url: `${process.env.FRONTEND_URL}/users/verify/${token}`
       })
@@ -93,6 +93,11 @@ module.exports = Router()
     res.send(user)
 
     await tempToken.consume("reset", id)
+  })
+  .delete("/avatar", async (req, res) => {
+    const user = await req.user.patch({ avatar: null })
+
+    res.status(204).send(user)
   })
   .delete("/", async (req, res) => {
     await req.user.$query().delete()

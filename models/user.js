@@ -86,7 +86,8 @@ class User extends password(softDelete(BaseModel)) {
     if (this.name) this.name = text.clean(this.name)
     if (this.location) this.location = text.clean(this.location)
     if (this.bio) this.bio = text.clean(this.bio)
-    if (!opt || this.avatar) this.avatar = await this.generateAvatar(opt)
+    if (!opt || (this.avatar || this.avatar === null))
+      this.avatar = await this.generateAvatar(opt)
   }
 
   async generateAvatar(opt) {
