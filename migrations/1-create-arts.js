@@ -12,7 +12,7 @@ exports.up = knex =>
       .references("users.id")
     table.integer("price")
     table.text("price_unit").notNullable()
-    table.jsonb("tags")
+    table.jsonb("tags").notNullable()
 
     table.timestamps(true, true)
   })

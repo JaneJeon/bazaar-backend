@@ -17,7 +17,7 @@ exports.up = knex =>
     table.integer("num_updates")
     table.text("copyright").notNullable()
 
-    table.jsonb("tags")
+    table.jsonb("tags").notNullable()
     table.text("description").notNullable()
 
     table.timestamps(true, true)
