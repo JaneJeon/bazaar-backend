@@ -22,11 +22,8 @@ exports.up = knex =>
     table.integer("num_updates")
     table.text("copyright").notNullable()
 
-    table
-      .timestamp("created_at")
-      .defaultTo(knex.fn.now())
-      .notNullable()
-    table.text("updated_at").notNullable()
+    table.timestamps(true, true)
+    table.text("update_id").notNullable()
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)

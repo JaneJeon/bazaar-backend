@@ -31,7 +31,7 @@ module.exports = Router()
     const negotiations = await req.commission.paginate(
       "artistForms",
       req.query.after,
-      "updated_at"
+      "update_id"
     )
 
     res.send(negotiations)

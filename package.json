@@ -44,7 +44,8 @@
     "rate-limit-redis": "^1.6.0",
     "sharp": "^0.21.3",
     "supertest": "^3.4.2",
-    "uid-safe": "^2.1.5"
+    "uid-safe": "^2.1.5",
+    "ulid": "^2.3.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",

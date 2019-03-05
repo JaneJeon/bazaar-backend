@@ -1,5 +1,5 @@
 const BaseModel = require("./base")
-const { sync: uid } = require("uid-safe")
+const { ulid } = require("ulid")
 
 class Negotiation extends BaseModel {
   static get idColumn() {
@@ -22,7 +22,7 @@ class Negotiation extends BaseModel {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
         },
-        updatedAt: { type: "string" }
+        updateId: { type: "string" }
       },
       required: ["artistId", "isArtist", "price", "deadline", "copyright"],
       additionalProperties: false
@@ -47,11 +47,11 @@ class Negotiation extends BaseModel {
   }
 
   static get autoFields() {
-    return ["isArtist", "accepted", "finalized", "updatedAt"]
+    return ["isArtist", "accepted", "finalized", "updateId"]
   }
 
   processInput() {
-    this.updatedAt = `${+new Date()}/${uid(7)}`
+    this.updateId = ulid()
   }
 
   $beforeInsert(queryContext) {
