@@ -1,6 +1,6 @@
-require("dotenv-defaults").config()
-require("express-async-errors")
+require("./config/env")
 require("./config/passport")
+require("express-async-errors")
 
 const express = require("express")
 const app = express()
