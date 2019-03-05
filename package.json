@@ -1,14 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "start": "node -r dotenv-defaults/config app",
-    "watch": "DEBUG=knex node -r dotenv-defaults/config node_modules/.bin/nodemon app | pino-pretty -ct",
+    "start": "node app",
+    "watch": "DEBUG=knex nodemon app | pino-pretty -ct",
     "pretest": "yarn seed",
-    "test": "NODE_ENV=test node -r dotenv-defaults/config node_modules/.bin/mocha --bail --exit --recursive --slow 500",
+    "test": "NODE_ENV=test mocha --bail --exit --recursive --slow 500",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
-    "migrate": "DEBUG=knex node -r dotenv-defaults/config node_modules/.bin/knex migrate:latest --knexfile ./config/database.js",
-    "rollback": "DEBUG=knex node -r dotenv-defaults/config node_modules/.bin/knex migrate:rollback --knexfile ./config/database.js",
-    "seed": "DEBUG=knex node -r dotenv-defaults/config node_modules/.bin/knex seed:run --knexfile ./config/database.js",
+    "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
+    "rollback": "DEBUG=knex knex migrate:rollback --knexfile ./config/database.js",
+    "seed": "DEBUG=knex knex seed:run --knexfile ./config/database.js",
     "migrate-email": "node scripts/email-templates",
     "clean": "rm -f *.log; rm -rf node_modules"
   },
