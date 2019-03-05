@@ -1,4 +1,5 @@
 const { Router } = require("express")
+const assert = require("http-assert")
 const sessions = require("./sessions")
 const users = require("./users")
 const arts = require("./arts")
@@ -7,6 +8,10 @@ const negotiations = require("./negotiations")
 const chats = require("./chats")
 
 module.exports = Router()
+  .use((req, res, next) => {
+    req.ensureVerified = () => assert(req.user, 401)
+    next()
+  })
   .use("/sessions", sessions)
   .use("/users", users)
   .use("/arts", arts)

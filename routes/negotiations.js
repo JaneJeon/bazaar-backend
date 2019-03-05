@@ -43,7 +43,7 @@ module.exports = Router()
 
     res.send(negotiations)
   })
-  .use((req, res, next) => next(assert(req.user, 401))) // TODO: re-add verified
+  .use((req, res, next) => next(req.ensureVerified()))
   .post("/", async (req, res) => {
     // negotiation forms for buyer and artist
     const negotiations = await req.commission.beginNegotiation(

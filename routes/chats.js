@@ -6,7 +6,7 @@ const log = require("../lib/log")
 
 module.exports = Router()
   .use(async (req, res, next) => {
-    // TODO: assert verified
+    req.ensureVerified()
     req.commission = await Commission.findById(req.params.commissionId)
     req.negotiation = await req.commission
       .$relatedQuery("negotiations")
@@ -15,7 +15,6 @@ module.exports = Router()
       .first()
 
     // only the artist and the buyer can access
-    assert(req.user, 401)
     next(
       assert(
         req.user.id == req.commission.buyerId ||
@@ -24,12 +23,26 @@ module.exports = Router()
       )
     )
   })
+  // get previous chat records
   .get("/", async (req, res) => {
     const chats = await req.negotiation.paginate("chats", req.query.after)
 
     res.send(chats)
   })
   .ws("/", (ws, req) => {
+    // messages sent by the user
+    ws.on("message", async message => {
+      try {
+        const obj = { userId: req.user.id, message }
+        const chat = await req.negotiation.insert("chats", obj)
+
+        await pub.publish("chats", `${req.path}:${JSON.stringify(obj)}`)
+      } catch (err) {
+        log.error(err)
+      }
+    })
+
+    // messages from the other person
     sub.on("message", (channel, message) => {
       // every time a message comes in from redis, post that
       if (channel == "chat" && message.startsWith(req.path)) {
@@ -40,13 +53,4 @@ module.exports = Router()
         }
       }
     })
-  })
-  .post("/", async (req, res) => {
-    const obj = { userId: req.user.id, message: req.body.body } // lol
-    const chat = await req.negotiation.$relatedQuery("chats").insert(obj)
-
-    res.status(201).send(chat)
-
-    // publish to redis for live updates
-    await pub.publish("chats", `${req.path}:${JSON.stringify(obj)}`)
   })

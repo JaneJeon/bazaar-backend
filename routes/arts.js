@@ -1,7 +1,6 @@
 const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art } = require("../models")
-const assert = require("http-assert")
 
 module.exports = Router()
   // the "discover" page
@@ -16,7 +15,7 @@ module.exports = Router()
 
     res.send(art)
   })
-  .use((req, res, next) => next(assert(req.user, 401))) // TODO: re-add verified
+  .use((req, res, next) => next(req.ensureVerified()))
   .post(
     "/",
     upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),

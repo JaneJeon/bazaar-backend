@@ -1,5 +1,4 @@
 const { Router } = require("express")
-const assert = require("http-assert")
 const { Commission } = require("../models")
 
 module.exports = Router()
@@ -22,7 +21,7 @@ module.exports = Router()
 
     res.send(commission)
   })
-  .use((req, res, next) => next(assert(req.user, 401))) // TODO: re-add verified
+  .use((req, res, next) => next(req.ensureVerified()))
   // commissions by the user
   .get("/byMe", async (req, res) => {
     const commissions = await req.user
