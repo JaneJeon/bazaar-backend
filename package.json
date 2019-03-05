@@ -4,7 +4,7 @@
     "start": "node app",
     "watch": "DEBUG=knex node -r dotenv/config node_modules/.bin/nodemon app | pino-pretty -ct",
     "pretest": "yarn seed",
-    "test": "NODE_ENV=test node -r dotenv/config node_modules/.bin/mocha --bail --exit --recursive",
+    "test": "NODE_ENV=test node -r dotenv/config node_modules/.bin/mocha --bail --exit --recursive --slow 500",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
     "migrate": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex node -r dotenv/config node_modules/.bin/knex migrate:rollback --knexfile ./config/database.js",

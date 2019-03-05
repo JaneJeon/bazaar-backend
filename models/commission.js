@@ -125,14 +125,8 @@ class Commission extends softDelete(BaseModel) {
     )
     const formsAreEqual = isEqual(forms[0], forms[1])
 
-    // don't allow accepting when:
-    // 1. the other person has already accepted, and
-    // 2. the forms are different
-    assert(
-      !(changes.accepted && forms[(idx + 1) % 2].accepted && !formsAreEqual),
-      405,
-      "Cannot accept while the forms are different"
-    )
+    // don't allow accepting when the forms are different
+    assert(!formsAreEqual, 405, "Cannot accept while the forms are different")
 
     // do the actual update
     negotiations[idx] = await negotiations[idx].patch(changes, trx)
