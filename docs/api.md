@@ -32,7 +32,7 @@ For arts:
 - `price`: at least 0. We're not bothering with units atm
 - `medium`: at most 30 characters long
 
-See `.env.example` of the backend repo for these values.
+See `.env.defaults` of the backend repo for these values.
 
 Finally, anything of form `:var` is a URL parameter, and they should always be non-empty. For example, if a route calls for `/foo/:bar`, sending a request to `/foo/baz` is ok whereas `/foo` is not.
 

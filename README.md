@@ -19,14 +19,13 @@ in `S3` (via `aws-sdk`).
 1. Install postgres if it isn't installed
 2. Create a postgres database (`createdb bazaar`) if it doesn't already exist
 3. Install redis if it isn't installed
-4. Run `yarn update-env`; this will create `.env` if it doesn't already exist, and if it does, it updates its values from the latest `.env.example` values
-5. Modify the environment variables in `.env` as needed (`yarn update-env` will tell you which configurations are missing)
-6. `yarn` to install dependencies for development, `yarn install --production` for production
-7. (optional) Run `dropdb bazaar` then `createdb bazaar` if the next 2 steps fail
-8. `yarn rollback`
-9. `yarn migrate`
-10. (optional) `yarn seed` if you want to populate the database with sample entries
-11. `yarn watch` to run the server for development, `yarn start` for production
+4. Create `.env` if it doesn't exist, and fill it with environment variables from `.env.defaults` that you'd like to change, or variables that are left empty (such as `AWS_ACCESS_KEY_ID`)
+5. `yarn` to install dependencies for development, `yarn install --production` for production
+6. (optional) Run `dropdb bazaar` then `createdb bazaar` if the next 2 steps fail
+7. `yarn rollback`
+8. `yarn migrate`
+9. (optional) `yarn seed` if you want to populate the database with sample entries
+10. `yarn watch` to run the server for development, `yarn start` for production
 
 ## Deployment
 
