@@ -18,6 +18,19 @@ Some endpoints will require that a user be logged in. In that case, you must sen
 
 And finally, each resource has some degree of access control - while some resources may allow them to be read publicly, some only allow a few people to even access the resource. In general, only the creator has read/write access.
 
+### Errors
+The API, on error, will return a JSON with the status code, the error name and the message. The error message should be relayed to the user.
+
+When a request is malformed (e.g. wrong/missing parameters), returns a 400 status code.
+
+When a request isn't authenticated (i.e. missing cookie), returns a 401.
+
+When a route and/or a resource is not found, returns a 404 status code. This can also happen when a resource does exist but the requester does not have access to it.
+
+When there was a conflict in one of the parameters (e.g. username/email is already taken), returns a 409 status code.
+
+If there was a server-side error, it will return a 500 status code.
+
 ## Resources
 You can see what each resource *looks like* by going to the `models` folders and looking at the class representing the resource. For example, to look at what a `User` looks like, you can look for `static get jsonSchema()` in `models/user.js`.
 
@@ -31,124 +44,129 @@ To see which fields you can't set via `POST` requests (but remember - you *can* 
 
 To see which fields you can't set via `PATCH` requests, check the property `reservedPatchFields` in the resource class, or if it doesn't exist, the `reservedPostFields` property.
 
-## Routes
-- [POST `/sessions`](#login)
-- [DELETE `/sessions`](#logout)
-- [GET `/users/:userId`](#me)
-- [GET `/users/:userId/arts`](#myart)
-- [POST `/users`](#createuser)
-- [PATCH `/users/verify/:token`](#verifyuser)
-- [PATCH `/users/reset`](#requestreset)
-- [PATCH `/users/reset/:token`](#passwordreset)
-- [GET `/arts`](#discover)
-- [GET `/arts/:artId`](#getart)
-- [POST `/arts`](#createpicture)
-- [GET `/commissions`](#cboard)
-- [GET `/commissions/:commissionId`](#getc)
-- [GET `/commissions/forMe`](#getcme)
-- [POST `/commissions`](#makec)
-- [GET `/negotiations`](#neg)
-- [GET `/negotiations/:artistName`](#negart)
-- [POST `/negotiations/`](#negpost)
-- [PATCH `/negotiations/:artistName`](#negpatch)
+### User
+e.g. id vs. username
 
-### <a name="login"></a>POST `/sessions`
+### Art
+
+### Commission
+
+### Negotiation
+
+### Chat
+
+## Routes
+- [POST `/sessions`](#posts)
+- [DELETE `/sessions`](#dels)
+
+- [POST `/users`](#postu)
+- [PATCH `/users/verify/:token`](#patchuvt)
+- [GET `/users/:userId`](#getuu)
+- [POST `/users/reset`](#postur)
+- [PATCH `/users/reset/:token`](#patchurt)
+- [PATCH `/users`](#patchu)
+- [DELETE `/users`](#delu)
+
+- [POST `/arts`](#posta)
+- [GET `/arts`](#geta)
+- [GET `/arts/:artId`](#getaa)
+- [GET `/users/:userId/arts`](#getuua)
+- [PATCH `/arts/:artId`](#patchaa)
+- [DELETE `/arts/:artId`](#delaa)
+
+- [POST `/commissions`](#postc)
+- [GET `/commissions`](#getc)
+- [GET `/commissions/:commissionId`](#getcc)
+- [GET `/users/:userId/commissions`](#getuuc)
+- [GET `/commissions/byMe`](#getcb)
+- [GET `/commissions/forMe`](#getcf)
+- [PATCH `/commissions/:commissionId`](#patchcc)
+- [PATCH `/commissions/:commissionId/reject`](#patchccr)
+- [DELETE `/commissions/:commissionId`](#delcc)
+
+- [POST `/commissions/:commissionId/negotiations`](#postccn)
+- [GET `/commissions/:commissionId/negotiations`](#getccn)
+- [GET `/commissions/:commissionId/negotiations/:artistId`](#getccna)
+- [PATCH `/commissions/:commissionId/negotiations/:artistId`](#patchccna)
+
+### <a name="posts"></a>POST `/sessions`
 This endpoint is used to login existing users. Params `username` and `password` are expected. On success, returns status code 201 with a cookie. Also returns an instance of the user object.
 
-### <a name="logout"></a>DELETE `/sessions`
-
+### <a name="dels"></a>DELETE `/sessions`
 This endpoint is used to logout users who are already logged in. On success, returns status code 204.
 
-### <a name="me"></a>GET `/users/:userId`
-
-Returns user information corresponding to the `userId`. One of the components that would be included in a "user profile".
-
-### <a name="myart"></a>GET `/users/:userId/arts`
-
-Returns all of the art for a user. Also used for profile. Optionally can pass an `after` for pagination.
-
-### <a name="createuser"></a>POST `/users`
-
+### <a name="postu"></a>POST `/users`
 This endpoint is used to create a user. Params `username`, `email`, and `password` are expected. On success, returns status code 201 with a JSON object representing the user, which contains the fields `id`, `email`, `username`, and `verified`.
 
 Additionally, an email is sent out to the user's email asking for verification containing a link to `/users/verify/:token` when their account is created successfully.
 
-### <a name="verifyuser"></a>PATCH `/users/verify/:token`
-
+### <a name="patchuvt"></a>PATCH `/users/verify/:token`
 When a user accesses a page of form `/users/verify/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` value) to verify the user's email address. On success, returns status code 200, at which point the user should be redirected to a login page (front-end routing).
 
-### <a name="requestreset"></a>PATCH `/users/reset`
+### <a name="getuu"></a>GET `/users/:userId`
+Returns user information corresponding to the `userId`. One of the components that would be included in a "user profile".
 
+### <a name="postur"></a>POST `/users/reset`
 This endpoint is used to request a password reset in case a user forgot it. Param `email` is expected. On success, returns a 200 and sends out an email with the password reset link of form `/users/reset/:token`.
 
-### <a name="passwordreset"></a>PATCH `/users/reset/:token`
-
+### <a name="patchurt"></a>PATCH `/users/reset/:token`
 When a user accesses a page of form `/users/reset/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` value) to reset the user's password. Param `password` is expected (the new password). On success, returns a 200.
 
-### <a name="discover"></a>GET `/arts`
+### <a name="patchu"></a>PATCH `/users`
 
-This is the "discover page". Currently, it returns the most recent pictures in anti-chronological order.
+### <a name="delu"></a>DELETE `/users`
 
-It returns a maximum of 15 pictures. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen picture (i.e. the `id` of the last object in the pictures array returned).
-
-### <a name="getart"></a> GET `/arts/:artId`
-
-Get a single art by id.
-
-### <a name="createpicture"></a>POST `/arts`
-
+### <a name="posta"></a>POST `/arts`
 This endpoint is used to upload a picture. The request body should be sent as multi-part form data, instead of JSON. Params `title` and `picture` are expected (you are required to upload at least 1 picture), and you can optionally also pass `description` (from which hashtags are parsed), `price`, and `medium`. The `pictures` field should contain the picture file(s).
 
 Upon success, returns a 201 with a JSON object representing the user, which contains the fields `id`, `title`, `description`,  `pictures`, `price`, `tags`, and `artist_id`. The `pictures` array contain links to the pictures in the art.
 
 You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
 
-### <a name="cboard"></a>GET `/commissions`
+### <a name="geta"></a>GET `/arts`
+This is the "discover page". Currently, it returns the most recent pictures in anti-chronological order.
 
-This is the commission board. Currently, it returns the most recent commissions in anti-chronological order.
+It returns a maximum of 15 pictures. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen picture (i.e. the `id` of the last object in the pictures array returned).
 
-It returns a maximum of 15 commissions. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen commission (i.e. the `id` of the last object in the commissions array returned).
+### <a name="getaa"></a> GET `/arts/:artId`
+Get a single art by id.
 
-### <a name="getc"></a>GET `/commissions/:commissionId`
+### <a name="getuua"></a>GET `/users/:userId/arts`
+Returns all of the art for a user. Also used for profile. Optionally can pass an `after` for pagination.
 
-Get a single commission by `id`
+### <a name="patchaa"></a>PATCH `/arts/:artId`
 
-### <a name="getcme"></a>GET `/commissions/forMe`
+### <a name="delaa"></a>DELETE `/arts/:artId`
 
-Get all the commisions related to a user. This request must contain a query appended to the end of the url. This query has one param `as` which contains the value of artist or buyer depending on which types of commissions you are trying to look at. `/me/?as=artist` 
-
-For artist commissions, a second parameter, `show` must also be included with the value 'all' if you want to view rejected commissions or `current` if you want to exclude these commissions. `/me/?as=artist&show=all`
-
-You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
-
-### <a name="makec"></a>POST `/commissions`
-
+### <a name="postc"></a>POST `/commissions`
 Create a commissions object. Required fields are `price`, `deadline`, `copyright`, `description`.  Successful posting returns a error 201 code and a JSON object representing the commission.
 
 You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
 
+### <a name="getc"></a>GET `/commissions`
+This is the commission board. Currently, it returns the most recent commissions in anti-chronological order.
 
-### <a name="neg"></a>GET `/negotiations`
+It returns a maximum of 15 commissions. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen commission (i.e. the `id` of the last object in the commissions array returned).
 
+### <a name="getcc"></a>GET `/commissions/:commissionId`
+Get a single commission by `id`
 
+### <a name="getuuc"></a>GET `/users/:userId/commissions`
 
-### <a name="negart"></a>GET `/negotiations/:artistName`
+### <a name="getcb"></a>GET `/commissions/byMe`
 
+### <a name="getcf"></a>GET `/commissions/forMe`
 
-### <a name="negpost"></a>POST `/negotiations`
+### <a name="patchcc"></a>PATCH `/commissions/:commissionId`
 
+### <a name="patchccr"></a>PATCH `/commissions/:commissionId/reject`
 
-### <a name="negpatch"></a>PATCH `/negotiations/:artistName`
+### <a name="delcc"></a>DELETE `/commissions/:commissionId`
 
-## Errors
-The API, on error, will return a JSON with the status code, the error name and the message. The error message should be relayed to the user.
+### <a name="postccn"></a>POST `/commissions/:commissionId/negotiations`
 
-When a request is malformed (e.g. wrong/missing parameters), returns a 400 status code.
+### <a name="getccn"></a>GET `/commissions/:commissionId/negotiations`
 
-When a request isn't authenticated (i.e. missing cookie), returns a 401.
+### <a name="getccna"></a>GET `/commissions/:commissionId/negotiations/:artistId`
 
-When a route and/or a resource is not found, returns a 404 status code. This can also happen when a resource does exist but the requester does not have access to it.
-
-When there was a conflict in one of the parameters (e.g. username/email is already taken), returns a 409 status code.
-
-If there was a server-side error, it will return a 500 status code.
+### <a name="patchccna"></a>PATCH `/commissions/:commissionId/negotiations/:artistId`

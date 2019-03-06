@@ -53,7 +53,7 @@ module.exports = Router()
 
     res.status(201).send(negotiations)
   })
-  .patch("/:artistName", async (req, res) => {
+  .patch("/:artistId", async (req, res) => {
     Negotiation.filterPatch(req.body)
 
     const negotiations = await transaction(Negotiation.knex(), async trx => {
