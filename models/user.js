@@ -17,7 +17,7 @@ class User extends password(softDelete(BaseModel)) {
           type: "string",
           minLength: process.env.MIN_USERNAME_LENGTH,
           maxLength: process.env.MAX_USERNAME_LENGTH,
-          pattern: "^[\\w ]+$"
+          pattern: "^\\w+$"
         },
         email: { type: "string", format: "email" },
         password: {
@@ -82,7 +82,7 @@ class User extends password(softDelete(BaseModel)) {
   }
 
   async processInput(opt) {
-    if (this.username) this.id = text.slugify(this.username)
+    if (this.username) this.id = this.username.toLowerCase()
     if (this.email) this.email = normalize(this.email)
     if (this.name) this.name = text.clean(this.name)
     if (this.location) this.location = text.clean(this.location)

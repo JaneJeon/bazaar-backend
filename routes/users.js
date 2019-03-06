@@ -56,7 +56,7 @@ module.exports = Router()
       url: `${process.env.FRONTEND_URL}/users/reset/${token}`
     })
   })
-  .use((req, res, next) => next(req.user, 401))
+  .use((req, res, next) => next(req.ensureVerified()))
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req)
     if (this.file) req.body.avatar = this.file
@@ -75,7 +75,7 @@ module.exports = Router()
   // verify user email
   .patch("/verify/:token", async (req, res) => {
     const id = await tempToken.fetch("verify", req.params.token)
-    assert(id == req.user.id, 403)
+    assert(id == req.user.id, 404)
 
     const user = await req.user.patch({ verified: true })
 
@@ -85,7 +85,7 @@ module.exports = Router()
   })
   .patch("/reset/:token", async (req, res) => {
     const id = await tempToken.fetch("reset", req.params.token)
-    assert(id == req.user.id, 403)
+    assert(id == req.user.id, 404)
 
     const user = await req.user.patch({ password })
 
@@ -93,13 +93,9 @@ module.exports = Router()
 
     await tempToken.consume("reset", id)
   })
-  .delete("/avatar", async (req, res) => {
-    const user = await req.user.patch({ avatar: null })
-
-    res.status(204).send(user)
-  })
   .delete("/", async (req, res) => {
     await req.user.$query().delete()
 
-    req.session.destroy(err => res.sendStatus(204))
+    req.session = null
+    res.sendStatus(204)
   })

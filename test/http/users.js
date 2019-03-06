@@ -1,14 +1,15 @@
-const { agent } = require("supertest")
-const app = require("../../app")
-const request = agent(app)
-const { strictEqual, notStrictEqual } = require("assert")
-const testUser = { username: "Ricky Cranium", password: "123456789" }
-const redis = require("../../lib/redis")
+require("../lib/text")
 
-exports.testUser = testUser
+const session = require("supertest-session")
+const app = require("../../app")
+const request = session(app)
+const assert = require("assert")
+const redis = require("../../lib/redis")
+const tempToken = require("../../models/temp-token")
+const { User } = require("../../models")
 
 describe("user routes", () => {
-  let user
+  const testUser = { username: "Ricky_Cranium", password: "123456789" }
 
   describe("POST /users", () => {
     it("should sign up", async () => {
@@ -19,8 +20,8 @@ describe("user routes", () => {
         )
         .expect(201)
 
-      user = res.body
-      strictEqual(user.verified, false)
+      assert(res.body.verified === false)
+      assert(res.body.avatar !== null)
     })
 
     it("should 400 when parameters are wrong", async () => {
@@ -33,10 +34,12 @@ describe("user routes", () => {
 
   describe("GET /users/:userId", () => {
     it("should return the user information", async () => {
-      const res = await request.get(`/users/${user.id}`).expect(200)
+      const res = await request
+        .get(`/users/${testUser.username.toLowerCase()}`)
+        .expect(200)
 
-      strictEqual(res.body.username, testUser.username)
-      notStrictEqual(res.body.password, testUser.password)
+      assert(res.body.username == testUser.username)
+      assert(res.body.password != testUser.password)
     })
 
     it("should 404 when user is not found", async () => {
@@ -46,6 +49,7 @@ describe("user routes", () => {
 
   describe("PATCH /users/verify/:token", () => {
     let token
+
     before(async () => {
       const [key] = await redis.keys("verify:*")
       token = key.substr("verify:".length)
@@ -57,6 +61,35 @@ describe("user routes", () => {
 
     it("should reject token doesn't match any user", async () => {
       await request.patch(`/users/verify/${token}1`).expect(404)
+    })
+
+    it("should not allow a token to be used twice", async () => {
+      const result = await tempToken.fetch("verify", token)
+
+      assert(result === null)
+    })
+  })
+
+  describe("POST /users/reset", () => {
+    it("should send password reset email", async () => {
+      // TODO
+    })
+  })
+
+  describe("PATCH /users/reset/:token", () => {
+    // TODO
+  })
+
+  describe("PATCH /users", () => {
+    // TODO
+  })
+
+  describe("DELETE /users", () => {
+    it("should delete the user", async () => {
+      await request.delete("/users").expect(204)
+
+      const user = await User.query().findById(testUser.username.toLowerCase())
+      assert(user.deleted === true)
     })
   })
 })
