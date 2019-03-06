@@ -1,13 +1,23 @@
-const { agent } = require("supertest")
+const session = require("supertest-session")
 const app = require("../../app")
-const request = agent(app)
+const request = session(app)
+const { users } = require("./sessions")
 const redis = require("../../lib/redis")
+const assert = require("assert")
 
 describe("art routes", () => {
-  let arts
+  let arts, art, pictures
+
+  before(async () => {
+    pictures = await redis.smembers("pictures")
+  })
+
+  beforeEach(async () => {
+    await request.post("/sessions").send(users[0])
+  })
 
   describe("GET /arts", () => {
-    it.skip("should fetch some arts", async () => {
+    it("should fetch some arts", async () => {
       const res = await request.get("/arts").expect(200)
 
       arts = res.body
@@ -15,26 +25,31 @@ describe("art routes", () => {
   })
 
   describe("GET /arts/:artId", () => {
-    it.skip("should fetch a specific art", async () => {
+    it("should fetch a specific art", async () => {
       await request.get(`/arts/${arts[0].id}`).expect(200)
     })
   })
 
   describe("GET /users/:userId/arts", () => {
-    it.skip("should list arts by a user", async () => {
-      await request.get(`/users/${text.slugify(user.username)}/arts`)
+    it("should list arts by a user", async () => {
+      await request
+        .get(`/users/${users[0].username.toLowerCase()}/arts`)
+        .expect(200)
+    })
+
+    it("should 404 when user is not found", async () => {
+      await request.get("/users/1234/arts").expect(404)
     })
   })
 
   describe("POST /arts", async () => {
-    const pictures = await redis.smembers("pictures")
-
     context("when unauthenticated or not verified", () => {
-      it.skip("should reject", async () => {
+      it("should reject", async () => {
+        await request.delete("/sessions")
+
         await request
           .post("/arts")
           .field("title", "hello")
-          .field("description", "blah blah #foo @bar")
           .attach("pictures", pictures[0])
           .attach("pictures", pictures[1])
           .expect(401)
@@ -42,16 +57,70 @@ describe("art routes", () => {
     })
 
     context("when user is verified", () => {
-      it.skip("should create art", async () => {
-        await request.post("/sessions").send(user)
-
-        await request
+      it("should create art", async () => {
+        const res = await request
           .post("/arts")
           .field("title", "hello")
+          .field("price", "42")
           .field("description", "blah blah #foo @bar")
           .attach("pictures", pictures[0])
           .attach("pictures", pictures[1])
           .expect(201)
+
+        art = res.body
+
+        assert(art.price === 42)
+      })
+    })
+
+    context("when the art has missing pictures upload", () => {
+      it("should reject", async () => {
+        await request
+          .post("/arts")
+          .field("title", "hello")
+          .expect(400)
+      })
+    })
+
+    context("when the pictures are attached to the wrong field", () => {
+      it("should reject", async () => {
+        await request
+          .post("/arts")
+          .field("title", "hello")
+          .attach("picture", pictures[0])
+          .expect(400)
+      })
+    })
+  })
+
+  describe("PATCH /arts/:artId", () => {
+    it("should update the art", async () => {
+      await request
+        .patch(`/arts/${arts[0].id}`)
+        .send({ description: "changed!" })
+        .expect(200)
+    })
+
+    it("should not allow users to re-upload photos", async () => {
+      await request
+        .patch(`/arts/${arts[0].id}`)
+        .attach("pictures", pictures[3])
+        .expect(400)
+    })
+  })
+
+  describe("DELETE /arts/:artId", () => {
+    context("when the art belongs to the user", () => {
+      it("should delete the art", async () => {
+        await request.delete(`/arts/${art.id}`).expect(204)
+      })
+    })
+
+    context("when the art does not belong to the user", () => {
+      it("should return 404", async () => {
+        await request.post("/sessions").send(users[1])
+
+        await request.delete(`/arts/${arts[0].id}`).expect(404)
       })
     })
   })

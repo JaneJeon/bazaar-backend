@@ -2,7 +2,6 @@ const session = require("supertest-session")
 const app = require("../../app")
 const request = session(app)
 const { users } = require("../../seeds/0-users")
-const pick = require("lodash/pick")
 
 exports.users = users
 
@@ -11,7 +10,7 @@ describe("session routes", () => {
     it.skip("should sign in", async () => {
       await request
         .post("/sessions")
-        .send(pick(users[0], ["username", "password"]))
+        .send(users[0])
         .expect(201)
     })
 

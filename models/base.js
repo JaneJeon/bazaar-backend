@@ -2,6 +2,7 @@ const { Model, snakeCaseMappers } = require("objection")
 const { DbErrors } = require("objection-db-errors")
 const { default: visibility } = require("objection-visibility")
 const tableName = require("@xyluet/objection-table-name")()
+const isEmpty = require("lodash/isEmpty")
 const assert = require("http-assert")
 
 class BaseModel extends tableName(visibility(DbErrors(Model))) {
@@ -19,14 +20,17 @@ class BaseModel extends tableName(visibility(DbErrors(Model))) {
 
   // some fields shouldn't be manually set
   static filterPost(body) {
+    assert(!isEmpty(body), 400)
+
     this.reservedPostFields.forEach(field =>
       assert(body[field] === undefined, 400)
     )
   }
 
   static filterPatch(body) {
-    const fields = this.reservedPatchFields || this.reservedPostFields
+    assert(!isEmpty(body), 400)
 
+    const fields = this.reservedPatchFields || this.reservedPostFields
     fields.forEach(field => assert(body[field] === undefined, 400))
   }
 
