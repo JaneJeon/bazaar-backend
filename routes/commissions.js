@@ -49,7 +49,7 @@ module.exports = Router()
   .post("/", async (req, res) => {
     Commission.filterPost(req.body)
 
-    const commission = await req.user.insert("commissions", req.body)
+    const commission = await req.user.insert("commissionsAsBuyer", req.body)
 
     res.status(201).send(commission)
   })
