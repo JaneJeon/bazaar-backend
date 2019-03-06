@@ -1,7 +1,6 @@
 const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art } = require("../models")
-const assert = require("assert")
 
 module.exports = Router()
   // the "discover" page
@@ -11,7 +10,7 @@ module.exports = Router()
 
     res.send(arts)
   })
-  .get("/:artId", async (req, res) => {
+  .get("/:artId(\\d+)", async (req, res) => {
     const art = await Art.findById(req.params.artId)
 
     res.send(art)
@@ -29,7 +28,7 @@ module.exports = Router()
       res.status(201).send(art)
     }
   )
-  .patch("/:artId", async (req, res) => {
+  .patch("/:artId(\\d+)", async (req, res) => {
     Art.filterPatch(req.body)
 
     let art = await req.user.findById("arts", req.params.artId)
@@ -37,7 +36,7 @@ module.exports = Router()
 
     res.send(art)
   })
-  .delete("/:artId", async (req, res) => {
+  .delete("/:artId(\\d+)", async (req, res) => {
     const art = await req.user.findById("arts", req.params.artId)
     await art.$query().delete()
 

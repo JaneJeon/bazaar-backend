@@ -36,7 +36,7 @@ module.exports = Router()
 
     res.send(negotiations)
   })
-  .get("/:artistId", async (req, res) => {
+  .get("/:artistId(\\w+)", async (req, res) => {
     const negotiations = await req.commission
       .$relatedQuery("negotiations")
       .where("artist_id", req.params.artistId)
@@ -53,7 +53,7 @@ module.exports = Router()
 
     res.status(201).send(negotiations)
   })
-  .patch("/:artistId", async (req, res) => {
+  .patch("/:artistId(\\w+)", async (req, res) => {
     Negotiation.filterPatch(req.body)
 
     const negotiations = await transaction(Negotiation.knex(), async trx => {

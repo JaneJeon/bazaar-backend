@@ -6,19 +6,19 @@ const upload = require("../config/multer")
 
 module.exports = Router()
   // user info
-  .get("/:userId", async (req, res) => {
+  .get("/:userId(\\w+)", async (req, res) => {
     const user = await User.findByUserId(req.params.userId, req.user)
 
     res.send(user)
   })
-  .get("/:userId/arts", async (req, res) => {
+  .get("/:userId(\\w+)/arts", async (req, res) => {
     const user = await User.findByUserId(req.params.userId, req.user)
     const arts = await user.paginate("arts", req.query.after)
 
     res.send(arts)
   })
   // a user's public commission listing
-  .get("/:userId/commissions", async (req, res) => {
+  .get("/:userId(\\w+)/commissions", async (req, res) => {
     const user = await User.findByUserId(req.params.userId, req.user)
     const commissions = await user
       .$relatedQuery("commissionsAsBuyer")

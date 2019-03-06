@@ -16,7 +16,7 @@ module.exports = Router()
 
     res.send(commissions)
   })
-  .get("/:commissionId", async (req, res) => {
+  .get("/:commissionId(\\d+)", async (req, res) => {
     const commission = await Commission.findById(req.params.commissionId)
 
     res.send(commission)
@@ -54,7 +54,7 @@ module.exports = Router()
     res.status(201).send(commission)
   })
   // change commission details, only available to the buyer
-  .patch("/:commissionId", async (req, res) => {
+  .patch("/:commissionId(\\d+)", async (req, res) => {
     Commission.filterPatch(req.body)
 
     let commission = await req.user.findById(
@@ -67,7 +67,7 @@ module.exports = Router()
   })
   // change commission status, only available to the artist
   // accept is set from notifications
-  .patch("/:commissionId/reject", async (req, res) => {
+  .patch("/:commissionId(\\d+)/reject", async (req, res) => {
     let commission = await req.user.findById(
       "commissionsAsArtist",
       req.params.commissionId
@@ -77,7 +77,7 @@ module.exports = Router()
     res.send(commission)
   })
   // TODO: completed, cancelled
-  .delete("/:commissionId", async (req, res) => {
+  .delete("/:commissionId(\\d+)", async (req, res) => {
     const commission = await req.user.findById(
       "commissionsAsBuyer",
       req.params.commissionId
