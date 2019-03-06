@@ -1,8 +1,48 @@
-const { agent } = require("supertest")
+const session = require("supertest-session")
 const app = require("../../app")
-const request = agent(app)
-const { user } = require("./sessions")
+const request = session(app)
+const { users } = require("./sessions")
+const redis = require("../../lib/redis")
+const assert = require("assert")
 
 describe("commission routes", () => {
-  // todo
+  before(async () => {
+    await request.post("/sessions").send(users[0])
+  })
+
+  describe("GET /commissions", () => {
+    it("should return all open commissions")
+  })
+
+  describe("GET /commissions/:commissionId", () => {
+    it("should fetch commission by id")
+  })
+
+  describe("GET /users/:userId/commissions", () => {
+    it("should return a user's public commissions")
+  })
+
+  describe("GET /commissions/byMe", () => {
+    it("should return commissions made by the user")
+  })
+
+  describe("GET /commissions/forMe", () => {
+    it("should return commissions requesting the user")
+  })
+
+  describe("POST /commissions", () => {
+    it("should create a commission")
+  })
+
+  describe("PATCH /commissions/:commissionId", () => {
+    it("should allow the buyer to edit a commission")
+  })
+
+  describe("PATCH /commissions/:commissionId/reject", () => {
+    it("should allow the artist to reject a commission requesting them")
+  })
+
+  describe("DELETE /commissions/:commissionId", () => {
+    it("should allow the buyer to delete a commission")
+  })
 })
