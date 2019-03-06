@@ -1,47 +1,37 @@
-# API
-## Parameters
+# API Documentation
+## REST API
+A REST API exposes resources over various endpoints. This one exposes the resources `User`, `Art`, `Commission`, `Negotiation`, and `Chat` over HTTP endpoints.
 
-All parameters should be sent over as JSON unless including media (e.g. picture), in which case it is to be sent over as a multi-part form.
+A resource can be manipulated via the combination of an HTTP *verb* (`GET`/`POST`/`PATCH`/`DELETE`) and an endpoint (e.g. `/arts/:artId`).
 
-In addition, when cookies are required, use axios to send the cookie over as follows:
+In the endpoints, anything of form `:var` is a URL parameter, and they should always be non-empty. For example, if a route calls for `/foo/:bar`, sending a request to `/foo/baz` is ok whereas `/foo` is not.
 
-```js
-// for a single request
-axios.get('/foo', { withCredentials: true })
-axios.post('/bar', data, { withCredentials: true })
-```
+`GET` methods are *read-only*, meaning they cannot change any resources. Rather, `GET` methods return *resources* specified by the endpoint (e.g. `GET /arts` return an array of `Art` objects whereas `GET /arts/:artId` returns the `Art` object with the specified `:artId`, if any exists).
 
-The above pattern gets more complicated if you want to include credentials *by default* and get server-side error messages back (Google is your friend).
+`POST` methods *create* resources with their request body, which can be either JSON or a multi-part form data. Use JSON unless if you want to attach a file. For example, `POST /users` creates a user. In the response to a `POST` request, the API will return the created resource.
 
-Additionally, we expect some parameters to be checked before they're submitted to the backend!
+`PATCH` methods *update* resources. The request body specifies what and how exactly to update the resource (e.g. `{ name: "Joe Shmoe" }` changes the name, and `{ avatar: null }` unsets avatar). In the response to a `PATCH` request, the API will return the updated resource.
 
-For users:
+`DELETE` methods *delete* resources. To do so, you would need to specify the resource to be deleted via the endpoint (e.g. `DELETE /arts/1`).
 
-- `username`: must be between 1 and 15 characters long, can only contain `\w` (i.e. letters, numbers, `_`, `-`)
-- `password`: must be at least 9 characters long
-- `email`: must be a valid email format
-- `name`: at max 30 characters long
-- `location`: at max 50 characters long
-- `bio`: at max 140 characters long
+Some endpoints will require that a user be logged in. In that case, you must send over a valid cookie (which are generated for you after you log in or sign up) for the request to be valid.
 
-For arts:
+And finally, each resource has some degree of access control - while some resources may allow them to be read publicly, some only allow a few people to even access the resource. In general, only the creator has read/write access.
 
-- `title`: must be between 1 and 140 characters long
-- `description`: can be at most 500 characters long
-- `pictures`: array of at most 4 pictures (each picture is at max 100MB in size)
-- `price`: at least 0. We're not bothering with units atm
-- `medium`: at most 30 characters long
+## Resources
+You can see what each resource *looks like* by going to the `models` folders and looking at the class representing the resource. For example, to look at what a `User` looks like, you can look for `static get jsonSchema()` in `models/user.js`.
 
-See `.env.defaults` of the backend repo for these values.
+The actual `jsonSchema` should be trivial to understand, but if you're unsure what some of the attribute-specific keywords mean (such as the `pattern: "^\\w+$"`), please see [here](https://json-schema.org/understanding-json-schema/reference/type.html). For the environment variables (e.g. `process.env.MIN_USERNAME_LENGTH`), please see `.env.defaults`.
 
-Finally, anything of form `:var` is a URL parameter, and they should always be non-empty. For example, if a route calls for `/foo/:bar`, sending a request to `/foo/baz` is ok whereas `/foo` is not.
+Ideally, you would do front-end validation based on these `jsonSchema` specifications before you send over any data to the backend.
+
+However, not all attributes listed in the `jsonSchema` are meant to be set by the frontend. For example, each resource has the fields `createdAt` and `updatedAt` that is set automatically each time you interact with the resource.
+
+To see which fields you can't set via `POST` requests (but remember - you *can* read all attributes of any resource that the API returns, minus `password`), see `reservedPostFields` in the resource class.
+
+To see which fields you can't set via `PATCH` requests, check the property `reservedPatchFields` in the resource class, or if it doesn't exist, the `reservedPostFields` property.
 
 ## Routes
-
-This API uses a REST design - that means each endpoint exposes a single "resource" - users, pictures, etc. When a 
-request is successful, it returns a status code <300, and when there's resource(s) to return, it returns a JSON 
-object representing the resource(s) that you can access via `response.data` when using `axios`.
-
 - [POST `/sessions`](#login)
 - [DELETE `/sessions`](#logout)
 - [GET `/users/:userId`](#me)
@@ -145,21 +135,19 @@ You are required to pass user information (i.e. user must be logged in and you g
 ### <a name="negart"></a>GET `/negotiations/:artistName`
 
 
-
 ### <a name="negpost"></a>POST `/negotiations`
 
 
 ### <a name="negpatch"></a>PATCH `/negotiations/:artistName`
 
-
-
 ## Errors
-
-The API, on error, will return a status code (`error.response.status`) and an error message (`error.response.data`). The error message should be relayed to the user.
+The API, on error, will return a JSON with the status code, the error name and the message. The error message should be relayed to the user.
 
 When a request is malformed (e.g. wrong/missing parameters), returns a 400 status code.
 
-When a route and/or a resource is not found, returns a 404 status code.
+When a request isn't authenticated (i.e. missing cookie), returns a 401.
+
+When a route and/or a resource is not found, returns a 404 status code. This can also happen when a resource does exist but the requester does not have access to it.
 
 When there was a conflict in one of the parameters (e.g. username/email is already taken), returns a 409 status code.
 
