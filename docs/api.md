@@ -89,6 +89,9 @@ e.g. id vs. username
 - [GET `/commissions/:commissionId/negotiations/:artistId`](#getccna)
 - [PATCH `/commissions/:commissionId/negotiations/:artistId`](#patchccna)
 
+- [GET `/commissions/:commissionId/negotiations/:artistId/chats`](#getccnac)
+- [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
+
 ### <a name="posts"></a>POST `/sessions`
 This endpoint is used to login existing users. Params `username` and `password` are expected. On success, returns status code 201 with a cookie. Also returns an instance of the user object.
 
@@ -170,3 +173,7 @@ Get a single commission by `id`
 ### <a name="getccna"></a>GET `/commissions/:commissionId/negotiations/:artistId`
 
 ### <a name="patchccna"></a>PATCH `/commissions/:commissionId/negotiations/:artistId`
+
+### <a name="getccnac"></a>GET `/commissions/:commissionId/negotiations/:artistId/chats`
+
+### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
