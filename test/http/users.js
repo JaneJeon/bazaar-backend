@@ -6,7 +6,6 @@ const request = session(app)
 const assert = require("assert")
 const tempToken = require("../../lib/temp-token")
 const { User } = require("../../models")
-const pick = require("lodash/pick")
 
 describe("user routes", () => {
   const testUser = {

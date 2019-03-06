@@ -2,6 +2,16 @@ const n = 3
 const { User } = require("../models")
 const faker = require("faker")
 
+const users = []
+for (let i = 0; i < n; i++)
+  users.push({
+    username: faker.random.alphaNumeric(15),
+    password: faker.internet.password(10),
+    email: faker.internet.email()
+  })
+
+exports.users = users
+
 exports.seed = async knex => {
   await knex("chats").del()
   await knex("negotiations").del()
@@ -9,16 +19,5 @@ exports.seed = async knex => {
   await knex("arts").del()
   await knex("users").del()
 
-  const promises = []
-  for (let i = 0; i < n; i++) {
-    promises.push(
-      User.query().insert({
-        username: faker.random.alphaNumeric(15),
-        password: faker.internet.password(9),
-        email: faker.internet.email()
-      })
-    )
-  }
-
-  await Promise.all(promises)
+  await User.query().insert(users)
 }
