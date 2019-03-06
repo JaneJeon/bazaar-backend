@@ -4,20 +4,22 @@ const session = require("supertest-session")
 const app = require("../../app")
 const request = session(app)
 const assert = require("assert")
-const redis = require("../../lib/redis")
-const tempToken = require("../../models/temp-token")
+const tempToken = require("../../lib/temp-token")
 const { User } = require("../../models")
+const pick = require("lodash/pick")
 
 describe("user routes", () => {
-  const testUser = { username: "Ricky_Cranium", password: "123456789" }
+  const testUser = {
+    username: "Ricky_Cranium",
+    password: "123456789",
+    email: "success@simulator.amazonses.com"
+  }
 
   describe("POST /users", () => {
     it("should sign up", async () => {
       const res = await request
         .post("/users")
-        .send(
-          Object.assign({ email: "success@simulator.amazonses.com" }, testUser)
-        )
+        .send(testUser)
         .expect(201)
 
       assert(res.body.verified === false)
@@ -51,8 +53,7 @@ describe("user routes", () => {
     let token
 
     before(async () => {
-      const [key] = await redis.keys("verify:*")
-      token = key.substr("verify:".length)
+      token = await tempToken.findOne("verify")
     })
 
     it("should verify user given the right token", async () => {
@@ -72,16 +73,56 @@ describe("user routes", () => {
 
   describe("POST /users/reset", () => {
     it("should send password reset email", async () => {
-      // TODO
+      await request
+        .post("/users/reset")
+        .send({ email: testUser.email })
+        .expect(200)
+
+      const token = await tempToken.findOne("reset")
+
+      assert(token)
     })
   })
 
   describe("PATCH /users/reset/:token", () => {
-    // TODO
+    let token
+
+    before(async () => {
+      token = await tempToken.findOne("reset")
+    })
+
+    it("should reset password given the right token", async () => {
+      await request
+        .patch(`/users/reset/${token}`)
+        .send({ password: "987654321" })
+        .expect(200)
+    })
+
+    it("should reject token doesn't match any user", async () => {
+      await request.patch(`/users/reset/${token}1`).expect(404)
+    })
+
+    it("should not allow a token to be used twice", async () => {
+      const result = await tempToken.fetch("reset", token)
+
+      assert(result === null)
+    })
   })
 
   describe("PATCH /users", () => {
-    // TODO
+    it("should update user details when logged in", async () => {
+      await request
+        .patch("/users")
+        .send({ bio: "Just some dude" })
+        .expect(200)
+    })
+
+    it("should not allow users to update username", async () => {
+      await request
+        .patch("/users")
+        .send({ username: "xXh4X0rzXx" })
+        .expect(400)
+    })
   })
 
   describe("DELETE /users", () => {

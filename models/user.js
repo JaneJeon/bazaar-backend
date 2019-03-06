@@ -96,7 +96,7 @@ class User extends password(softDelete(BaseModel)) {
       ? await image.upload(this.avatar, "AVATAR", "cover")
       : `https://gravatar.com/avatar/${createHash("md5")
           .update(this.email || opt.old.email)
-          .digest("hex")}?s=${process.env.AVATAR_SIZE}&d=retro`
+          .digest("hex")}?s=${process.env.AVATAR_MAX_WIDTH}&d=retro`
   }
 
   async $beforeInsert(queryContext) {

@@ -36,7 +36,7 @@ module.exports = Router()
         const obj = { userId: req.user.id, message }
         const chat = await req.negotiation.insert("chats", obj)
 
-        await pub.publish("chats", `${req.path}:${JSON.stringify(obj)}`)
+        await pub.publish("chats", `${req.path}:${JSON.stringify(chat)}`)
       } catch (err) {
         log.error(err)
       }

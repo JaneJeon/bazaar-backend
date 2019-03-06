@@ -1,6 +1,6 @@
 const { Router } = require("express")
 const { User } = require("../models")
-const tempToken = require("../models/temp-token")
+const tempToken = require("../lib/temp-token")
 const assert = require("http-assert")
 const upload = require("../config/multer")
 
@@ -56,9 +56,10 @@ module.exports = Router()
       url: `${process.env.FRONTEND_URL}/users/reset/${token}`
     })
   })
-  .use((req, res, next) => next(req.ensureVerified()))
+  .use((req, res, next) => next(assert(req.user, 401)))
   .patch("/", upload.single("avatar"), async (req, res) => {
-    User.filterPatch(req)
+    User.filterPatch(req.body)
+    console.log("HERE", req.body)
     if (this.file) req.body.avatar = this.file
 
     const user = await req.user.patch(req.body)
@@ -87,7 +88,7 @@ module.exports = Router()
     const id = await tempToken.fetch("reset", req.params.token)
     assert(id == req.user.id, 404)
 
-    const user = await req.user.patch({ password })
+    const user = await req.user.patch({ password: req.body.password })
 
     res.send(user)
 

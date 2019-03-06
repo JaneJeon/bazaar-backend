@@ -18,13 +18,13 @@ class BaseModel extends tableName(visibility(DbErrors(Model))) {
   }
 
   // some fields shouldn't be manually set
-  static async filterPost(body) {
+  static filterPost(body) {
     this.reservedPostFields.forEach(field =>
       assert(body[field] === undefined, 400)
     )
   }
 
-  static async filterPatch(body) {
+  static filterPatch(body) {
     const fields = this.reservedPatchFields || this.reservedPostFields
 
     fields.forEach(field => assert(body[field] === undefined, 400))
@@ -82,7 +82,6 @@ class BaseModel extends tableName(visibility(DbErrors(Model))) {
     return this.$query(trx)
       .patch(obj)
       .returning("*")
-      .first()
   }
 }
 
