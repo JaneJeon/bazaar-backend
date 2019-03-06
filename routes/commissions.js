@@ -79,7 +79,7 @@ module.exports = Router()
   // TODO: completed, cancelled
   .delete("/:commissionId", async (req, res) => {
     const commission = await req.user.findById(
-      "commissions",
+      "commissionsAsBuyer",
       req.params.commissionId
     )
     await commission.$query().delete()
