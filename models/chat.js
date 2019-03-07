@@ -20,10 +20,6 @@ class Chat extends BaseModel {
   static get hidden() {
     return ["dummyField"]
   }
-
-  static get autoFields() {
-    return ["userId"]
-  }
 }
 
 module.exports = Chat
