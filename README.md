@@ -1,6 +1,6 @@
-# Bazaar Back End
+# Bazaar backend
 
-This is a backend service that will support the Bazaar client. Please refer to the frontent repo @ https://github.com/dartmouth-cs98/19w-bazaar-frontend. There's no screenshots since this is a pure API (no server-side view 
+This is a REST API that will support the Bazaar client. Please refer to the frontent repo @ https://github.com/dartmouth-cs98/19w-bazaar-frontend. There's no screenshots since this is a pure API (no server-side view 
 rendering).
 
 ## Architecture
