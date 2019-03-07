@@ -5,14 +5,7 @@ rendering).
 
 ## Architecture
 
-The frontend will interact with the backend via a REST API. This API is created by `express`, with user session 
-management done by 
-`cookie-session` + `passport` + `passport-local`. We have a basic rate limiter set up (`express-rate-limit` + 
-`rate-limit-redis`). Our models are managed by the `Objection` ORM and we use `Knex` to migrate our `Postgres` database. We're 
-using `argon2` for password hashing and `Amazon SES` for sending emails (and `jsonwebtoken` to authenticate users clicking 
-email links). Major blobs 
-(mostly pictures) are to be stored 
-in `S3` (via `aws-sdk`).
+The frontend will interact with the backend via a REST API. This API is created by `express`, with user session management done by `cookie-session` + `passport` + `passport-local`. We have a basic rate limiter set up (`express-rate-limit` + `rate-limit-redis`). Our models are managed by the `Objection` ORM and we use `Knex` to migrate our `Postgres` database. We're using `argon2` for password hashing, `Amazon SES` for sending emails, and `ioredis` for storing reset/verify tokens in `Redis`. Pictures are resized by `sharp` and are stored in `S3` (via `aws-sdk`). For our websocket endpoint, we're using `express-ws`.
 
 ## Setup (this is to be run every time the application updates)
 
