@@ -10,7 +10,7 @@ In the endpoints, anything of form `:var` is a URL parameter, and they should al
 
 In general, any `GET` request that returns a list will support paginating via specifying the query parameter `after`. For example, `GET /arts` will return the first 15 results, and suppose the `id` for the last item is 42. Then, `GET /arts?after=15` would return the next 15 results, and so on.
 
-`POST` methods *create* resources with their request body, which can be either JSON or a multi-part form data. Use JSON unless if you want to attach a file. For example, `POST /users` creates a user. In the response to a `POST` request, the API will return the created resource.
+`POST` methods *create* resources with their request body, which can be either JSON or a multi-part form data. For example, `POST /users` creates a user. Use JSON unless if the route supports uploading a file (e.g. `POST /users` supports uploading avatars, so you must use multi-part even when you aren't uploading an avatar). In the response to a `POST` request, the API will return the created resource.
 
 `PATCH` methods *update* resources. The request body specifies what and how exactly to update the resource (e.g. `{ name: "Joe Shmoe" }` changes the name, and `{ avatar: null }` unsets avatar). In the response to a `PATCH` request, the API will return the updated resource.
 
@@ -54,6 +54,7 @@ To see which fields you can't set via `PATCH` requests, check the property `rese
 The user's `id` is simply its `username` lowercased to guarantee uniqueness. Neither the `id` and `username` can be changed after being set, so it allows the frontend to link to a user by name, rather than some random number.
 
 A user's `avatar` is a link that defaults to the gravatar specified by their `email` akin to this:
+
 <img src="https://gravatar.com/avatar/870c9fb319dc8955c1ca0fcc68592f0d?s=500&d=retro"></img>
 
 However, a user may choose to upload an avatar, in which case their `avatar` will be replaced by the link to the picture they uploaded. When a user deletes their `avatar`, it will once again default to the gravatar.
@@ -77,9 +78,10 @@ Once an `artistId` is set, you cannot change it or delete it again.
 The `deadline` is a date (of format `YYYY-MM-DD`), not a datetime/timestamp, and it is specified in the UTC timezone.
 
 ### Negotiation
-A commission can have multiple ongoing negotiations with different artists. When an artist sends the buyer an offer, two forms based on the commission details are generated - they can edit their own forms (i.e. 
+A commission can have multiple ongoing negotiations with different artists. When an artist makes an offer for a commission and begin the process of negotiation, both the artist and the buyer are given negotiation forms. They can edit the details of the negotiation (they can only edit their own form), and once the forms are equal they are allowed to accept the details. Once they both accept, artists may no longer make an offer for the commission, and the negotiation and the commission details are finalized and cannot be changed any more.
 
 ### Chat
+Each negotiation has a chat room in which the buyer and the artist can discuss the details of the negotiation.
 
 ## Routes
 - [POST `/sessions`](#posts)
@@ -117,86 +119,77 @@ A commission can have multiple ongoing negotiations with different artists. When
 - [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
 
 ### <a name="posts"></a>POST `/sessions`
-This endpoint is used to login existing users. Params `username` and `password` are expected. On success, returns status code 201 with a cookie. Also returns an instance of the user object.
+This endpoint is used to login existing users. Fields `username` and `password` are expected. Returns an instance of the user object.
 
 ### <a name="dels"></a>DELETE `/sessions`
-This endpoint is used to logout users who are already logged in. On success, returns status code 204.
+This endpoint is used to logout users who are already logged in.
 
 ### <a name="postu"></a>POST `/users`
-This endpoint is used to create a user. Params `username`, `email`, and `password` are expected. On success, returns status code 201 with a JSON object representing the user, which contains the fields `id`, `email`, `username`, and `verified`.
-
 Additionally, an email is sent out to the user's email asking for verification containing a link to `/users/verify/:token` when their account is created successfully.
 
 ### <a name="patchuvt"></a>PATCH `/users/verify/:token`
-When a user accesses a page of form `/users/verify/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` value) to verify the user's email address. On success, returns status code 200, at which point the user should be redirected to a login page (front-end routing).
+When a user accesses a page of form `/users/verify/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` parameter value) to verify the user's email address. No fields are expected.
 
 ### <a name="getuu"></a>GET `/users/:userId`
-Returns user information corresponding to the `userId`. One of the components that would be included in a "user profile".
 
 ### <a name="postur"></a>POST `/users/reset`
-This endpoint is used to request a password reset in case a user forgot it. Param `email` is expected. On success, returns a 200 and sends out an email with the password reset link of form `/users/reset/:token`.
+This endpoint is used to request a password reset in case a user forgot it. Field `email` is expected.
+
+On success, sends out an email with the password reset link of form `/users/reset/:token`.
 
 ### <a name="patchurt"></a>PATCH `/users/reset/:token`
-When a user accesses a page of form `/users/reset/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` value) to reset the user's password. Param `password` is expected (the new password). On success, returns a 200.
+When a user accesses a page of form `/users/reset/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` parameter value) to reset the user's password. Field `password` is expected (the new password).
 
 ### <a name="patchu"></a>PATCH `/users`
 
 ### <a name="delu"></a>DELETE `/users`
 
 ### <a name="posta"></a>POST `/arts`
-This endpoint is used to upload a picture. The request body should be sent as multi-part form data, instead of JSON. Params `title` and `picture` are expected (you are required to upload at least 1 picture), and you can optionally also pass `description` (from which hashtags are parsed), `price`, and `medium`. The `pictures` field should contain the picture file(s).
-
-Upon success, returns a 201 with a JSON object representing the user, which contains the fields `id`, `title`, `description`,  `pictures`, `price`, `tags`, and `artist_id`. The `pictures` array contain links to the pictures in the art.
-
-You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
 
 ### <a name="geta"></a>GET `/arts`
 This is the "discover page". Currently, it returns the most recent pictures in anti-chronological order.
 
-It returns a maximum of 15 pictures. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen picture (i.e. the `id` of the last object in the pictures array returned).
-
 ### <a name="getaa"></a> GET `/arts/:artId`
-Get a single art by id.
 
 ### <a name="getuua"></a>GET `/users/:userId/arts`
-Returns all of the art for a user. Also used for profile. Optionally can pass an `after` for pagination.
+Returns all of the art created by a user.
 
 ### <a name="patchaa"></a>PATCH `/arts/:artId`
 
 ### <a name="delaa"></a>DELETE `/arts/:artId`
 
 ### <a name="postc"></a>POST `/commissions`
-Create a commissions object. Required fields are `price`, `deadline`, `copyright`, `description`.  Successful posting returns a error 201 code and a JSON object representing the commission.
-
-You are required to pass user information (i.e. user must be logged in and you gotta send over a cookie) since the art created is linked to that user!
 
 ### <a name="getc"></a>GET `/commissions`
 This is the commission board. Currently, it returns the most recent commissions in anti-chronological order.
 
-It returns a maximum of 15 commissions. If you want to load more, you can include the `after` parameter indicating the `id` of the last seen commission (i.e. the `id` of the last object in the commissions array returned).
-
 ### <a name="getcc"></a>GET `/commissions/:commissionId`
-Get a single commission by `id`
 
 ### <a name="getuuc"></a>GET `/users/:userId/commissions`
-When accessing someone else's commissions (i.e. `:userId` is not the user's `id`), you get the user's public commissions that are open *and* public (i.e. they haven't specified any artist yet).
+When accessing someone else's commissions (i.e. `:userId` is not the user's `id` or you're not sending a cookie to begin with), you get the user's public commissions that are open *and* public (i.e. they haven't specified any artist yet).
 
 When accessing the user's own commissions, you can specify the query parameter `as` to display either the user's commissions as `artist` or as `buyer` (it defaults to `buyer`).
 
 ### <a name="patchcc"></a>PATCH `/commissions/:commissionId`
+This is the endpoint for *buyers* to update commission details.
 
 ### <a name="patchccr"></a>PATCH `/commissions/:commissionId/reject`
+This is the endpoint for *artists* to reject a commission. No fields are expected.
 
 ### <a name="delcc"></a>DELETE `/commissions/:commissionId`
 
 ### <a name="postccn"></a>POST `/commissions/:commissionId/negotiations`
+This is the endpoint for *artists* to make a commission offer and begin the process of negotiation. Returns two commission forms as an array (but since this counts as a "single" negotiation, the result is not paginated).
 
 ### <a name="getccn"></a>GET `/commissions/:commissionId/negotiations`
 
 ### <a name="getccna"></a>GET `/commissions/:commissionId/negotiations/:artistId`
 
 ### <a name="patchccna"></a>PATCH `/commissions/:commissionId/negotiations/:artistId`
+The buyer/artist can make edits *to their own forms* (i.e. send an object, not an array).
 
 ### <a name="getccnac"></a>GET `/commissions/:commissionId/negotiations/:artistId/chats`
+This endpoint is used to load previous chats.
 
 ### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
+This *websocket* endpoint is used to communicate live with the other party - creating chat messages and receiving *live* updates should be done through this socket.

@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { User, Commission } = require("../models")
+const { User } = require("../models")
 const tempToken = require("../lib/temp-token")
 const assert = require("http-assert")
 const upload = require("../config/multer")
