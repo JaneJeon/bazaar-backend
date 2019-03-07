@@ -1,33 +1,51 @@
 const { Router } = require("express")
-const { User } = require("../models")
+const { User, Commission } = require("../models")
 const tempToken = require("../lib/temp-token")
 const assert = require("http-assert")
 const upload = require("../config/multer")
 
 module.exports = Router()
   // user info
-  .get("/:userId(\\w+)", async (req, res) => {
+  .get("/:userId", async (req, res) => {
     const user = await User.findByUserId(req.params.userId, req.user)
 
     res.send(user)
   })
-  .get("/:userId(\\w+)/arts", async (req, res) => {
+  .get("/:userId/arts", async (req, res) => {
     const user = await User.findByUserId(req.params.userId, req.user)
     const arts = await user.paginate("arts", req.query.after)
 
     res.send(arts)
   })
-  // a user's public commission listing
-  .get("/:userId(\\w+)/commissions", async (req, res) => {
+  .get("/:userId/commissions", async (req, res) => {
     const user = await User.findByUserId(req.params.userId, req.user)
-    const commissions = await user
-      .$relatedQuery("commissionsAsBuyer")
-      .skipUndefined()
-      .where("status", "open")
-      .where("is_private", false)
-      .where("id", "<", req.query.after)
-      .orderBy("id")
-      .limit(process.env.PAGE_SIZE)
+    let commissions
+
+    if (user.id == (req.user || {}).id) {
+      // load a user's own commissions, defaulting to as=buyer
+
+      commissions = await req.user
+        .$relatedQuery(
+          req.query.as == "artist"
+            ? "commissionsAsArtist"
+            : "commissionsAsBuyer"
+        )
+        .skipUndefined()
+        .where("status", req.query.status || "open")
+        .where("id", "<", req.query.after)
+        .orderBy("id", "desc")
+        .limit(process.env.PAGE_SIZE)
+    } else {
+      // public, open commissions by the user
+      commissions = await user
+        .$relatedQuery("commissionsAsBuyer")
+        .skipUndefined()
+        .where("status", "open")
+        .where("is_private", false)
+        .where("id", "<", req.query.after)
+        .orderBy("id")
+        .limit(process.env.PAGE_SIZE)
+    }
 
     res.send(commissions)
   })

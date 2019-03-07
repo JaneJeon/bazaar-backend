@@ -8,6 +8,8 @@ In the endpoints, anything of form `:var` is a URL parameter, and they should al
 
 `GET` methods are *read-only*, meaning they cannot change any resources. Rather, `GET` methods return *resources* specified by the endpoint (e.g. `GET /arts` return an array of `Art` objects whereas `GET /arts/:artId` returns the `Art` object with the specified `:artId`, if any exists).
 
+In general, any `GET` request that returns a list will support paginating via specifying the query parameter `after`. For example, `GET /arts` will return the first 15 results, and suppose the `id` for the last item is 42. Then, `GET /arts?after=15` would return the next 15 results, and so on.
+
 `POST` methods *create* resources with their request body, which can be either JSON or a multi-part form data. Use JSON unless if you want to attach a file. For example, `POST /users` creates a user. In the response to a `POST` request, the API will return the created resource.
 
 `PATCH` methods *update* resources. The request body specifies what and how exactly to update the resource (e.g. `{ name: "Joe Shmoe" }` changes the name, and `{ avatar: null }` unsets avatar). In the response to a `PATCH` request, the API will return the updated resource.
@@ -19,13 +21,17 @@ Some endpoints will require that a user be logged in. In that case, you must sen
 And finally, each resource has some degree of access control - while some resources may allow them to be read publicly, some only allow a few people to even access the resource. In general, only the creator has read/write access.
 
 ### Errors
-The API, on error, will return a JSON with the status code, the error name and the message. The error message should be relayed to the user.
+The API, on error, will return a JSON object with the status code, the error name, and the message. The error message should be relayed to the user, and the frontend should take actions depending on the status code/error name.
 
 When a request is malformed (e.g. wrong/missing parameters), returns a 400 status code.
 
 When a request isn't authenticated (i.e. missing cookie), returns a 401.
 
 When a route and/or a resource is not found, returns a 404 status code. This can also happen when a resource does exist but the requester does not have access to it.
+
+In addition, in case of nested resources (e.g. `/users/:userId/arts`), if the parent resource specified by the id (in this case, the `:userId`) does not exist, it will throw a 404.
+
+In general, routes that specify a *single* resource will throw a 404 when not found, and routes that specify a *list* of resources will simply return an empty array when not found.
 
 When there was a conflict in one of the parameters (e.g. username/email is already taken), returns a 409 status code.
 
@@ -45,13 +51,33 @@ To see which fields you can't set via `POST` requests (but remember - you *can* 
 To see which fields you can't set via `PATCH` requests, check the property `reservedPatchFields` in the resource class, or if it doesn't exist, the `reservedPostFields` property.
 
 ### User
-e.g. id vs. username
+The user's `id` is simply its `username` lowercased to guarantee uniqueness. Neither the `id` and `username` can be changed after being set, so it allows the frontend to link to a user by name, rather than some random number.
+
+A user's `avatar` is a link that defaults to the gravatar specified by their `email` akin to this:
+<img src="https://gravatar.com/avatar/870c9fb319dc8955c1ca0fcc68592f0d?s=500&d=retro"></img>
+
+However, a user may choose to upload an avatar, in which case their `avatar` will be replaced by the link to the picture they uploaded. When a user deletes their `avatar`, it will once again default to the gravatar.
+
+For purposes of preservation, when a user deletes their account, their account is marked as `deleted` *but* their actual account resource is not deleted. This allows the frontend to distinguish between active accounts and closed accounts when displaying art, for example.
+
+And when a user is first created, the user is not `verified`, and so they cannot create art/commission/negotiation until they verify their account. The frontend should read this value and nudge the user to verify their account whenever possible.
 
 ### Art
+An art can have 1-4 `pictures` attached to it. However, the `pictures` may not be changed after upload.
+
+If the art has a `description`, `tags` will be automatically extracted from it - no need to specify the `tags` yourself!
+
+The art does have a `priceUnit`; however, for now the only possible value for this field is "USD" (and it is the default value for the field).
 
 ### Commission
+When a buyer creates a commission, they can specify an artist of their choosing. Whenever a commission specifies an artist (and `artistId` can actually be set even after the commission is created as a public commission), it will be turned into a private commission.
+
+Once an `artistId` is set, you cannot change it or delete it again.
+
+The `deadline` is a date (of format `YYYY-MM-DD`), not a datetime/timestamp, and it is specified in the UTC timezone.
 
 ### Negotiation
+A commission can have multiple ongoing negotiations with different artists. When an artist sends the buyer an offer, two forms based on the commission details are generated - they can edit their own forms (i.e. 
 
 ### Chat
 
@@ -78,8 +104,6 @@ e.g. id vs. username
 - [GET `/commissions`](#getc)
 - [GET `/commissions/:commissionId`](#getcc)
 - [GET `/users/:userId/commissions`](#getuuc)
-- [GET `/commissions/byMe`](#getcb)
-- [GET `/commissions/forMe`](#getcf)
 - [PATCH `/commissions/:commissionId`](#patchcc)
 - [PATCH `/commissions/:commissionId/reject`](#patchccr)
 - [DELETE `/commissions/:commissionId`](#delcc)
@@ -155,10 +179,9 @@ It returns a maximum of 15 commissions. If you want to load more, you can includ
 Get a single commission by `id`
 
 ### <a name="getuuc"></a>GET `/users/:userId/commissions`
+When accessing someone else's commissions (i.e. `:userId` is not the user's `id`), you get the user's public commissions that are open *and* public (i.e. they haven't specified any artist yet).
 
-### <a name="getcb"></a>GET `/commissions/byMe`
-
-### <a name="getcf"></a>GET `/commissions/forMe`
+When accessing the user's own commissions, you can specify the query parameter `as` to display either the user's commissions as `artist` or as `buyer` (it defaults to `buyer`).
 
 ### <a name="patchcc"></a>PATCH `/commissions/:commissionId`
 

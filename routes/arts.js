@@ -10,7 +10,7 @@ module.exports = Router()
 
     res.send(arts)
   })
-  .get("/:artId(\\d+)", async (req, res) => {
+  .get("/:artId", async (req, res) => {
     const art = await Art.findById(req.params.artId)
 
     res.send(art)
@@ -28,7 +28,7 @@ module.exports = Router()
       res.status(201).send(art)
     }
   )
-  .patch("/:artId(\\d+)", async (req, res) => {
+  .patch("/:artId", async (req, res) => {
     Art.filterPatch(req.body)
 
     let art = await req.user.findById("arts", req.params.artId)
@@ -36,7 +36,7 @@ module.exports = Router()
 
     res.send(art)
   })
-  .delete("/:artId(\\d+)", async (req, res) => {
+  .delete("/:artId", async (req, res) => {
     const art = await req.user.findById("arts", req.params.artId)
     await art.$query().delete()
 
