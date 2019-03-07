@@ -55,7 +55,7 @@ The user's `id` is simply its `username` lowercased to guarantee uniqueness. Nei
 
 A user's `avatar` is a link that defaults to the gravatar specified by their `email` akin to this:
 
-<img src="https://gravatar.com/avatar/870c9fb319dc8955c1ca0fcc68592f0d?s=500&d=retro"></img>
+<img src="https://gravatar.com/avatar/870c9fb319dc8955c1ca0fcc68592f0d?s=200&d=retro"></img>
 
 However, a user may choose to upload an avatar, in which case their `avatar` will be replaced by the link to the picture they uploaded. When a user deletes their `avatar`, it will once again default to the gravatar.
 
