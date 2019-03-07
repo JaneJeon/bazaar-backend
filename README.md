@@ -5,7 +5,7 @@ rendering).
 
 ## Architecture
 
-The frontend will interact with the backend via a REST API. This API is created by `express`, with user session management done by `cookie-session` + `passport` + `passport-local`. The rate limiter uses `express-rate-limit` and `rate-limit-redis`. The models are managed by the `Objection` ORM and I use `Knex` to migrate our `Postgres` database. I'm using `argon2` for password hashing, `Amazon SES` for sending emails, and `ioredis` for storing reset/verify tokens in `Redis`. Pictures are resized by `sharp` and are stored in `S3` (via `aws-sdk`). For the websocket endpoint, I'm using `express-ws`. For tests, I'm using just plain `mocha` and I'm using `CircleCI` for continuous integration.
+The frontend will interact with the backend via a REST API. This API is created by `express`, with user session management done by `cookie-session` + `passport` + `passport-local`. The rate limiter uses `express-rate-limit` and `rate-limit-redis`. The models are managed by the `Objection` ORM and I use `Knex` to migrate our `Postgres` database. I'm using `argon2` for password hashing, `Amazon SES` for sending emails, and `ioredis` for storing reset/verify tokens in `Redis`. Pictures are resized by `sharp` and are stored in `S3` (via `aws-sdk`). For the websocket endpoint, I'm using `express-ws`. For tests, I'm using just plain `mocha` and for continuous integration/agile development, I'm using `CircleCI`.
 
 ## Setup (this is to be run every time the application updates)
 
