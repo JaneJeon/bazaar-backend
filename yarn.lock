@@ -137,9 +137,9 @@
     "@types/node" "*"
 
 "@types/lodash@^4.14.121":
-  version "4.14.121"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.121.tgz#9327e20d49b95fc2bf983fc2f045b2c6effc80b9"
-  integrity sha512-ORj7IBWj13iYufXt/VXrCNMbUuCTJfhzme5kx9U/UtcIPdJYuvPDUAlHlbNhz/8lKCLy9XGIZnGrqXOtQbPGoQ==
+  version "4.14.122"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.122.tgz#3e31394c38cf1e5949fb54c1192cbc406f152c6c"
+  integrity sha512-9IdED8wU93ty8gP06ninox+42SBSJHp2IAamsSYMUY76mshRTeUsid/gtbl8ovnOwy8im41ib4cxTiIYMXGKew==
 
 "@types/mime@*":
   version "2.0.1"
@@ -159,9 +159,9 @@
     "@types/express" "*"
 
 "@types/node@*":
-  version "11.10.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.10.4.tgz#3f5fc4f0f322805f009e00ab35a2ff3d6b778e42"
-  integrity sha512-wa09itaLE8L705aXd8F80jnFpxz3Y1/KRHfKsYL2bPc0XF+wEWu8sR9n5bmeu8Ba1N9z2GRNzm/YdHcghLkLKg==
+  version "11.11.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.11.0.tgz#070e9ce7c90e727aca0e0c14e470f9a93ffe9390"
+  integrity sha512-D5Rt+HXgEywr3RQJcGlZUCTCx1qVbCZpVk3/tOOA6spLNZdGm8BU+zRgdRYDoF1pO3RuXLxADzMrF903JlQXqg==
 
 "@types/passport-local@^1.0.33":
   version "1.0.33"
@@ -214,9 +214,9 @@
     "@types/mime" "*"
 
 "@types/sharp@^0.21.2":
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/@types/sharp/-/sharp-0.21.2.tgz#7c00b73ae08419a694daea720127d4015c253802"
-  integrity sha512-HIeqSPUKbC09YAFCVEmDCM7bU/7vmw8YcssiO9lKoZXPMLyAubgYLcmjGYMz2Re6yVXA204LnUcayRfy5hUcGQ==
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/@types/sharp/-/sharp-0.21.3.tgz#82f89f99536557e397c0c46f5ea50dcc1529fe35"
+  integrity sha512-wgCw1OO/iQ3w13WVRhx1fHoo5NDHq+444wqTnKcAWA9YMj1a9stoLlfLjW1mJJkFG1aRjeKd9KYhiYOJ3H7qEg==
   dependencies:
     "@types/node" "*"
 
@@ -402,9 +402,9 @@ atob@^2.1.1:
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
 aws-sdk@^2.395.0:
-  version "2.414.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.414.0.tgz#38f43a536fc47ecd407049565737a0fb009d4cc9"
-  integrity sha512-ZJvZei479gJdp0N2MKb1I0COcowNIN5L5cllooMV0RPztrianR72SyE1gquPeT7TA37l/fVuSmYat2dh4C2GTg==
+  version "2.418.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.418.0.tgz#840c4562c28fc63e99a9195a4644d0021f5b3e35"
+  integrity sha512-15aCtqqCsiyMW+CDwo6Fq3V5jDzpgb5//aPMosL+5FQnQu65t2GiLidcIPx4fWvsYpRiE/i4enz3a0Kqtt2acQ==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -2531,11 +2531,6 @@ objection-password-argon2@^2.1.0:
   dependencies:
     argon2 "^0.20.1"
 
-objection-soft-delete@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/objection-soft-delete/-/objection-soft-delete-1.0.5.tgz#15e7f8dcc74419fec4363b29330868dd1da8a6f2"
-  integrity sha512-YgU4bTQEoZWY6xR+QwsKbiWTQsVcsGOem0pmQsILcrSW9HKf3nfjsPGfkyo1AYUy+pSbpCSx9uBvOSYOFtkMeA==
-
 objection-visibility@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/objection-visibility/-/objection-visibility-0.4.0.tgz#8ca3f02e3edc5e256efc3db24a3cf7d5225e0e92"
@@ -2730,9 +2725,9 @@ pg-types@~2.0.0:
     postgres-interval "^1.1.0"
 
 pg@^7.8.0:
-  version "7.8.1"
-  resolved "https://registry.yarnpkg.com/pg/-/pg-7.8.1.tgz#327e25411784cffe067f1cd1ba275d506e92a82b"
-  integrity sha512-m9aIrOV4mgfo+1Ze+eNoJwaWZDvpeBz8Kzwi0zzqLC+tQBsQgIuu+FGPqzyRv9HFlS7tHO1I33LKp9gP5g7U4Q==
+  version "7.8.2"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-7.8.2.tgz#d53ffcbbaa789e15e80ffec570603294d90116e8"
+  integrity sha512-5U4fjV43DnQxelkhyPdU3YfUbYVa21bNmreXRCM/gFFw09YxWaitWWITm/u0twUNF5EYOSDhkgyEAocgtpP9JQ==
   dependencies:
     buffer-writer "2.0.0"
     packet-reader "1.0.0"

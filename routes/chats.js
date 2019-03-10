@@ -25,7 +25,9 @@ module.exports = Router()
   })
   // get previous chat records
   .get("/", async (req, res) => {
-    const chats = await req.negotiation.paginate("chats", req.query.after)
+    const chats = await req.negotiation
+      .$relatedQuery("chats")
+      .paginate(req.query.after)
 
     res.send(chats)
   })
@@ -34,7 +36,7 @@ module.exports = Router()
     ws.on("message", async message => {
       try {
         const obj = { userId: req.user.id, message }
-        const chat = await req.negotiation.insert("chats", obj)
+        const chat = await req.negotiation.$relatedQuery("chats").insert(obj)
 
         await pub.publish("chats", `${req.path}:${JSON.stringify(chat)}`)
       } catch (err) {

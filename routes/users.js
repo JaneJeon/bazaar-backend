@@ -7,18 +7,18 @@ const upload = require("../config/multer")
 module.exports = Router()
   // user info
   .get("/:userId", async (req, res) => {
-    const user = await User.findByUserId(req.params.userId, req.user)
+    const user = await User.query().findById(req.params.userId, req.user)
 
     res.send(user)
   })
   .get("/:userId/arts", async (req, res) => {
-    const user = await User.findByUserId(req.params.userId, req.user)
-    const arts = await user.paginate("arts", req.query.after)
+    const user = await User.query().findById(req.params.userId, req.user)
+    const arts = await user.$relatedQuery("arts").paginate(req.query.after)
 
     res.send(arts)
   })
   .get("/:userId/commissions", async (req, res) => {
-    const user = await User.findByUserId(req.params.userId, req.user)
+    const user = await User.query().findById(req.params.userId, req.user)
     let commissions
 
     if (user.id == (req.user || {}).id) {
@@ -30,21 +30,15 @@ module.exports = Router()
             ? "commissionsAsArtist"
             : "commissionsAsBuyer"
         )
-        .skipUndefined()
         .where("status", req.query.status || "open")
-        .where("id", "<", req.query.after)
-        .orderBy("id", "desc")
-        .limit(process.env.PAGE_SIZE)
+        .paginate(req.query.after)
     } else {
       // public, open commissions by the user
       commissions = await user
         .$relatedQuery("commissionsAsBuyer")
-        .skipUndefined()
         .where("status", "open")
         .where("is_private", false)
-        .where("id", "<", req.query.after)
-        .orderBy("id")
-        .limit(process.env.PAGE_SIZE)
+        .paginate(req.query.after)
     }
 
     res.send(commissions)
@@ -53,7 +47,7 @@ module.exports = Router()
     User.filterPost(req.body)
     if (this.file) req.body.avatar = this.file
 
-    const user = await User.insert(req.body)
+    const user = await User.query().insert(req.body)
     const token = await tempToken.generate("verify", user.id, user.id)
 
     req.login(user, () => res.status(201).send(req.user))
@@ -65,7 +59,7 @@ module.exports = Router()
   })
   // password reset when user forgets their password while logging in
   .post("/reset", async (req, res) => {
-    const user = await User.findByEmail(req.body.email)
+    const user = await User.query().findByEmail(req.body.email)
     const token = await tempToken.generate("reset", user.id, user.id)
 
     res.end()
@@ -80,7 +74,7 @@ module.exports = Router()
     console.log("HERE", req.body)
     if (this.file) req.body.avatar = this.file
 
-    const user = await req.user.patch(req.body)
+    const user = await req.user.$query().patch(req.body)
 
     res.send(user)
 
@@ -96,7 +90,7 @@ module.exports = Router()
     const id = await tempToken.fetch("verify", req.params.token)
     assert(id == req.user.id, 404)
 
-    const user = await req.user.patch({ verified: true })
+    const user = await req.user.$query().patch({ verified: true })
 
     res.send(user)
 
@@ -106,14 +100,14 @@ module.exports = Router()
     const id = await tempToken.fetch("reset", req.params.token)
     assert(id == req.user.id, 404)
 
-    const user = await req.user.patch({ password: req.body.password })
+    const user = await req.user.$query().patch({ password: req.body.password })
 
     res.send(user)
 
     await tempToken.consume("reset", id)
   })
   .delete("/", async (req, res) => {
-    await req.user.$query().delete()
+    await req.user.$query().patch({ deleted: true })
 
     req.session = null
     res.sendStatus(204)
