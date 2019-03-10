@@ -1,13 +1,13 @@
 const BaseModel = require("./base")
 const password = require("objection-password-argon2")()
-const softDelete = require("objection-soft-delete")()
+const { default: visibility } = require("objection-visibility")
 const { createHash } = require("crypto")
 const normalize = require("normalize-email")
 const text = require("../lib/text")
 const image = require("../lib/image")
 const ses = require("../lib/ses")
 
-class User extends password(softDelete(BaseModel)) {
+class User extends visibility(password(BaseModel)) {
   static get jsonSchema() {
     return {
       type: "object",
@@ -55,8 +55,7 @@ class User extends password(softDelete(BaseModel)) {
         join: {
           from: "users.id",
           to: "commissions.buyer_id"
-        },
-        filter: { deleted: false }
+        }
       },
       commissionsAsArtist: {
         relation: BaseModel.HasManyRelation,
@@ -109,15 +108,16 @@ class User extends password(softDelete(BaseModel)) {
     await this.processInput(opt)
   }
 
-  static async findByEmail(email) {
-    return this.query()
-      .findOne({ email: normalize(email) })
-      .whereNotDeleted()
-      .throwIfNotFound()
-  }
+  static get QueryBuilder() {
+    return class extends super.QueryBuilder {
+      findById(id, self) {
+        return self && self.id == id ? self : super.findById(id)
+      }
 
-  static async findByUserId(userId, self) {
-    return self && self.id == userId ? self : this.findById(userId)
+      findByEmail(email) {
+        return this.findOne({ email: normalize(email) }).throwIfNotFound()
+      }
+    }
   }
 
   async sendEmail(Template, data) {

@@ -1,12 +1,11 @@
 const BaseModel = require("./base")
-const softDelete = require("objection-soft-delete")()
 const text = require("../lib/text")
 const assert = require("http-assert")
 const pickBy = require("lodash/pickBy")
 const pick = require("lodash/pick")
 const isEqual = require("lodash/isEqual")
 
-class Commission extends softDelete(BaseModel) {
+class Commission extends BaseModel {
   static get jsonSchema() {
     return {
       type: "object",
@@ -97,7 +96,7 @@ class Commission extends softDelete(BaseModel) {
     // YYYY-MM-DD
     base.deadline = this.deadline.toISOString().substr(0, 10)
 
-    return this.insert("negotiations", [
+    return this.$relatedQuery("negotiations").insert([
       // auto-accept for the buyer
       Object.assign({ artistId, isArtist: false, accepted: true }, base),
       Object.assign({ artistId, isArtist: true }, base)
@@ -129,7 +128,7 @@ class Commission extends softDelete(BaseModel) {
     assert(!formsAreEqual, 405, "Cannot accept while the forms are different")
 
     // do the actual update
-    negotiations[idx] = await negotiations[idx].patch(changes, trx)
+    negotiations[idx] = await negotiations[idx].$query(trx).patch(changes)
 
     forms[idx] = pick(negotiations[idx], Commission.negotiationFields)
     const newFormsAreEqual = isEqual(forms[0], forms[1])
@@ -139,10 +138,9 @@ class Commission extends softDelete(BaseModel) {
     if (newForms[0].accepted && newForms[1].accepted && newFormsAreEqual)
       [negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
-          .patch({ finalized: true })
           .where("artist_id", artistId)
-          .returning("*"),
-        this.patch({ artistId }, trx)
+          .patch({ finalized: true }),
+        this.$query(trx).patch({ artistId })
       ])
 
     return negotiations

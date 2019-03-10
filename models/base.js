@@ -1,11 +1,10 @@
 const { Model, snakeCaseMappers } = require("objection")
 const { DbErrors } = require("objection-db-errors")
-const { default: visibility } = require("objection-visibility")
 const tableName = require("@xyluet/objection-table-name")()
 const isEmpty = require("lodash/isEmpty")
 const assert = require("http-assert")
 
-class BaseModel extends tableName(visibility(DbErrors(Model))) {
+class BaseModel extends tableName(DbErrors(Model)) {
   static get columnNameMappers() {
     return snakeCaseMappers()
   }
@@ -15,6 +14,10 @@ class BaseModel extends tableName(visibility(DbErrors(Model))) {
   }
 
   static get reservedPostFields() {
+    return []
+  }
+
+  static get reservedPatchFields() {
     return []
   }
 
@@ -34,58 +37,34 @@ class BaseModel extends tableName(visibility(DbErrors(Model))) {
     fields.forEach(field => assert(body[field] === undefined, 400))
   }
 
-  static get isSoftDelete() {
-    return this.namedFilters && this.namedFilters.hasOwnProperty("deleted")
+  static get pageSize() {
+    return process.env.PAGE_SIZE || 15
   }
 
-  static async findById(id, trx) {
-    let q = this.query(trx).findById(id)
-    if (this.isSoftDelete) q = q.whereNotDeleted()
-    return q.throwIfNotFound()
-  }
+  static get QueryBuilder() {
+    return class extends Model.QueryBuilder {
+      findById(id) {
+        return super.findById(id).throwIfNotFound()
+      }
 
-  // not bothering with the whole soft-delete bullshit since it only
-  // applies to the current class, not the referenced one
-  async findById(ref, id, trx) {
-    return this.$relatedQuery(ref, trx)
-      .findById(id)
-      .throwIfNotFound()
-  }
+      paginate(after, sortField = "id") {
+        return this.skipUndefined()
+          .where(sortField, "<", after)
+          .orderBy(sortField, "desc")
+          .limit(this.modelClass().pageSize)
+      }
 
-  static async paginate(after, sortField = "id", trx) {
-    let q = this.query(trx)
-      .skipUndefined()
-      .where(sortField, "<", after)
-    if (this.isSoftDelete) q = q.whereNotDeleted()
-    return q.orderBy(sortField, "desc").limit(process.env.PAGE_SIZE)
-  }
+      insert(obj) {
+        let q = super.insert(obj).returning("*")
+        if (!Array.isArray(obj)) q = q.first()
 
-  async paginate(ref, after, sortField = "id", trx) {
-    return this.$relatedQuery(ref, trx)
-      .skipUndefined()
-      .where(sortField, "<", after)
-      .orderBy(sortField, "desc")
-      .limit(process.env.PAGE_SIZE)
-  }
+        return q
+      }
 
-  static async insert(obj, trx) {
-    return this.query(trx)
-      .insert(obj)
-      .returning("*")
-      .first()
-  }
-
-  async insert(ref, obj, trx) {
-    return this.$relatedQuery(ref, trx)
-      .insert(obj)
-      .returning("*")
-      .first()
-  }
-
-  async patch(obj, trx) {
-    return this.$query(trx)
-      .patch(obj)
-      .returning("*")
+      patch(obj) {
+        return super.patch(obj).returning("*")
+      }
+    }
   }
 }
 

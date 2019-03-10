@@ -28,11 +28,9 @@ module.exports = Router()
     //  to accommodate both parties' forms in one record (as a JSON field) -
     //  however, that is tricky since I'd need to update the whole "forms"
     //  field at once even when we're changing only one party's form!!
-    const negotiations = await req.commission.paginate(
-      "artistForms",
-      req.query.after,
-      "update_id"
-    )
+    const negotiations = await req.commission
+      .$relatedQuery("artistForms")
+      .paginate(req.query.after, "update_id")
 
     res.send(negotiations)
   })
