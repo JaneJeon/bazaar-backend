@@ -5,7 +5,7 @@ const { transaction } = require("objection")
 
 module.exports = Router()
   .use(async (req, res, next) => {
-    req.commission = await Commission.findById(req.params.commissionId)
+    req.commission = await Commission.query().findById(req.params.commissionId)
 
     if (req.user.id == req.commission.buyerId) req.isArtist = false
     else if (req.user.id == req.commission.artistId) req.isArtist = true
