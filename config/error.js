@@ -1,4 +1,3 @@
-const log = require("../lib/log")
 const { MulterError } = require("multer")
 const { ValidationError, NotFoundError } = require("objection")
 const {
@@ -12,7 +11,7 @@ const {
 
 const logError = err => {
   err.stack = err.stack.slice(0, err.stack.lastIndexOf("at newFn")).trimRight()
-  log.error(err)
+  console.error(err)
 }
 
 module.exports = (err, res) => {

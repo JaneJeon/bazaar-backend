@@ -2,7 +2,6 @@ const { Router } = require("express")
 const { Commission } = require("../models")
 const assert = require("http-assert")
 const { pub, sub } = require("../lib/redis")
-const log = require("../lib/log")
 
 module.exports = Router()
   .use(async (req, res, next) => {
@@ -40,7 +39,7 @@ module.exports = Router()
 
         await pub.publish("chats", `${req.path}:${JSON.stringify(chat)}`)
       } catch (err) {
-        log.error(err)
+        console.error(err)
       }
     })
 
@@ -51,7 +50,7 @@ module.exports = Router()
         try {
           ws.send(message.substr(req.path.length + 1))
         } catch (err) {
-          log.error(err)
+          console.error(err)
         }
       }
     })
