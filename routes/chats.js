@@ -6,7 +6,7 @@ const { pub, sub } = require("../lib/redis")
 module.exports = Router()
   .use(async (req, res, next) => {
     req.ensureVerified()
-    req.commission = await Commission.findById(req.params.commissionId)
+    req.commission = await Commission.query().findById(req.params.commissionId)
     req.negotiation = await req.commission
       .$relatedQuery("negotiations")
       .where("artist_id", req.params.artistId)
