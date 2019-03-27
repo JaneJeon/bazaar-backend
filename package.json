@@ -46,6 +46,7 @@
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
+    "pg-native": "^3.0.0",
     "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {

@@ -68,6 +68,26 @@ module.exports = Router()
       url: `${process.env.FRONTEND_URL}/users/reset/${token}`
     })
   })
+  .patch("/verify/:token", async (req, res) => {
+    const id = await tempToken.fetch("verify", req.params.token)
+    let user = await User.query().findById(id)
+
+    user = await user.$query().patch({ verified: true })
+
+    res.send(user)
+
+    await tempToken.consume("verify", id)
+  })
+  .patch("/reset/:token", async (req, res) => {
+    const id = await tempToken.fetch("reset", req.params.token)
+    let user = await User.query().findById(id)
+
+    user = await user.$query().patch({ password: req.body.password })
+
+    res.send(user)
+
+    await tempToken.consume("reset", id)
+  })
   .use((req, res, next) => next(assert(req.user, 401)))
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req.body)
@@ -84,27 +104,6 @@ module.exports = Router()
         url: `${process.env.FRONTEND_URL}/users/verify/${token}`
       })
     }
-  })
-  // verify user email
-  .patch("/verify/:token", async (req, res) => {
-    const id = await tempToken.fetch("verify", req.params.token)
-    assert(id == req.user.id, 404)
-
-    const user = await req.user.$query().patch({ verified: true })
-
-    res.send(user)
-
-    await tempToken.consume("verify", id)
-  })
-  .patch("/reset/:token", async (req, res) => {
-    const id = await tempToken.fetch("reset", req.params.token)
-    assert(id == req.user.id, 404)
-
-    const user = await req.user.$query().patch({ password: req.body.password })
-
-    res.send(user)
-
-    await tempToken.consume("reset", id)
   })
   .delete("/", async (req, res) => {
     await req.user.$query().patch({ deleted: true })
