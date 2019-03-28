@@ -9,7 +9,7 @@ const chats = require("./chats")
 
 module.exports = Router()
   .use((req, res, next) => {
-    req.ensureVerified = () => assert(req.user, 401)
+    req.ensureVerified = () => assert(req.user && req.user.verified, 401)
     next()
   })
   .use("/sessions", sessions)
