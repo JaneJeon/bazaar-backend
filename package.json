@@ -40,7 +40,6 @@
     "pluralize": "^7.0.0",
     "rate-limit-redis": "^1.6.0",
     "sharp": "^0.22.0",
-    "supertest-session": "^4.0.0",
     "uid-safe": "^2.1.5",
     "ulid": "^2.3.0"
   },
@@ -75,7 +74,9 @@
     "faker": "^4.1.0",
     "mocha": "^6.0.2",
     "nodemon": "^1.18.10",
-    "prettier": "^1.16.3"
+    "prettier": "^1.16.3",
+    "supertest": "^4.0.2",
+    "supertest-session": "^4.0.0"
   },
   "prettier": {
     "semi": false
