@@ -69,12 +69,12 @@ class User extends visibility(password(BaseModel)) {
         relation: BaseModel.ManyToManyRelation,
         modelClass: "favorite",
         join: {
-          from: users.id,
+          from: "users.id",
           through: {
-            from: favorites.user_id,
-            to: favorites.art_id
+            from: "favorites.user_id",
+            to: "favorites.art_id"
           },
-          to: arts.id
+          to: "arts.id"
         }
       }
     }

@@ -38,12 +38,12 @@ class Art extends BaseModel {
         relation: BaseModel.ManyToManyRelation,
         modelClass: "favorite",
         join: {
-          from: arts.id,
+          from: "arts.id",
           through: {
-            from: favorites.art_id,
-            to: favorites.user_id
+            from: "favorites.art_id",
+            to: "favorites.user_id"
           },
-          to: users.id
+          to: "users.id"
         }
       }
     }
