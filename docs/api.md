@@ -201,8 +201,8 @@ This endpoint is used to load previous chats.
 ### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
 This *websocket* endpoint is used to communicate live with the other party - creating chat messages and receiving *live* updates should be done through this socket.
 
-### <a name="patchf"></a> ws `/favorites/ArtId`
+### <a name="patchf"></a> PATCH `/favorites/ArtId`
 Request sent to favorite an art post. A user must be signed to favorite an art post.
 
-### <a name="deletef"></a> ws `/favorites/ArtId`
+### <a name="deletef"></a> DELETE `/favorites/ArtId`
 Request sent to unfavorite an art post. A user must be signed to favorite an art post.
