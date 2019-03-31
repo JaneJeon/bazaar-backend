@@ -99,6 +99,7 @@ Each negotiation has a chat room in which the buyer and the artist can discuss t
 - [GET `/arts`](#geta)
 - [GET `/arts/:artId`](#getaa)
 - [GET `/users/:userId/arts`](#getuua)
+- [GET `/users/:userId/favorites`](#getuuf)
 - [PATCH `/arts/:artId`](#patchaa)
 - [DELETE `/arts/:artId`](#delaa)
 
@@ -117,6 +118,9 @@ Each negotiation has a chat room in which the buyer and the artist can discuss t
 
 - [GET `/commissions/:commissionId/negotiations/:artistId/chats`](#getccnac)
 - [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
+
+- [PATCH `/favorites/:ArtId`](#patchf)
+- [DELETE `/favorites/:ArtId`](#deletef)
 
 ### <a name="posts"></a>POST `/sessions`
 This endpoint is used to login existing users. Fields `username` and `password` are expected. Returns an instance of the user object.
@@ -153,6 +157,9 @@ This is the "discover page". Currently, it returns the most recent pictures in a
 
 ### <a name="getuua"></a>GET `/users/:userId/arts`
 Returns all of the art created by a user.
+
+### <a name="getuuf"></a>GET `/users/:userId/favorites`
+Returns all of the arts favorited by a user.
 
 ### <a name="patchaa"></a>PATCH `/arts/:artId`
 
@@ -193,3 +200,9 @@ This endpoint is used to load previous chats.
 
 ### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
 This *websocket* endpoint is used to communicate live with the other party - creating chat messages and receiving *live* updates should be done through this socket.
+
+### <a name="patchf"></a> PATCH `/favorites/ArtId`
+Request sent to favorite an art post. A user must be signed to favorite an art post.
+
+### <a name="deletef"></a> DELETE `/favorites/ArtId`
+Request sent to unfavorite an art post. A user must be signed to favorite an art post.
