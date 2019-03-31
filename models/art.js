@@ -32,6 +32,23 @@ class Art extends BaseModel {
     }
   }
 
+  static get relationMappings() {
+    return {
+      favorites: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: "favorite",
+        join: {
+          from: arts.id,
+          through: {
+            from: favorites.art_id,
+            to: favorites.user_id
+          },
+          to: users.id
+        }
+      }
+    }
+  }
+
   static get reservedPostFields() {
     return ["pictures", "tags"]
   }
