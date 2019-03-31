@@ -96,11 +96,14 @@ Each negotiation has a chat room in which the buyer and the artist can discuss t
 - [DELETE `/users`](#delu)
 
 - [POST `/arts`](#posta)
+- [POST `/arts/:ArtId/favorites`](#postaf)
 - [GET `/arts`](#geta)
 - [GET `/arts/:artId`](#getaa)
+- [GET `/arts/:artId/favorites`](#getuuaf)
 - [GET `/users/:userId/arts`](#getuua)
 - [GET `/users/:userId/favorites`](#getuuf)
 - [PATCH `/arts/:artId`](#patchaa)
+- [DELETE `/arts/:ArtId/favorites`](#delaf)
 - [DELETE `/arts/:artId`](#delaa)
 
 - [POST `/commissions`](#postc)
@@ -118,9 +121,6 @@ Each negotiation has a chat room in which the buyer and the artist can discuss t
 
 - [GET `/commissions/:commissionId/negotiations/:artistId/chats`](#getccnac)
 - [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
-
-- [PATCH `/favorites/:ArtId`](#patchf)
-- [DELETE `/favorites/:ArtId`](#deletef)
 
 ### <a name="posts"></a>POST `/sessions`
 This endpoint is used to login existing users. Fields `username` and `password` are expected. Returns an instance of the user object.
@@ -150,10 +150,16 @@ When a user accesses a page of form `/users/reset/:token`, a PATCH request shoul
 
 ### <a name="posta"></a>POST `/arts`
 
+### <a name="postsaf"></a>POST `/arts/:artId/favorites`
+Command to favorite an art piece.
+
 ### <a name="geta"></a>GET `/arts`
 This is the "discover page". Currently, it returns the most recent pictures in anti-chronological order.
 
 ### <a name="getaa"></a> GET `/arts/:artId`
+
+### <a name="getuuaf"></a>GET `/arts/:artId/favorites`
+Returns all of the users who favorites a specific piece of art.
 
 ### <a name="getuua"></a>GET `/users/:userId/arts`
 Returns all of the art created by a user.
@@ -164,6 +170,9 @@ Returns all of the arts favorited by a user.
 ### <a name="patchaa"></a>PATCH `/arts/:artId`
 
 ### <a name="delaa"></a>DELETE `/arts/:artId`
+
+### <a name="delaf"></a>DELETE `/arts/:artId/favorites`
+Delete a user from a list of users favoriting an art piece.
 
 ### <a name="postc"></a>POST `/commissions`
 
@@ -200,9 +209,3 @@ This endpoint is used to load previous chats.
 
 ### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
 This *websocket* endpoint is used to communicate live with the other party - creating chat messages and receiving *live* updates should be done through this socket.
-
-### <a name="patchf"></a> PATCH `/favorites/ArtId`
-Request sent to favorite an art post. A user must be signed to favorite an art post.
-
-### <a name="deletef"></a> DELETE `/favorites/ArtId`
-Request sent to unfavorite an art post. A user must be signed to favorite an art post.
