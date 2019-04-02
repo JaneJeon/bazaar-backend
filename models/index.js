@@ -6,7 +6,7 @@ const Art = require("./art")
 const Commission = require("./commission")
 const Negotiation = require("./negotiation")
 const Chat = require("./chat")
-const Favorite = require('./favorite')
+const Favorite = require("./favorite")
 
 Model.knex(knex(knexfile)) // yo dawg
 
