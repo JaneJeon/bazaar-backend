@@ -7,7 +7,7 @@ const commissions = require("./commissions")
 const negotiations = require("./negotiations")
 const chats = require("./chats")
 
-module.exports = Router({ mergeParams: true })
+module.exports = Router()
   .use((req, res, next) => {
     req.ensureVerified = () => assert(req.user && req.user.verified, 401)
     next()

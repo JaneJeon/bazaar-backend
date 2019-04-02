@@ -3,7 +3,7 @@ const { Commission, Negotiation } = require("../models")
 const assert = require("http-assert")
 const { transaction } = require("objection")
 
-module.exports = Router()
+module.exports = Router({ mergeParams: true })
   .use(async (req, res, next) => {
     req.commission = await Commission.query().findById(req.params.commissionId)
 

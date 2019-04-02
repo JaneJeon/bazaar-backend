@@ -3,7 +3,7 @@ const { Commission } = require("../models")
 const assert = require("http-assert")
 const { pub, sub } = require("../lib/redis")
 
-module.exports = Router()
+module.exports = Router({ mergeParams: true })
   .use(async (req, res, next) => {
     req.ensureVerified()
     req.commission = await Commission.query().findById(req.params.commissionId)
