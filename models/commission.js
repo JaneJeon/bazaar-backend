@@ -87,7 +87,7 @@ class Commission extends BaseModel {
 
   async beginNegotiation(isArtist, artistId) {
     // buyer can't create negotiation with themselves, duh
-    assert(isArtist, 403)
+    assert(!isArtist, 403)
 
     const base = pickBy(
       this,
