@@ -63,7 +63,7 @@ module.exports = Router()
   .delete('/:artId/favorites', async (req, res) => {
 
     const art = await Art.query().findById(req.params.artId);
-    const users = await.art.$relatedQuery("users").delete().where('user_id', req.user.id)
+    const users = await art.$relatedQuery("users").delete().where('user_id', req.user.id)
 
     res.sendStatus(204)
   })
