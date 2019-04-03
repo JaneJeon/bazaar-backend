@@ -45,7 +45,7 @@ module.exports = Router({ mergeParams: true })
   .post("/", async (req, res) => {
     // negotiation forms for buyer and artist
     const negotiations = await req.commission.beginNegotiation(
-      req.isArtist,
+      req.isBuyer,
       req.user.id
     )
 
