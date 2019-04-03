@@ -85,9 +85,9 @@ class Commission extends BaseModel {
     this.processInput()
   }
 
-  async beginNegotiation(isArtist, artistId) {
+  async beginNegotiation(isBuyer, artistId) {
     // buyer can't create negotiation with themselves, duh
-    assert(isArtist, 403)
+    assert(!isBuyer, 403)
 
     const base = pickBy(
       this,
