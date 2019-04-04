@@ -39,9 +39,7 @@ module.exports = Router()
 
     const art = await Art.query().findById(req.params.artId)
 
-    const favorite = await art.$relatedQuery("users").insert({
-      user_id: req.user.id
-    });
+    const favorite = await art.$relatedQuery("favoriteUsers").relate(req.user.id)
 
 
     res.status(201).send(favorite)
@@ -63,7 +61,7 @@ module.exports = Router()
   .delete('/:artId/favorites', async (req, res) => {
 
     const art = await Art.query().findById(req.params.artId);
-    const users = await art.$relatedQuery("users").delete().where('user_id', req.user.id)
+    const users = await art.$relatedQuery("favoriteUsers").unrelate().where('user_id', req.user.id)
 
     res.sendStatus(204)
   })

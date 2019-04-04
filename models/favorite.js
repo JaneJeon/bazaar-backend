@@ -5,3 +5,5 @@ class Favorite extends BaseModel {
     return ["user_id", "art_id"]
   }
 }
+
+module.exports = Favorite

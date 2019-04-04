@@ -1,6 +1,8 @@
 const session = require("supertest-session")
 const app = require("../../app")
 const request = session(app)
+const { users } = require("./sessions")
+const redis = require('../../lib/redis')
 const assert = require("assert")
 
 describe("favorites routes", () => {
@@ -31,30 +33,25 @@ describe("favorites routes", () => {
   describe("GET /arts/:artId/favorites", () => {
     it("should list favorites by an art", async () => {
       await request
-        .get(`/arts/${arts[0].username.toLowerCase()}/favorites`)
+        .get(`/arts/${arts[0].id}/favorites`)
         .expect(200)
-    })
-
-    it("should 404 when art is not found", async () => {
-      await request.get("/arts/12ndsjdfhalk2/favorites").expect(404)
     })
   })
 
   describe("POST /arts/:artId/favorites", () => {
-
     context("when unauthenticated or not verified", () => {
       it("should reject", async () => {
         await request.delete("/sessions")
 
         await request
-          .post(`/arts/${arts[0].username.toLowerCase()}/favorites`)
+          .post(`/arts/${arts[0].id}/favorites`)
           .expect(401)
       })
 
       context("when user is verified", () => {
-        it("should create art", async () => {
+        it("should like art", async () => {
           const res = await request
-            .post(`/arts/${arts[0].username.toLowerCase()}/favorites`)
+            .post(`/arts/${arts[0].id}/favorites`)
             .expect(201)
         })
       })
@@ -62,26 +59,22 @@ describe("favorites routes", () => {
   })
 
   describe("DELETE /arts/:artId/favorites", () => {
-
     context("when unauthenticated or not verified", () => {
       it("should reject", async () => {
         await request.delete("/sessions")
 
         await request
-          .delete(`/arts/${arts[0].username.toLowerCase()}/favorites`)
+          .delete(`/arts/${arts[0].id}/favorites`)
           .expect(401)
       })
 
       context("when user is verified", () => {
-        it("should create art", async () => {
+        it("should remove favorite", async () => {
           const res = await request
-            .delete(`/arts/${arts[0].username.toLowerCase()}/favorites`)
-            .expect(201)
+            .delete(`/arts/${arts[0].id}/favorites`)
+            .expect(204)
         })
       })
-
+    })
   })
-
-
-
 })
