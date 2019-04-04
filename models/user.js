@@ -65,9 +65,9 @@ class User extends visibility(password(BaseModel)) {
           to: "commissions.artist_id"
         }
       },
-      favorites: {
+      favoriteArts: {
         relation: BaseModel.ManyToManyRelation,
-        modelClass: "favorite",
+        modelClass: "art",
         join: {
           from: "users.id",
           through: {

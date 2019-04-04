@@ -34,9 +34,9 @@ class Art extends BaseModel {
 
   static get relationMappings() {
     return {
-      favorites: {
+      favoriteUsers: {
         relation: BaseModel.ManyToManyRelation,
-        modelClass: "favorite",
+        modelClass: "user",
         join: {
           from: "arts.id",
           through: {
