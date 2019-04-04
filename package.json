@@ -38,6 +38,7 @@
     "passport-local": "^1.0.0",
     "pg": "^7.9.0",
     "pluralize": "^7.0.0",
+    "querystring": "^0.2.0",
     "rate-limit-redis": "^1.6.0",
     "sharp": "^0.22.0",
     "stripe": "^6.28.0",
