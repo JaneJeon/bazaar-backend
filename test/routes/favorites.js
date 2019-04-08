@@ -2,7 +2,7 @@ const session = require("supertest-session")
 const app = require("../../app")
 const request = session(app)
 const { users } = require("./sessions")
-const redis = require('../../lib/redis')
+const redis = require("../../lib/redis")
 const assert = require("assert")
 
 describe("favorites routes", () => {
@@ -32,9 +32,7 @@ describe("favorites routes", () => {
 
   describe("GET /arts/:artId/favorites", () => {
     it("should list favorites by an art", async () => {
-      await request
-        .get(`/arts/${arts[0].id}/favorites`)
-        .expect(200)
+      await request.get(`/arts/${arts[0].id}/favorites`).expect(200)
     })
   })
 
@@ -43,9 +41,7 @@ describe("favorites routes", () => {
       it("should reject", async () => {
         await request.delete("/sessions")
 
-        await request
-          .post(`/arts/${arts[0].id}/favorites`)
-          .expect(401)
+        await request.post(`/arts/${arts[0].id}/favorites`).expect(401)
       })
 
       context("when user is verified", () => {
@@ -63,9 +59,7 @@ describe("favorites routes", () => {
       it("should reject", async () => {
         await request.delete("/sessions")
 
-        await request
-          .delete(`/arts/${arts[0].id}/favorites`)
-          .expect(401)
+        await request.delete(`/arts/${arts[0].id}/favorites`).expect(401)
       })
 
       context("when user is verified", () => {

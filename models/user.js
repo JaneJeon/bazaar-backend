@@ -34,10 +34,36 @@ class User extends visibility(password(BaseModel)) {
         },
         bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH },
         rating: {type: "integer"}
+        stripeCustomerId: { type: "string" },
+        stripeAccountId: { type: "string" }
+
       },
       required: ["username", "email", "password"],
       additionalProperties: false
     }
+  }
+
+  static get reservedPostFields() {
+    return [
+      "id",
+      "deleted",
+      "verified",
+      "avatar",
+      "stripeCustomerId",
+      "stripeAccountId"
+    ]
+  }
+
+  static get reservedPatchFields() {
+    return [
+      "id",
+      "username",
+      "deleted",
+      "verified",
+      "avatar",
+      "stripeCustomerId",
+      "stripeAccountId"
+    ]
   }
 
   static get relationMappings() {
@@ -103,14 +129,6 @@ class User extends visibility(password(BaseModel)) {
         }
       }
     }
-  }
-
-  static get reservedPostFields() {
-    return ["id", "deleted", "verified", "avatar"]
-  }
-
-  static get reservedPatchFields() {
-    return ["id", "username", "deleted", "verified", "avatar"]
   }
 
   static get hidden() {
