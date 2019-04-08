@@ -106,7 +106,7 @@ class User extends visibility(password(BaseModel)) {
   }
 
   static get hidden() {
-    return ["password"]
+    return ["password", "stripe_account_id", "stripe_customer_id"]
   }
 
   async processInput(opt) {
