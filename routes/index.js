@@ -19,6 +19,7 @@ module.exports = Router()
   .use("/commissions", commissions)
   .use("/commissions/:commissionId/negotiations", negotiations)
   .use("/commissions/:commissionId/negotiations/:artistId/chats", chats)
+  .use((req, res, next) => next(req.ensureVerified()))
   .get("/negotiations", async (req, res) => {
     const negotiations = await Negotiation.query()
       .where("artist_id", req.user.id)
