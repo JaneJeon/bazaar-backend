@@ -15,9 +15,11 @@ module.exports = Router()
 
     res.send(art)
   })
-  .get('/:artId/favorites', async (req, res) => {
+  .get("/:artId/favorites", async (req, res) => {
     const art = await Art.query().findById(req.params.artId)
-    const favorites = await art.$relatedQuery('favoriteUsers').paginate(req.query.after)
+    const favorites = await art
+      .$relatedQuery("favoriteUsers")
+      .paginate(req.query.after)
 
     res.send(favorites)
   })
@@ -34,13 +36,14 @@ module.exports = Router()
       res.status(201).send(art)
     }
   )
-  .post('/:artId/favorites', async (req, res) => {
+  .post("/:artId/favorites", async (req, res) => {
     //const favorite = await req.user.$relatedQuery('favoriteArts').insert({}) // TODO: I forgot how to do this
 
     const art = await Art.query().findById(req.params.artId)
 
-    const favorite = await art.$relatedQuery("favoriteUsers").relate(req.user.id)
-
+    const favorite = await art
+      .$relatedQuery("favoriteUsers")
+      .relate(req.user.id)
 
     res.status(201).send(favorite)
   })
@@ -58,10 +61,12 @@ module.exports = Router()
 
     res.sendStatus(204)
   })
-  .delete('/:artId/favorites', async (req, res) => {
-
-    const art = await Art.query().findById(req.params.artId);
-    const users = await art.$relatedQuery("favoriteUsers").unrelate().where('user_id', req.user.id)
+  .delete("/:artId/favorites", async (req, res) => {
+    const art = await Art.query().findById(req.params.artId)
+    const users = await art
+      .$relatedQuery("favoriteUsers")
+      .unrelate()
+      .where("user_id", req.user.id)
 
     res.sendStatus(204)
   })
