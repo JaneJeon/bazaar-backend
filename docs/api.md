@@ -114,6 +114,7 @@ Each negotiation has a chat room in which the buyer and the artist can discuss t
 - [PATCH `/commissions/:commissionId/reject`](#patchccr)
 - [DELETE `/commissions/:commissionId`](#delcc)
 
+- [GET `/negotiations`](#gn)
 - [POST `/commissions/:commissionId/negotiations`](#postccn)
 - [GET `/commissions/:commissionId/negotiations`](#getccn)
 - [GET `/commissions/:commissionId/negotiations/:artistId`](#getccna)
@@ -193,6 +194,9 @@ This is the endpoint for *buyers* to update commission details.
 This is the endpoint for *artists* to reject a commission. No fields are expected.
 
 ### <a name="delcc"></a>DELETE `/commissions/:commissionId`
+
+### <a name="gn"></a>GET `/negotiations`
+Returns all of the negotiations
 
 ### <a name="postccn"></a>POST `/commissions/:commissionId/negotiations`
 This is the endpoint for *artists* to make a commission offer and begin the process of negotiation. Returns two commission forms as an array (but since this counts as a "single" negotiation, the result is not paginated).

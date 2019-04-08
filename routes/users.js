@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { User } = require("../models")
+const { User, Negotiation } = require("../models")
 const tempToken = require("../lib/temp-token")
 const assert = require("http-assert")
 const upload = require("../config/multer")
@@ -33,7 +33,7 @@ module.exports = Router()
     if (user.id == (req.user || {}).id) {
       // load a user's own commissions, defaulting to as=buyer
 
-      commissions = await req.user
+      commissions = await user
         .$relatedQuery(
           req.query.as == "artist"
             ? "commissionsAsArtist"
@@ -98,6 +98,14 @@ module.exports = Router()
     await tempToken.consume("reset", id)
   })
   .use((req, res, next) => next(assert(req.user, 401)))
+  .get("/negotiations", async (req, res) => {
+    const negotiations = await Negotiation.query()
+      .where("artist_id", req.user.id)
+      .where("finalized", false)
+      .paginate(req.query.after)
+
+    res.send(negotiations)
+  })
   .patch("/stripe/authorize/callback", async (req, res) => {
     const { data } = await stripe.connectArtist(req.query.code)
     const user = await req.user
