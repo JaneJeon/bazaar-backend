@@ -32,7 +32,8 @@ class User extends visibility(password(BaseModel)) {
           type: "string",
           maxLength: process.env.MAX_LOCATION_LENGTH
         },
-        bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH }
+        bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH },
+        rating: {type: "integer"}
       },
       required: ["username", "email", "password"],
       additionalProperties: false
@@ -75,6 +76,30 @@ class User extends visibility(password(BaseModel)) {
             to: "favorites.art_id"
           },
           to: "arts.id"
+        }
+      },
+      reviewBuyers: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: "user",
+        join: {
+          from: "users.id",
+          through: {
+            from: "reviews.buyer_id",
+            to: "reviews.user_id"
+          },
+          to: "users.id"
+        }
+      },
+      reviewArtists: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: "user",
+        join: {
+          from: "users.id",
+          through: {
+            from: "reviews.buyer_id",
+            to: "reviews.artist_id"
+          },
+          to: "users.id"
         }
       }
     }
