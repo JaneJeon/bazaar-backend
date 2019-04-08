@@ -23,8 +23,9 @@ module.exports = Router()
   .get("/negotiations", async (req, res) => {
     const negotiations = await Negotiation.query()
       .where("artist_id", req.user.id)
+      .where("is_artist", true)
       .where("finalized", false)
-      .paginate(req.query.after)
+      .paginate(req.query.after, "commission_id")
 
     res.send(negotiations)
   })
