@@ -13,7 +13,7 @@ exports.up = knex =>
       .notNullable()
       .references("users.id")
     table
-      .integer("artist_id")
+      .text("artist_id")
       .notNullable()
       .references("users.id")
 
