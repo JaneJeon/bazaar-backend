@@ -22,8 +22,7 @@ app
   .use(
     cookieSession({
       keys: [process.env.SESSION_SECRET],
-      sameSite: "lax",
-      secure: false // because Ricky demands it
+      sameSite: "lax"
     })
   )
   .use(passport.initialize())
