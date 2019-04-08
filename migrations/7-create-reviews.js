@@ -17,7 +17,7 @@ exports.up = knex =>
       .notNullable()
       .references("users.id")
 
-    table.primary(["buyer_id", "artist_id"])
+    table.primary(["relatedCommission_id", "buyer_id", "artist_id"])
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)
