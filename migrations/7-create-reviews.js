@@ -5,7 +5,7 @@ exports.up = knex =>
     table.text("description")
     table.integer("rating").notNullable()
     table
-      .text("relatedCommission_id")
+      .integer("relatedCommission_id")
       .notNullable()
       .references("commissions.id")
     table
