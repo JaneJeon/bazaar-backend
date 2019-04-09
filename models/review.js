@@ -1,7 +1,6 @@
 const BaseModel = require("./base")
 
 class Review extends BaseModel {
-
   static get idColumn() {
     return ["buyer_id", "artist_id, relatedCommission_id"]
   }
@@ -33,7 +32,6 @@ class Review extends BaseModel {
       }
     }
   }
-
 }
 
 module.exports = Review

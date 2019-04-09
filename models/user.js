@@ -33,10 +33,9 @@ class User extends visibility(password(BaseModel)) {
           maxLength: process.env.MAX_LOCATION_LENGTH
         },
         bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH },
-        rating: {type: "integer"},
+        rating: { type: "integer" },
         stripeCustomerId: { type: "string" },
         stripeAccountId: { type: "string" }
-
       },
       required: ["username", "email", "password"],
       additionalProperties: false
