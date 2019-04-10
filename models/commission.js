@@ -54,7 +54,7 @@ class Commission extends BaseModel {
           from: "commissions.id",
           to: "negotiations.commission_id"
         },
-        filter: { isArtist: true }
+        filter: { is_artist: true }
       },
       commissionReviews: {
         relation: BaseModel.HasManyRelation,
