@@ -93,7 +93,7 @@ class Commission extends BaseModel {
     this.processInput()
   }
 
-  async beginNegotiation(isBuyer, artistId) {
+  async beginNegotiation(isBuyer, artistId, buyerId) {
     // buyer can't create negotiation with themselves, duh
     assert(!isBuyer, 403)
 
@@ -106,8 +106,11 @@ class Commission extends BaseModel {
 
     return this.$relatedQuery("negotiations").insert([
       // auto-accept for the buyer
-      Object.assign({ artistId, isArtist: false, accepted: true }, base),
-      Object.assign({ artistId, isArtist: true }, base)
+      Object.assign(
+        { artistId, buyerId, isArtist: false, accepted: true },
+        base
+      ),
+      Object.assign({ artistId, buyerId, isArtist: true }, base)
     ])
   }
 

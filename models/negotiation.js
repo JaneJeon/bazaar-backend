@@ -11,6 +11,7 @@ class Negotiation extends BaseModel {
       type: "object",
       properties: {
         artistId: { type: "string" },
+        buyerId: { type: "string" },
         isArtist: { type: "boolean" },
         accepted: { type: "boolean", default: false },
         finalized: { type: "boolean", default: false },
@@ -24,7 +25,14 @@ class Negotiation extends BaseModel {
         },
         updateId: { type: "string" }
       },
-      required: ["artistId", "isArtist", "price", "deadline", "copyright"],
+      required: [
+        "artistId",
+        "buyerId",
+        "isArtist",
+        "price",
+        "deadline",
+        "copyright"
+      ],
       additionalProperties: false
     }
   }
