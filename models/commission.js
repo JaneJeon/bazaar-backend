@@ -115,7 +115,7 @@ class Commission extends BaseModel {
   async negotiate(artistId, idx, changes = {}, trx) {
     let negotiations = await this.$relatedQuery("negotiations", trx)
       .where("artist_id", artistId)
-      .orderBy("isArtist")
+      .orderBy("is_artist")
 
     // disallow updates when finalized
     assert(!negotiations[idx].finalized, 405, "Cannot change finalized forms")
