@@ -6,6 +6,7 @@ const arts = require("./arts")
 const commissions = require("./commissions")
 const negotiations = require("./negotiations")
 const chats = require("./chats")
+const stripe = require("./stripe")
 
 module.exports = Router()
   .use((req, res, next) => {
@@ -18,3 +19,4 @@ module.exports = Router()
   .use("/commissions", commissions)
   .use("/commissions/:commissionId/negotiations", negotiations)
   .use("/commissions/:commissionId/negotiations/:artistId/chats", chats)
+  .use("/stripe", stripe)
