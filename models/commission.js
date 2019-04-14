@@ -137,7 +137,7 @@ class Commission extends BaseModel {
 
     // don't allow accepting when the forms are different
     assert(
-      !(changes[idx].accepted && !formsAreEqual),
+      !((changes[idx] || {}).accepted === true && !formsAreEqual),
       405,
       "Cannot accept while the forms are different"
     )
