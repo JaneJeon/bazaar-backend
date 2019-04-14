@@ -136,7 +136,11 @@ class Commission extends BaseModel {
     const formsAreEqual = isEqual(forms[0], forms[1])
 
     // don't allow accepting when the forms are different
-    assert(!formsAreEqual, 405, "Cannot accept while the forms are different")
+    assert(
+      !(changes[idx].accepted && !formsAreEqual),
+      405,
+      "Cannot accept while the forms are different"
+    )
 
     // do the actual update
     negotiations[idx] = await negotiations[idx].$query(trx).patch(changes)
