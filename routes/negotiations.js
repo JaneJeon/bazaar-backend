@@ -58,7 +58,7 @@ module.exports = Router({ mergeParams: true })
     const negotiations = await transaction(Negotiation.knex(), async trx => {
       return req.commission.negotiate(
         req.params.artistId,
-        (req.isArtist || true) + 0,
+        req.isArtist === undefined ? 1 : req.isArtist + 0,
         req.body,
         trx
       )
