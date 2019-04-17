@@ -6,12 +6,16 @@ module.exports = Router()
   // the "discover" page
   .get("/", async (req, res) => {
     // TODO: FOR NOW, the results are not personalized
-    const arts = await Art.query().paginate(req.query.after)
+    const arts = await Art.query()
+      .selectWithFavorite((req.user || {}).id)
+      .paginate(req.query.after)
 
     res.send(arts)
   })
   .get("/:artId", async (req, res) => {
-    const art = await Art.query().findById(req.params.artId)
+    const art = await Art.query()
+      .selectWithFavorite((req.user || {}).id)
+      .findById(req.params.artId)
 
     res.send(art)
   })
@@ -37,8 +41,6 @@ module.exports = Router()
     }
   )
   .post("/:artId/favorites", async (req, res) => {
-    //const favorite = await req.user.$relatedQuery('favoriteArts').insert({}) // TODO: I forgot how to do this
-
     const art = await Art.query().findById(req.params.artId)
 
     const favorite = await art
@@ -63,7 +65,7 @@ module.exports = Router()
   })
   .delete("/:artId/favorites", async (req, res) => {
     const art = await Art.query().findById(req.params.artId)
-    const users = await art
+    await art
       .$relatedQuery("favoriteUsers")
       .unrelate()
       .where("user_id", req.user.id)

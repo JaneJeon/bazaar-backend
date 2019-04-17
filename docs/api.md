@@ -70,6 +70,8 @@ If the art has a `description`, `tags` will be automatically extracted from it -
 
 The art does have a `priceUnit`; however, for now the only possible value for this field is "USD" (and it is the default value for the field).
 
+`GET` operations return additional fields: `likes` counting the number of likes the art has, and `liked` (an integer, but you can use it as a boolean since 0 is falsey and 1 is truthy in javascript) indicating whether the current user (if the user is signed in) liked the art. If the user is not signed in, `liked` is always 0.
+
 ### Commission
 When a buyer creates a commission, they can specify an artist of their choosing. Whenever a commission specifies an artist (and `artistId` can actually be set even after the commission is created as a public commission), it will be turned into a private commission.
 
@@ -78,7 +80,7 @@ Once an `artistId` is set, you cannot change it or delete it again.
 The `deadline` is a date (of format `YYYY-MM-DD`), not a datetime/timestamp, and it is specified in the UTC timezone.
 
 ### Negotiation
-A commission can have multiple ongoing negotiations with different artists. When an artist makes an offer for a commission and begin the process of negotiation, both the artist and the buyer are given negotiation forms. They can edit the details of the negotiation (they can only edit their own form), and once the forms are equal they are allowed to accept the details. Once they both accept, artists may no longer make an offer for the commission, and the negotiation and the commission details are finalized and cannot be changed any more.
+A commission can have multiple ongoing negotiations with different artists. When an artist makes an offer for a commission and begin the process of negotiation, both the artist and the buyer are given negotiation forms. They can edit the details of the negotiation (they can only edit their own form), and once the forms are equal they are allowed to set `accepted` as true. Once they both accept, artists may no longer make an offer for the commission, and the negotiation and the commission details are `finalized` (true) and cannot be changed any more.
 
 ### Chat
 Each negotiation has a chat room in which the buyer and the artist can discuss the details of the negotiation.

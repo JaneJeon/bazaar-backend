@@ -19,6 +19,7 @@ exports.seed = async knex => {
   await knex("chats").del()
   await knex("negotiations").del()
   await knex("commissions").del()
+  await knex("favorites").del()
   await knex("arts").del()
   await knex("users").del()
 

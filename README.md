@@ -1,4 +1,4 @@
-# Bazaar backend
+# Bazaar [![CircleCI](https://circleci.com/gh/dartmouth-cs98/19w-bazaar-backend.svg?style=svg&circle-token=da3f2720e545f2b6c92aceccc91852ffca18ea15)](https://circleci.com/gh/dartmouth-cs98/19w-bazaar-backend)
 
 This is a REST API that will support the Bazaar client. Please refer to the frontent repo @ https://github.com/dartmouth-cs98/19w-bazaar-frontend. There's no screenshots since this is a pure API (no server-side view 
 rendering).

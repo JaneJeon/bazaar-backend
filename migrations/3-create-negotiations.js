@@ -10,6 +10,10 @@ exports.up = knex =>
       .text("artist_id")
       .references("users.id")
       .notNullable()
+    table
+      .text("buyer_id")
+      .references("users.id")
+      .notNullable()
     table.boolean("is_artist").notNullable()
     table.primary(["commission_id", "artist_id", "is_artist"])
 

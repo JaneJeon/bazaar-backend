@@ -46,7 +46,8 @@ module.exports = Router({ mergeParams: true })
     // negotiation forms for buyer and artist
     const negotiations = await req.commission.beginNegotiation(
       req.isBuyer,
-      req.user.id
+      req.user.id,
+      req.commission.buyerId
     )
 
     res.status(201).send(negotiations)
@@ -57,7 +58,7 @@ module.exports = Router({ mergeParams: true })
     const negotiations = await transaction(Negotiation.knex(), async trx => {
       return req.commission.negotiate(
         req.params.artistId,
-        req.isArtist + 0,
+        req.isArtist === undefined ? 1 : req.isArtist + 0,
         req.body,
         trx
       )

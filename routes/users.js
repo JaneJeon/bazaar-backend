@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { User, Negotiation } = require("../models")
+const { User } = require("../models")
 const tempToken = require("../lib/temp-token")
 const assert = require("http-assert")
 const upload = require("../config/multer")
@@ -104,6 +104,14 @@ module.exports = Router()
       .paginate(req.query.after)
 
     res.send(negotiations)
+  })
+  .patch("/stripe/authorize/callback", async (req, res) => {
+    const { data } = await stripe.connectArtist(req.query.code)
+    const user = await req.user
+      .$query()
+      .patch({ stripe_account_id: data.stripe_user_id })
+
+    res.send(user)
   })
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req.body)

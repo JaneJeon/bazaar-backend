@@ -1,3 +1,7 @@
+// return results of COUNT(*) as integer, NOT string!!
+// https://github.com/brianc/node-pg-types#use
+require("pg").types.setTypeParser(20, parseInt)
+
 const { Model } = require("objection")
 const knex = require("knex")
 const knexfile = require("../config/database")

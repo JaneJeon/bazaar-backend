@@ -6,7 +6,7 @@ const arts = require("./arts")
 const commissions = require("./commissions")
 const negotiations = require("./negotiations")
 const chats = require("./chats")
-const stripe = require("./stripe")
+const { Negotiation } = require("../models")
 
 module.exports = Router()
   .use((req, res, next) => {
@@ -19,4 +19,13 @@ module.exports = Router()
   .use("/commissions", commissions)
   .use("/commissions/:commissionId/negotiations", negotiations)
   .use("/commissions/:commissionId/negotiations/:artistId/chats", chats)
-  .use("/stripe", stripe)
+  .use((req, res, next) => next(req.ensureVerified()))
+  .get("/negotiations", async (req, res) => {
+    const negotiations = await Negotiation.query()
+      .where("artist_id", req.user.id)
+      .where("is_artist", true)
+      .where("finalized", false)
+      .paginate(req.query.after, "commission_id")
+
+    res.send(negotiations)
+  })

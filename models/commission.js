@@ -54,7 +54,15 @@ class Commission extends BaseModel {
           from: "commissions.id",
           to: "negotiations.commission_id"
         },
-        filter: { isArtist: true }
+        filter: { is_artist: true }
+      },
+      commissionReviews: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "review",
+        join: {
+          from: "commissions.id",
+          to: "reviews.id"
+        }
       }
     }
   }
@@ -85,7 +93,7 @@ class Commission extends BaseModel {
     this.processInput()
   }
 
-  async beginNegotiation(isBuyer, artistId) {
+  async beginNegotiation(isBuyer, artistId, buyerId) {
     // buyer can't create negotiation with themselves, duh
     assert(!isBuyer, 403)
 
@@ -98,8 +106,11 @@ class Commission extends BaseModel {
 
     return this.$relatedQuery("negotiations").insert([
       // auto-accept for the buyer
-      Object.assign({ artistId, isArtist: false, accepted: true }, base),
-      Object.assign({ artistId, isArtist: true }, base)
+      Object.assign(
+        { artistId, buyerId, isArtist: false, accepted: true },
+        base
+      ),
+      Object.assign({ artistId, buyerId, isArtist: true }, base)
     ])
   }
 
@@ -107,7 +118,7 @@ class Commission extends BaseModel {
   async negotiate(artistId, idx, changes = {}, trx) {
     let negotiations = await this.$relatedQuery("negotiations", trx)
       .where("artist_id", artistId)
-      .orderBy("isArtist")
+      .orderBy("is_artist")
 
     // disallow updates when finalized
     assert(!negotiations[idx].finalized, 405, "Cannot change finalized forms")
@@ -125,7 +136,11 @@ class Commission extends BaseModel {
     const formsAreEqual = isEqual(forms[0], forms[1])
 
     // don't allow accepting when the forms are different
-    assert(!formsAreEqual, 405, "Cannot accept while the forms are different")
+    assert(
+      !((changes[idx] || {}).accepted === true && !formsAreEqual),
+      405,
+      "Cannot accept while the forms are different"
+    )
 
     // do the actual update
     negotiations[idx] = await negotiations[idx].$query(trx).patch(changes)
@@ -135,7 +150,11 @@ class Commission extends BaseModel {
 
     // finalize only if both the forms are the same and they both accept
     // and mark the commission as private by setting the artist_id
-    if (newForms[0].accepted && newForms[1].accepted && newFormsAreEqual)
+    if (
+      negotiations[0].accepted &&
+      negotiations[1].accepted &&
+      newFormsAreEqual
+    )
       [negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
           .where("artist_id", artistId)

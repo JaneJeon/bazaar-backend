@@ -34,6 +34,14 @@ class Art extends BaseModel {
 
   static get relationMappings() {
     return {
+      favorites: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "favorite",
+        join: {
+          from: "arts.id",
+          to: "favorites.art_id"
+        }
+      },
       favoriteUsers: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: "user",
@@ -51,6 +59,23 @@ class Art extends BaseModel {
 
   static get reservedPostFields() {
     return ["pictures", "tags"]
+  }
+
+  static get QueryBuilder() {
+    return class extends BaseModel.QueryBuilder {
+      selectWithFavorite(id = null) {
+        return this.select(
+          "*",
+          Art.relatedQuery("favorites")
+            .count()
+            .as("likes"),
+          Art.relatedQuery("favorites")
+            .where("user_id", id)
+            .count()
+            .as("liked")
+        )
+      }
+    }
   }
 
   async processInput() {
