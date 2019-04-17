@@ -6,6 +6,7 @@ const arts = require("./arts")
 const commissions = require("./commissions")
 const negotiations = require("./negotiations")
 const chats = require("./chats")
+const stripe = require("./stripe")
 const { Negotiation } = require("../models")
 
 module.exports = Router()
@@ -29,3 +30,4 @@ module.exports = Router()
 
     res.send(negotiations)
   })
+  .use("/stripe", stripe)
