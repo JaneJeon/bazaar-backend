@@ -33,7 +33,10 @@ class User extends visibility(password(BaseModel)) {
           maxLength: process.env.MAX_LOCATION_LENGTH
         },
         bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH },
-        stripeAccountId: { type: "string" }
+        stripeAccountId: { type: "string" },
+        stripeCustomerId: { type: "string" },
+        hasStripeAccount: { type: "boolean", default: false },
+        isStripeCustomer: { type: "boolean", default: false }
       },
       required: ["username", "email", "password"],
       additionalProperties: false
@@ -41,7 +44,14 @@ class User extends visibility(password(BaseModel)) {
   }
 
   static get reservedPostFields() {
-    return ["id", "deleted", "verified", "avatar", "stripeAccountId"]
+    return [
+      "id",
+      "deleted",
+      "verified",
+      "avatar",
+      "stripeAccountId",
+      "stripeCustomerId"
+    ]
   }
 
   static get reservedPatchFields() {
@@ -51,7 +61,8 @@ class User extends visibility(password(BaseModel)) {
       "deleted",
       "verified",
       "avatar",
-      "stripeAccountId"
+      "stripeAccountId",
+      "stripeCustomerId"
     ]
   }
 
@@ -108,6 +119,10 @@ class User extends visibility(password(BaseModel)) {
     if (this.bio) this.bio = text.clean(this.bio)
     if (!opt || (this.avatar || this.avatar === null))
       this.avatar = await this.generateAvatar(opt)
+    if (this.stripeAccountId) this.hasStripeAccount = true
+    else if (this.stripeAccountId === null) this.hasStripeAccount = false
+    if (this.stripeCustomerId) this.isStripeCustomer = true
+    else if (this.stripeCustomerId === null) this.isStripeCustomer = false
   }
 
   async generateAvatar(opt) {
