@@ -150,7 +150,11 @@ class Commission extends BaseModel {
 
     // finalize only if both the forms are the same and they both accept
     // and mark the commission as private by setting the artist_id
-    if (forms[0].accepted && forms[1].accepted && newFormsAreEqual)
+    if (
+      negotiations[0].accepted &&
+      negotiations[1].accepted &&
+      newFormsAreEqual
+    )
       [negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
           .where("artist_id", artistId)
