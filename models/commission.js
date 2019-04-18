@@ -63,6 +63,14 @@ class Commission extends BaseModel {
           from: "commissions.id",
           to: "reviews.id"
         }
+      },
+      payments: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "payment",
+        join: {
+          from: "commissions.id",
+          to: "payments.commission_id"
+        }
       }
     }
   }
