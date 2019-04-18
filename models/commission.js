@@ -159,7 +159,7 @@ class Commission extends BaseModel {
         this.$relatedQuery("negotiations", trx)
           .where("artist_id", artistId)
           .patch({ finalized: true }),
-        this.$query(trx).patch({ artistId })
+        this.$query(trx).patch(Object.assign({ artistId }, forms[0]))
       ])
 
     return negotiations
