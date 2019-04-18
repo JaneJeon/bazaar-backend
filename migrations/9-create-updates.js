@@ -2,11 +2,12 @@ const tableName = "updates"
 
 exports.up = knex =>
   knex.schema.createTable(tableName, table => {
-    table.increments()
     table
       .integer("commission_id")
       .references("commissions.id")
       .notNullable()
+    table.integer("update_num").notNullable()
+    table.primary(["commission_id", "update_num"])
 
     table.integer("price").notNullable()
     table.text("price_unit").notNullable()
@@ -14,7 +15,7 @@ exports.up = knex =>
     table.integer("delays").notNullable()
     table.boolean("waived").notNullable()
     table.date("deadline").notNullable()
-    table.text("picture")
+    table.jsonb("pictures")
 
     table.integer("payment_id").references("payments.id")
   })

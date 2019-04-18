@@ -20,7 +20,7 @@ class Payment extends BaseModel {
 
   static get relationMappings() {
     return {
-      // TODO: add relations from user(A/B), art, update
+      // TODO: add relations from user(A/B), art
     }
   }
 

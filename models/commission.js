@@ -71,6 +71,14 @@ class Commission extends BaseModel {
           from: "commissions.id",
           to: "payments.commission_id"
         }
+      },
+      updates: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "update",
+        join: {
+          from: "commissions.id",
+          to: "updates.commission_id"
+        }
       }
     }
   }
