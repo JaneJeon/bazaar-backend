@@ -1,6 +1,7 @@
 require("./config/env")
 require("./config/passport")
 require("express-async-errors")
+require("./jobs")
 
 const express = require("express")
 const app = express()

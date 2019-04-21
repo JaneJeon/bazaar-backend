@@ -4,6 +4,8 @@ const assert = require("http-assert")
 const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
 const { Payment } = require("../models")
 const { transaction } = require("objection")
+const dayjs = require("dayjs")
+const queue = require("../lib/queue")
 
 module.exports = Router()
   .use((req, res, next) => next(req.ensureVerified()))
@@ -65,6 +67,42 @@ module.exports = Router()
       })
 
       await commission.$query(trx).patch({ status: "in progress" })
+
+      const updates = []
+      const now = dayjs()
+      const days = dayjs(commission.deadline).diff(now, "day")
+
+      for (let i = 0; i <= commission.numUpdates; i++) {
+        const update = {
+          updateNum: i,
+          priceUnit: commission.priceUnit,
+          deadline: dayjs()
+            .add(Math.ceil((i * days) / commission.numUpdates), "day")
+            .format("YYYY-MM-DD")
+        }
+
+        if (i == 0) {
+          update.price =
+            (commission.price * (1 - commission.numUpdates / 5)) / 2
+          update.pictures = [""]
+        } else if (i == commission.numUpdates - 1) {
+          update.price = commission.price / 5
+        } else {
+          update.price =
+            (commission.price * (1 - commission.numUpdates / 5)) / 2
+        }
+
+        updates.push(update)
+      }
+
+      await commission.$relatedQuery("updates", trx).insert(updates)
+
+      for (const update of updates)
+        await queue.add(
+          "updateCheck",
+          { commissionId: commission.id, updateNum: update.updateNum }, // TODO: do I need to add "today"?
+          { delay: dayjs(update.deadline).diff(now) }
+        )
     })
 
     res.sendStatus(201)

@@ -10,7 +10,7 @@ class Update extends BaseModel {
       type: "object",
       properties: {
         updateNum: { type: "integer" },
-        price: { type: "integer" },
+        price: { type: "number" },
         priceUnit: { type: "string" },
         delays: { type: "integer", default: 0 },
         waived: { type: "boolean", default: false },

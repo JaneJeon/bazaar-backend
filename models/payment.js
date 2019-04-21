@@ -11,7 +11,7 @@ class Payment extends BaseModel {
         artId: { type: "integer" },
         commissionId: { type: "integer" },
         stripeChargeId: { type: "string" },
-        price: { type: "integer" },
+        price: { type: "number" },
         priceUnit: { type: "string" }
       },
       // TODO: figure out from which model(s) I want to process payment from

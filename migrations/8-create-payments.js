@@ -17,7 +17,7 @@ exports.up = knex =>
     table.integer("commission_id").references("commissions.id")
 
     table.text("stripe_charge_id").notNullable()
-    table.integer("price").notNullable()
+    table.float("price").notNullable()
     table.text("price_unit").notNullable()
 
     table.timestamps()
