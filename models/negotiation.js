@@ -16,7 +16,7 @@ class Negotiation extends BaseModel {
         accepted: { type: "boolean", default: false },
         finalized: { type: "boolean", default: false },
         price: { type: "integer", minimum: process.env.MIN_PRICE },
-        priceUnit: { type: "string", enum: ["USD"], default: "USD" },
+        priceUnit: { type: "string", enum: ["usd"], default: "usd" },
         deadline: { type: "string", format: "date" }, // ISO format
         numUpdates: { type: "integer", minimum: 0, maximum: 5, default: 0 },
         copyright: {
