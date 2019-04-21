@@ -4,6 +4,7 @@ const assert = require("http-assert")
 const pickBy = require("lodash/pickBy")
 const pick = require("lodash/pick")
 const isEqual = require("lodash/isEqual")
+const dayjs = require("dayjs")
 
 class Commission extends BaseModel {
   static get jsonSchema() {
@@ -117,8 +118,7 @@ class Commission extends BaseModel {
       this,
       (v, k) => v !== null && this.constructor.negotiationFields.includes(k)
     )
-    // YYYY-MM-DD
-    base.deadline = this.deadline.toISOString().substr(0, 10)
+    base.deadline = dayjs(this.deadline).format("YYYY-MM-DD")
 
     return this.$relatedQuery("negotiations").insert([
       // auto-accept for the buyer
