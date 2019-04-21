@@ -171,9 +171,7 @@ class User extends visibility(password(BaseModel)) {
   static get QueryBuilder() {
     return class extends super.QueryBuilder {
       findById(id, self) {
-        return self && self.id == id
-          ? self
-          : super.where("deleted", false).findById(id)
+        return self && self.id == id ? self : super.findById(id) // TODO: .where("deleted", false)
       }
 
       findByEmail(email) {
