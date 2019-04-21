@@ -6,6 +6,7 @@ class Payment extends BaseModel {
       type: "object",
       properties: {
         // TODO: attach "purchase" method to the user model as buyer
+        buyerId: { type: "string" },
         artistId: { type: "string" },
         artId: { type: "integer" },
         commissionId: { type: "integer" },
@@ -13,7 +14,8 @@ class Payment extends BaseModel {
         price: { type: "integer" },
         priceUnit: { type: "string" }
       },
-      required: ["artistId", "stripeChargeId", "price", "priceUnit"],
+      // TODO: figure out from which model(s) I want to process payment from
+      // required: ["artistId", "stripeChargeId", "price", "priceUnit"],
       additionalProperties: false
     }
   }
