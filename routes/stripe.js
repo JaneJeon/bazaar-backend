@@ -101,7 +101,11 @@ module.exports = Router()
         updates.map(update =>
           commissionCheckUpdateJob.add(
             // TODO: do I need to add "today"?
-            { commissionId: commission.id, updateNum: update.updateNum },
+            {
+              commissionId: commission.id,
+              updateNum: update.updateNum,
+              late: 0
+            },
             { delay: dayjs(update.deadline).diff(now) }
           )
         )

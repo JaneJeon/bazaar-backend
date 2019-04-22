@@ -18,11 +18,12 @@ queue.process(taskName, async (job, data) => {
       if (data.late)
         await commission.$query(trx).patch({
           deadline: dayjs(commission.deadline)
-            .add(1, "day")
+            .add(data.late, "day")
             .format("YYYY-MM-DD")
         })
     } else {
-      if (data.late)
+      if (data.late == 1)
+        // check after 48h and the buyer still hasn't paid
         // cancel commission
         await commissionCancelJob.add(data)
       else {

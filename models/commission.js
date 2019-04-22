@@ -190,11 +190,7 @@ class Commission extends BaseModel {
       // add job only when the finalization is confirmed to work, since
       // we don't keep track of jobs in our database
       await commissionCheckPaymentJob.add(
-        {
-          commissionId: this.id,
-          buyerId: this.buyerId,
-          late: 0
-        },
+        { commissionId: this.id, late: 0 },
         { delay: 24 * 60 * 60 * 1000 } // schedule to be run in 24h
       )
     }
