@@ -11,6 +11,12 @@ exports.add = async (data, opts) => {
   return queue.add(taskName, data, opts)
 }
 
+exports.trigger = async jobId => {
+  const job = await queue.getJob(`${taskName}-${jobId}`)
+
+  if (job !== null) await job.promote()
+}
+
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {
     const update = await Update.query(trx).findById([

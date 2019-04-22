@@ -23,6 +23,7 @@ module.exports = Router({ mergeParams: true })
 
     res.status(201).send(updates)
   })
+  // TODO: transaction-ify
   .patch(
     "/:updateNum",
     upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),

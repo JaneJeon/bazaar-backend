@@ -1,5 +1,6 @@
 const BaseModel = require("./base")
 const image = require("../lib/image")
+const commissionCheckUpdateJob = require("../jobs/commission-check-update")
 
 class Update extends BaseModel {
   static get idColumn() {
@@ -55,11 +56,10 @@ class Update extends BaseModel {
           async picture => await image.upload(picture, "PICTURE", "inside")
         )
       )
-  }
-
-  async $beforeInsert(queryContext) {
-    await super.$beforeInsert(queryContext)
-    await this.processInput()
+    if (this.pictures || this.waived)
+      await commissionCheckUpdateJob.trigger(
+        `${this.commissionId}-${this.updateNum}`
+      )
   }
 
   async $beforeUpdate(opt, queryContext) {
