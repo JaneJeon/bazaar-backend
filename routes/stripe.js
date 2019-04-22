@@ -5,7 +5,7 @@ const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
 const { Payment } = require("../models")
 const { transaction } = require("objection")
 const dayjs = require("dayjs")
-const queue = require("../lib/queue")
+const checkCommissionUpdateJob = require("../jobs/check-commission-update")
 
 module.exports = Router()
   .use((req, res, next) => next(req.ensureVerified()))
@@ -97,12 +97,15 @@ module.exports = Router()
 
       await commission.$relatedQuery("updates", trx).insert(updates)
 
-      for (const update of updates)
-        await queue.add(
-          "updateCheck",
-          { commissionId: commission.id, updateNum: update.updateNum }, // TODO: do I need to add "today"?
-          { delay: dayjs(update.deadline).diff(now) }
+      await Promise.all(
+        updates.map(update =>
+          checkCommissionUpdateJob.add(
+            // TODO: do I need to add "today"?
+            { commissionId: commission.id, updateNum: update.updateNum },
+            { delay: dayjs(update.deadline).diff(now) }
+          )
         )
+      )
     })
 
     res.sendStatus(201)
