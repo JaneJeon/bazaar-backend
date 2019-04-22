@@ -1,15 +1,20 @@
 const { Router } = require("express")
-const { Payment } = require("../models")
+const { Commission, Payment } = require("../models")
 const { transaction } = require("objection")
 const dayjs = require("dayjs")
 const commissionCheckUpdateJob = require("../jobs/commission-check-update")
 const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
+const assert = require("http-assert")
 
 module.exports = Router({ mergeParams: true })
   .use(async (req, res, next) => {
-    // TODO: common req.commission?
-    // TODO: limit access
-    next()
+    req.commission = await Commission.query().findById(req.params.commissionId)
+
+    if (req.user.id == req.commission.buyerId) req.isArtist = false
+    else if (req.user.id == req.commission.artistId) req.isArtist = true
+
+    // limit access
+    next(assert(req.isArtist !== undefined, 403))
   })
   // endpoint for buyer to actually start the commission
   .post("/", async (req, res) => {
