@@ -5,6 +5,7 @@ const pickBy = require("lodash/pickBy")
 const pick = require("lodash/pick")
 const isEqual = require("lodash/isEqual")
 const dayjs = require("dayjs")
+const commissionCheckPaymentJob = require("../jobs/commission-check-payment")
 
 class Commission extends BaseModel {
   static get jsonSchema() {
@@ -15,7 +16,14 @@ class Commission extends BaseModel {
         isPrivate: { type: "boolean", default: false },
         status: {
           type: "string",
-          enum: ["open", "accepted", "rejected", "completed", "cancelled"],
+          enum: [
+            "open",
+            "accepted",
+            "in progress",
+            "rejected",
+            "completed",
+            "cancelled"
+          ],
           default: "open"
         },
         price: { type: "integer", minimum: process.env.MIN_PRICE },
@@ -170,13 +178,26 @@ class Commission extends BaseModel {
       negotiations[0].accepted &&
       negotiations[1].accepted &&
       newFormsAreEqual
-    )
-      [negotiations] = await Promise.all([
+    ) {
+      // noinspection JSUnnecessarySemicolon
+      ;[negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
           .where("artist_id", artistId)
           .patch({ finalized: true }),
         this.$query(trx).patch(Object.assign({ artistId }, forms[0]))
       ])
+
+      // add job only when the finalization is confirmed to work, since
+      // we don't keep track of jobs in our database
+      await commissionCheckPaymentJob.add(
+        {
+          commissionId: this.id,
+          buyerId: this.buyerId,
+          late: 0
+        },
+        { delay: 24 * 60 * 60 * 1000 } // schedule to be run in 24h
+      )
+    }
 
     return negotiations
   }
