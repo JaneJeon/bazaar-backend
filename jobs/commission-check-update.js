@@ -6,7 +6,10 @@ const commissionPayoutJob = require("./commission-payout")
 const commissionCancelJob = require("./commission-cancel")
 const dayjs = require("dayjs")
 
-exports.add = async (data, opts) => queue.add(taskName, data, opts)
+exports.add = async (data, opts) => {
+  if (opts.jobId) opts.jobId = `${taskName}-${opts.jobId}`
+  return queue.add(taskName, data, opts)
+}
 
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {

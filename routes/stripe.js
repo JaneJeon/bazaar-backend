@@ -10,7 +10,7 @@ const commissionCheckUpdateJob = require("../jobs/commission-check-update")
 module.exports = Router()
   .use((req, res, next) => next(req.ensureVerified()))
   // endpoint for artists to start getting paid
-  .post("/account", async (req, res) => {
+  .post("/accounts", async (req, res) => {
     // using axios instead of stripe since stripe SDK only creates custom accounts
     const { data } = await axios.post(
       "https://connect.stripe.com/oauth/token",
@@ -27,7 +27,7 @@ module.exports = Router()
 
     res.end()
   })
-  .post("/customer", async (req, res) => {
+  .post("/customers", async (req, res) => {
     // require a source because we don't really need to create a stripe customer
     // unless they want to integrate a payment source (e.g. card)
     assert(req.body.stripeToken, 401)
@@ -100,13 +100,15 @@ module.exports = Router()
       await Promise.all(
         updates.map(update =>
           commissionCheckUpdateJob.add(
-            // TODO: do I need to add "today"?
             {
               commissionId: commission.id,
               updateNum: update.updateNum,
               late: 0
             },
-            { delay: dayjs(update.deadline).diff(now) }
+            {
+              delay: dayjs(update.deadline).diff(now),
+              jobId: `${commission.id}-${update.updateNum}`
+            }
           )
         )
       )
