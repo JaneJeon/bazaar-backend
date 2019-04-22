@@ -1,5 +1,5 @@
 const queue = require("../lib/queue")
-const taskName = "checkCommissionUpdate"
+const taskName = "commissionCheckPayment"
 
 exports.add = async (data, opts) => queue.add(taskName, data, opts)
 

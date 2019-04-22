@@ -5,7 +5,7 @@ const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
 const { Payment } = require("../models")
 const { transaction } = require("objection")
 const dayjs = require("dayjs")
-const checkCommissionUpdateJob = require("../jobs/check-commission-update")
+const commissionCheckUpdateJob = require("../jobs/commission-check-update")
 
 module.exports = Router()
   .use((req, res, next) => next(req.ensureVerified()))
@@ -99,7 +99,7 @@ module.exports = Router()
 
       await Promise.all(
         updates.map(update =>
-          checkCommissionUpdateJob.add(
+          commissionCheckUpdateJob.add(
             // TODO: do I need to add "today"?
             { commissionId: commission.id, updateNum: update.updateNum },
             { delay: dayjs(update.deadline).diff(now) }
