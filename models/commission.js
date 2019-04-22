@@ -5,7 +5,9 @@ const pickBy = require("lodash/pickBy")
 const pick = require("lodash/pick")
 const isEqual = require("lodash/isEqual")
 const dayjs = require("dayjs")
+const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
 const commissionCheckPaymentJob = require("../jobs/commission-check-payment")
+const commissionCheckUpdateJob = require("../jobs/commission-check-update")
 
 class Commission extends BaseModel {
   static get jsonSchema() {
@@ -196,6 +198,70 @@ class Commission extends BaseModel {
     }
 
     return negotiations
+  }
+
+  // pays for the commission, adds update rows, and kickstarts update jobs
+  async beginCommission(stripeCustomerId, trx) {
+    const charge = await stripe.charges.create({
+      amount: this.price,
+      currency: this.priceUnit,
+      transfer_group: `commission-${this.id}`,
+      customer: stripeCustomerId
+    })
+
+    await this.$relatedQuery("payments", trx).insert({
+      buyerId: this.buyerId,
+      artistId: this.artistId,
+      price: this.price,
+      priceUnit: this.priceUnit,
+      stripeChargeId: charge.id
+    })
+
+    await this.$query(trx).patch({ status: "in progress" })
+
+    const updates = []
+    const now = dayjs()
+    const days = dayjs(this.deadline).diff(now, "day")
+
+    for (let i = 0; i <= this.numUpdates; i++) {
+      const update = {
+        updateNum: i,
+        priceUnit: this.priceUnit,
+        deadline: dayjs()
+          .add(Math.ceil((i * days) / this.numUpdates), "day")
+          .format("YYYY-MM-DD")
+      }
+
+      if (i == 0) {
+        update.price = (this.price * (1 - this.numUpdates / 5)) / 2
+        update.pictures = [""]
+      } else if (i == this.numUpdates - 1) {
+        update.price = this.price / 5
+      } else {
+        update.price = (this.price * (1 - this.numUpdates / 5)) / 2
+      }
+
+      updates.push(update)
+    }
+
+    await this.$relatedQuery("updates", trx).insert(updates)
+
+    // put jobs after all db queries are done for safety
+    await Promise.all(
+      updates.map(update =>
+        commissionCheckUpdateJob.add(
+          {
+            commissionId: this.id,
+            updateNum: update.updateNum,
+            late: 0
+          },
+          {
+            delay: dayjs(update.deadline).diff(now),
+            jobId: `${this.id}-${update.updateNum}`
+          }
+        )
+      )
+    )
   }
 }
 
