@@ -1,4 +1,5 @@
 const BaseModel = require("./base")
+const image = require("../lib/image")
 
 class Update extends BaseModel {
   static get idColumn() {
@@ -45,6 +46,25 @@ class Update extends BaseModel {
         }
       }
     }
+  }
+
+  async processInput() {
+    if (this.pictures)
+      this.pictures = await Promise.all(
+        this.pictures.map(
+          async picture => await image.upload(picture, "PICTURE", "inside")
+        )
+      )
+  }
+
+  async $beforeInsert(queryContext) {
+    await super.$beforeInsert(queryContext)
+    await this.processInput()
+  }
+
+  async $beforeUpdate(opt, queryContext) {
+    await super.$beforeUpdate(opt, queryContext)
+    await this.processInput()
   }
 }
 

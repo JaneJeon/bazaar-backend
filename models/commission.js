@@ -219,7 +219,7 @@ class Commission extends BaseModel {
 
     await this.$query(trx).patch({ status: "in progress" })
 
-    const updates = []
+    const updateRows = []
     const now = dayjs()
     const days = dayjs(this.deadline).diff(now, "day")
 
@@ -241,14 +241,14 @@ class Commission extends BaseModel {
         update.price = (this.price * (1 - this.numUpdates / 5)) / 2
       }
 
-      updates.push(update)
+      updateRows.push(update)
     }
 
-    await this.$relatedQuery("updates", trx).insert(updates)
+    const updates = await this.$relatedQuery("updates", trx).insert(updateRows)
 
     // put jobs after all db queries are done for safety
     await Promise.all(
-      updates.map(update =>
+      updateRows.map(update =>
         commissionCheckUpdateJob.add(
           {
             commissionId: this.id,
@@ -262,6 +262,8 @@ class Commission extends BaseModel {
         )
       )
     )
+
+    return updates
   }
 }
 

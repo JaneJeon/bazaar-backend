@@ -17,9 +17,32 @@ module.exports = Router({ mergeParams: true })
   .post("/", async (req, res) => {
     assert(req.isArtist === false, 403)
 
-    await transaction(Commission.knex(), async trx =>
+    const updates = await transaction(Commission.knex(), async trx =>
       req.commission.beginCommission(req.user.stripeCustomerId, trx)
     )
 
-    res.sendStatus(201)
+    res.status(201).send(updates)
+  })
+  .patch(
+    "/:updateNum",
+    upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),
+    async (req, res) => {
+      assert(req.isArtist, 403)
+
+      let update = await req.commission
+        .$relatedQuery("updates")
+        .where("update_num", req.params.updateNum)
+        .first()
+
+      update = await update
+        .$query()
+        .patch({ pictures: Array.from(req.files).map(file => file.path) })
+
+      res.send(update)
+    }
+  )
+  .patch("/:updateNum/waive", async (req, res) => {
+    assert(req.isArtist === false, 403)
+
+    res.end()
   })
