@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { Commission } = require("../models")
+const { Commission, Payment } = require("../models")
 const { transaction } = require("objection")
 const upload = require("../config/multer")
 
@@ -29,10 +29,10 @@ module.exports = Router({ mergeParams: true })
     async (req, res) => {
       assert(req.isArtist, 403)
 
-      let update = await req.commission
-        .$relatedQuery("updates")
-        .where("update_num", req.params.updateNum)
-        .first()
+      let update = await Payment.query().findById([
+        req.params.commissionId,
+        req.params.updateNum
+      ])
 
       update = await update
         .$query()
@@ -44,5 +44,12 @@ module.exports = Router({ mergeParams: true })
   .patch("/:updateNum/waive", async (req, res) => {
     assert(req.isArtist === false, 403)
 
-    res.end()
+    let update = await Payment.query().findById([
+      req.params.commissionId,
+      req.params.updateNum
+    ])
+
+    update = await update.$query().patch({ waived: true })
+
+    res.send(update)
   })
