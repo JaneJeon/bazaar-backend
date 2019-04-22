@@ -45,12 +45,12 @@ module.exports = Router({ mergeParams: true })
   .patch("/:updateNum/waive", async (req, res) => {
     assert(req.isArtist === false, 403)
 
-    let update = await Payment.query().findById([
+    const update = await Payment.query().findById([
       req.params.commissionId,
       req.params.updateNum
     ])
 
-    update = await update.$query().patch({ waived: true })
+    await update.$query().patch({ waived: true })
 
-    res.send(update)
+    res.end()
   })
