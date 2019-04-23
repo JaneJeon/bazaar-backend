@@ -5,7 +5,7 @@ const pickBy = require("lodash/pickBy")
 const pick = require("lodash/pick")
 const isEqual = require("lodash/isEqual")
 const dayjs = require("dayjs")
-const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
+const stripe = require("../lib/stripe")
 const commissionCheckPaymentJob = require("../jobs/commission-check-payment")
 const commissionCheckUpdateJob = require("../jobs/commission-check-update")
 

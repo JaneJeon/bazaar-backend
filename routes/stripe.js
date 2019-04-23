@@ -1,7 +1,7 @@
 const { Router } = require("express")
 const axios = require("axios").default
 const assert = require("http-assert")
-const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY)
+const stripe = require("../lib/stripe")
 
 module.exports = Router()
   // endpoint for artists to start getting paid
