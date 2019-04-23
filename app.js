@@ -15,6 +15,9 @@ const router = require("./routes")
 const errorHandler = require("./config/error")
 
 if (process.env.NODE_ENV == "production") app.enable("trust proxy")
+else if (process.env.NODE_ENV == "development")
+  app.use(require("morgan")("dev"))
+
 app
   .use(helmet())
   .use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
