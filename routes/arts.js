@@ -1,6 +1,8 @@
 const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art } = require("../models")
+const assert = require("http-assert")
+const stripe = require("../lib/stripe")
 
 module.exports = Router()
   // the "discover" page
@@ -56,6 +58,22 @@ module.exports = Router()
     art = await art.$query().patch(req.body)
 
     res.send(art)
+  })
+  .patch("/:artId/purchase", async (req, res) => {
+    const art = await Art.query().findById(req.params.artId)
+
+    const charge = await stripe.charges.create({
+      amount: art.price,
+      currency: art.priceUnit,
+      transfer_group: `${req.params.artId}`,
+      customer: req.user.stripeCustomerId
+    })
+
+    art = await art.$query().patch({status: "sold"})
+
+    let bought = req.user.$relatedQuery("artsBought").relate(art)
+    res.send(bought)
+
   })
   .delete("/:artId", async (req, res) => {
     const art = await req.user.$relatedQuery("arts").findById(req.params.artId)

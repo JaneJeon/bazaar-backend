@@ -44,6 +44,7 @@ module.exports = Router({ mergeParams: true })
   .use((req, res, next) => next(req.ensureVerified()))
   .post("/", async (req, res) => {
     // negotiation forms for buyer and artist
+    // TODO: transaction-ify
     const negotiations = await req.commission.beginNegotiation(
       req.isBuyer,
       req.user.id,

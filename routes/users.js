@@ -3,7 +3,6 @@ const { User } = require("../models")
 const tempToken = require("../lib/temp-token")
 const assert = require("http-assert")
 const upload = require("../config/multer")
-const stripe = require("../lib/stripe")
 
 module.exports = Router()
   // user info
@@ -15,6 +14,12 @@ module.exports = Router()
   .get("/:userId/arts", async (req, res) => {
     const user = await User.query().findById(req.params.userId, req.user)
     const arts = await user.$relatedQuery("arts").paginate(req.query.after)
+
+    res.send(arts)
+  })
+  .get(":userId/arts/bought", async (req, res) => {
+    const user = await User.query().findById(req.params.userId, req.user)
+    const arts = await user.$relatedQuery("artsBought").paginate(req.query.after)
 
     res.send(arts)
   })
@@ -98,6 +103,14 @@ module.exports = Router()
     await tempToken.consume("reset", id)
   })
   .use((req, res, next) => next(assert(req.user, 401)))
+  .get("/negotiations", async (req, res) => {
+    const negotiations = await Negotiation.query()
+      .where("artist_id", req.user.id)
+      .where("finalized", false)
+      .paginate(req.query.after)
+
+    res.send(negotiations)
+  })
   .patch("/stripe/authorize/callback", async (req, res) => {
     const { data } = await stripe.connectArtist(req.query.code)
     const user = await req.user

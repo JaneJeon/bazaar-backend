@@ -34,8 +34,10 @@ class User extends visibility(password(BaseModel)) {
         },
         bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH },
         rating: { type: "integer" },
+        stripeAccountId: { type: "string" },
         stripeCustomerId: { type: "string" },
-        stripeAccountId: { type: "string" }
+        hasStripeAccount: { type: "boolean", default: false },
+        isStripeCustomer: { type: "boolean", default: false }
       },
       required: ["username", "email", "password"],
       additionalProperties: false
@@ -48,8 +50,8 @@ class User extends visibility(password(BaseModel)) {
       "deleted",
       "verified",
       "avatar",
-      "stripeCustomerId",
-      "stripeAccountId"
+      "stripeAccountId",
+      "stripeCustomerId"
     ]
   }
 
@@ -60,14 +62,30 @@ class User extends visibility(password(BaseModel)) {
       "deleted",
       "verified",
       "avatar",
-      "stripeCustomerId",
-      "stripeAccountId"
+      "stripeAccountId",
+      "stripeCustomerId"
     ]
   }
 
   static get relationMappings() {
     return {
       arts: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "art",
+        join: {
+          from: "users.id",
+          to: "arts.artist_id"
+        }
+      },
+      artsBought: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "art",
+        join: {
+          from: "users.id",
+          to: "arts.artist_id"
+        }
+      },
+      artsSold: {
         relation: BaseModel.HasManyRelation,
         modelClass: "art",
         join: {
@@ -131,7 +149,7 @@ class User extends visibility(password(BaseModel)) {
   }
 
   static get hidden() {
-    return ["password"]
+    return ["password", "stripe_account_id", "stripe_customer_id"]
   }
 
   async processInput(opt) {
@@ -142,6 +160,10 @@ class User extends visibility(password(BaseModel)) {
     if (this.bio) this.bio = text.clean(this.bio)
     if (!opt || (this.avatar || this.avatar === null))
       this.avatar = await this.generateAvatar(opt)
+    if (this.stripeAccountId) this.hasStripeAccount = true
+    else if (this.stripeAccountId === null) this.hasStripeAccount = false
+    if (this.stripeCustomerId) this.isStripeCustomer = true
+    else if (this.stripeCustomerId === null) this.isStripeCustomer = false
   }
 
   async generateAvatar(opt) {
@@ -165,7 +187,7 @@ class User extends visibility(password(BaseModel)) {
   static get QueryBuilder() {
     return class extends super.QueryBuilder {
       findById(id, self) {
-        return self && self.id == id ? self : super.findById(id)
+        return self && self.id == id ? self : super.findById(id) // TODO: .where("deleted", false)
       }
 
       findByEmail(email) {

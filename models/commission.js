@@ -4,6 +4,10 @@ const assert = require("http-assert")
 const pickBy = require("lodash/pickBy")
 const pick = require("lodash/pick")
 const isEqual = require("lodash/isEqual")
+const dayjs = require("dayjs")
+const stripe = require("../lib/stripe")
+const commissionCheckPaymentJob = require("../jobs/commission-check-payment")
+const commissionCheckUpdateJob = require("../jobs/commission-check-update")
 
 class Commission extends BaseModel {
   static get jsonSchema() {
@@ -14,11 +18,18 @@ class Commission extends BaseModel {
         isPrivate: { type: "boolean", default: false },
         status: {
           type: "string",
-          enum: ["open", "accepted", "rejected", "completed", "cancelled"],
+          enum: [
+            "open",
+            "accepted",
+            "in progress",
+            "rejected",
+            "completed",
+            "cancelled"
+          ],
           default: "open"
         },
         price: { type: "integer", minimum: process.env.MIN_PRICE },
-        priceUnit: { type: "string", enum: ["USD"], default: "USD" },
+        priceUnit: { type: "string", enum: ["usd"], default: "usd" },
         deadline: { type: "string", format: "date" }, // ISO format
         numUpdates: { type: "integer", minimum: 0, maximum: 5, default: 0 },
         copyright: {
@@ -63,6 +74,22 @@ class Commission extends BaseModel {
           from: "commissions.id",
           to: "reviews.id"
         }
+      },
+      payments: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "payment",
+        join: {
+          from: "commissions.id",
+          to: "payments.commission_id"
+        }
+      },
+      updates: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "update",
+        join: {
+          from: "commissions.id",
+          to: "updates.commission_id"
+        }
       }
     }
   }
@@ -101,8 +128,7 @@ class Commission extends BaseModel {
       this,
       (v, k) => v !== null && this.constructor.negotiationFields.includes(k)
     )
-    // YYYY-MM-DD
-    base.deadline = this.deadline.toISOString().substr(0, 10)
+    base.deadline = dayjs(this.deadline).format("YYYY-MM-DD")
 
     return this.$relatedQuery("negotiations").insert([
       // auto-accept for the buyer
@@ -154,15 +180,90 @@ class Commission extends BaseModel {
       negotiations[0].accepted &&
       negotiations[1].accepted &&
       newFormsAreEqual
-    )
-      [negotiations] = await Promise.all([
+    ) {
+      // noinspection JSUnnecessarySemicolon
+      ;[negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
           .where("artist_id", artistId)
           .patch({ finalized: true }),
-        this.$query(trx).patch({ artistId })
+        this.$query(trx).patch(Object.assign({ artistId }, forms[0]))
       ])
 
+      // add job only when the finalization is confirmed to work, since
+      // we don't keep track of jobs in our database
+      await commissionCheckPaymentJob.add(
+        { commissionId: this.id, late: 0 },
+        { delay: 24 * 60 * 60 * 1000 } // schedule to be run in 24h
+      )
+    }
+
     return negotiations
+  }
+
+  // pays for the commission, adds update rows, and kickstarts update jobs
+  async beginCommission(stripeCustomerId, trx) {
+    const charge = await stripe.charges.create({
+      amount: this.price,
+      currency: this.priceUnit,
+      transfer_group: `commission-${this.id}`,
+      customer: stripeCustomerId
+    })
+
+    await this.$relatedQuery("payments", trx).insert({
+      buyerId: this.buyerId,
+      artistId: this.artistId,
+      price: this.price,
+      priceUnit: this.priceUnit,
+      stripeChargeId: charge.id
+    })
+
+    await this.$query(trx).patch({ status: "in progress" })
+
+    const updateRows = []
+    const now = dayjs()
+    const days = dayjs(this.deadline).diff(now, "day")
+
+    for (let i = 0; i <= this.numUpdates; i++) {
+      const update = {
+        updateNum: i,
+        priceUnit: this.priceUnit,
+        deadline: dayjs()
+          .add(Math.ceil((i * days) / this.numUpdates), "day")
+          .format("YYYY-MM-DD")
+      }
+
+      if (i == 0) {
+        update.price = (this.price * (1 - this.numUpdates / 5)) / 2
+        update.pictures = [""]
+      } else if (i == this.numUpdates - 1) {
+        update.price = this.price / 5
+      } else {
+        update.price = (this.price * (1 - this.numUpdates / 5)) / 2
+      }
+
+      updateRows.push(update)
+    }
+
+    const updates = await this.$relatedQuery("updates", trx).insert(updateRows)
+
+    // put jobs after all db queries are done for safety
+    await Promise.all(
+      updateRows.map(update =>
+        commissionCheckUpdateJob.add(
+          {
+            commissionId: this.id,
+            updateNum: update.updateNum,
+            late: 0
+          },
+          {
+            delay: dayjs(update.deadline).diff(now),
+            jobId: `${this.id}-${update.updateNum}`
+          }
+        )
+      )
+    )
+
+    return updates
   }
 }
 
