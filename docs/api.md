@@ -85,6 +85,9 @@ A commission can have multiple ongoing negotiations with different artists. When
 ### Chat
 Each negotiation has a chat room in which the buyer and the artist can discuss the details of the negotiation.
 
+### Stripe
+There are two types of stripe accounts. A seller account and a customer account used to make purchases. In order to make a customer account, you must submit credit card information in the form of a stripe token to the backend. It will be impossible to begin a commission on the buyer side without first making a customer account. The seller account is required for artists to accept payments. In order to establish a seller account, an authorization code must be sent to the backend. The User model has `hasStripeAccount` and `isStripeCustomer` properties so that the frontend can verify whether or not the appropriate stripe account exists.
+
 ## Routes
 - [POST `/sessions`](#posts)
 - [DELETE `/sessions`](#dels)
@@ -124,6 +127,10 @@ Each negotiation has a chat room in which the buyer and the artist can discuss t
 
 - [GET `/commissions/:commissionId/negotiations/:artistId/chats`](#getccnac)
 - [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
+
+- [POST `/stripe/accounts`] (#postsacc)
+- [POST `/stripe/customers`] (#postscust)
+- [PATCH `/stripe/commissions/:commissionId`] (#patchscomm)
 
 ### <a name="posts"></a>POST `/sessions`
 This endpoint is used to login existing users. Fields `username` and `password` are expected. Returns an instance of the user object.
@@ -215,3 +222,12 @@ This endpoint is used to load previous chats.
 
 ### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
 This *websocket* endpoint is used to communicate live with the other party - creating chat messages and receiving *live* updates should be done through this socket.
+
+### <a name="#postsacc"></a> POST `/stripe/accounts`
+This post method should be used to create a seller account for an artist. It takes in data containing the authorization code obtained from stripe on the frontend. This route requires that the user be logged in, and that the user sends over a cookie in order to be used.
+
+### <a name="#postscust"></a> POST `/stripe/customers`
+This post method should be used to create a customer account on the backend. It requires that the frontend send over a stripeToken for a payment source related to that user (e.g. credit card). The user must be logged, and the user must send over a cookie in order to use this route.
+
+### <a name="#patchscomm"></a> POST `/stripe/commissions/:commissionId`
+This patch method should be used to send the payment for a commission. By doing so, it begins the commission process on the backend. For a buyer to use this method, they must first be a valid stripe customer, which requires calling `/stripe/customers`. The user must be logged, and the user must send over a cookie in order to use this route.
