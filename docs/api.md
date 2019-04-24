@@ -128,13 +128,12 @@ There are two types of stripe accounts. A seller account and a customer account 
 - [GET `/commissions/:commissionId/negotiations/:artistId/chats`](#getccnac)
 - [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
 
-- [POST `/commissions/:commissionId/updates`] (#postcu)
-- [PATCH `/commissions/:commissionId/updates/:updateNum`] (#patchcun)
-- [PATCH `/commissions/:commissionId/updates/:updateNum/waive`] (#patchcunw)
+- [POST `/commissions/:commissionId/updates`](#postcu)
+- [PATCH `/commissions/:commissionId/updates/:updateNum`](#patchcun)
+- [PATCH `/commissions/:commissionId/updates/:updateNum/waive`](#patchcunw)
 
-- [POST `/stripe/accounts`] (#postsacc)
-- [POST `/stripe/customers`] (#postscust)
-- [PATCH `/stripe/commissions/:commissionId`] (#patchscomm)
+- [POST `/stripe/accounts`](#postsacc)
+- [POST `/stripe/customers`](#postscust)
 
 ### <a name="posts"></a>POST `/sessions`
 This endpoint is used to login existing users. Fields `username` and `password` are expected. Returns an instance of the user object.
