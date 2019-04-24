@@ -128,6 +128,7 @@ There are two types of stripe accounts. A seller account and a customer account 
 - [GET `/commissions/:commissionId/negotiations/:artistId/chats`](#getccnac)
 - [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
 
+- [GET `/commissions/:commissionId/updates/:updateNum`](#getccuu)
 - [POST `/commissions/:commissionId/updates`](#postcu)
 - [PATCH `/commissions/:commissionId/updates/:updateNum`](#patchcun)
 - [PATCH `/commissions/:commissionId/updates/:updateNum/waive`](#patchcunw)
@@ -225,6 +226,11 @@ This endpoint is used to load previous chats.
 
 ### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
 This *websocket* endpoint is used to communicate live with the other party - creating chat messages and receiving *live* updates should be done through this socket.
+
+### <a name="getccuu"></a> GET `/commissions/:commissionId/updates/:updateNum`
+This route allows both the artist and the buyer to access the update. If the artist submitted early and the buyer is trying to view the update `pictures` before the deadline, the artist will be paid early (this process may take some time, but it's all contained in one request so the end user just has to wait a while), and *then* the buyer will be allowed to view the update.
+
+If the artist did not submit the in-progress update `pictures`, the buyer can view it anytime (we're only ensuring that the artist gets paid when the buyer views the `pictures`).
 
 ### <a name="postcu"></a> POST `/commissions/:commissionId/updates`
 This post method should be used to send the payment for a commission. By doing so, it begins the commission process on the backend. For a buyer to use this method, they must first be a valid stripe customer, which requires calling `/stripe/customers`. The user must be logged, and the user must send over a cookie in order to use this route. This route cannot not be called by the artist, otherwise it will return a 403 error.
