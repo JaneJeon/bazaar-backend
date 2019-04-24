@@ -27,24 +27,27 @@ queue.process(taskName, async (job, data) => {
     const penalty = (update.commission.price / 20) * update.delays // 5%
 
     // pay out the artist
-    const stripeTransfer = await stripe.transfers.create({
+    const transfer = await stripe.transfers.create({
       amount: update.price - penalty,
       currency: update.priceUnit,
       destination: update.commission.artist.stripeAccountId,
       transfer_group: update.commission.transferGroup
     })
 
+    const changes = { stripeTransferId: transfer.id }
+
     // if the artist is late, refund certain amount to the buyer
-    if (penalty)
-      var stripeRefund = await stripe.refunds.create({
+    if (penalty) {
+      const refund = await stripe.refunds.create({
         charge: update.commission.stripeCharge.id,
         amount: penalty
       })
 
+      changes.stripeRefundId = refund.id
+    }
+
     // record payments
-    await update
-      .$query(trx)
-      .patch({ stripeTransfer, ...(stripeRefund & { stripeRefund }) })
+    await update.$query(trx).patch(changes)
 
     // if final, mark commission 'complete'
     if (update.updateNum == commission.numUpdates)

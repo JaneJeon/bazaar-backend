@@ -17,8 +17,8 @@ exports.up = knex =>
     table.date("deadline").notNullable()
     table.jsonb("pictures")
 
-    table.jsonb("stripe_transfer")
-    table.jsonb("stripe_refund")
+    table.text("stripe_transfer_id")
+    table.text("stripe_refund_id")
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)

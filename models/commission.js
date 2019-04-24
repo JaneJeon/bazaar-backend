@@ -42,11 +42,15 @@ class Commission extends BaseModel {
         },
         tags: { type: "array", items: { type: "string" } },
         deleted: { type: "boolean" }, // TODO: do I need this?
-        stripeCharge: { type: "object" }
+        stripeChargeId: { type: "string" }
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
     }
+  }
+
+  static get hidden() {
+    return ["stripeChargeId"]
   }
 
   static get relationMappings() {
@@ -208,7 +212,7 @@ class Commission extends BaseModel {
 
   // pays for the commission, adds update rows, and kickstarts update jobs
   async beginCommission(stripeCustomerId, trx) {
-    const stripeCharge = await stripe.charges.create({
+    const charge = await stripe.charges.create({
       amount: this.price,
       currency: this.priceUnit,
       transfer_group: this.transferGroup,
@@ -217,7 +221,7 @@ class Commission extends BaseModel {
 
     await this.$query(trx).patch({
       status: "in progress",
-      stripeCharge
+      stripeChargeId: charge.id
     })
 
     const updateRows = []

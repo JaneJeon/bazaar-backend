@@ -23,8 +23,8 @@ class Update extends BaseModel {
           minItems: 1,
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
-        stripeTransfer: { type: "object" },
-        stripeRefund: { type: "object" }
+        stripeTransferId: { type: "string" },
+        stripeRefundId: { type: "string" }
       },
       required: [
         "updateNum",
@@ -36,6 +36,10 @@ class Update extends BaseModel {
       ],
       additionalProperties: false
     }
+  }
+
+  static get hidden() {
+    return ["stripeTransferId", "stripeRefundId"]
   }
 
   static get relationMappings() {

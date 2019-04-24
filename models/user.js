@@ -36,8 +36,8 @@ class User extends visibility(password(BaseModel)) {
         rating: { type: "integer" },
         stripeAccountId: { type: "string" },
         stripeCustomerId: { type: "string" },
-        hasStripeAccount: { type: "boolean", default: false },
-        isStripeCustomer: { type: "boolean", default: false }
+        hasStripeAccount: { type: "boolean" },
+        isStripeCustomer: { type: "boolean" }
       },
       required: ["username", "email", "password"],
       additionalProperties: false
@@ -149,7 +149,7 @@ class User extends visibility(password(BaseModel)) {
   }
 
   static get hidden() {
-    return ["password", "stripe_account_id", "stripe_customer_id"]
+    return ["password", "stripeAccountId", "stripeCustomerId"]
   }
 
   async processInput(opt) {
