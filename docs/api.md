@@ -128,6 +128,10 @@ There are two types of stripe accounts. A seller account and a customer account 
 - [GET `/commissions/:commissionId/negotiations/:artistId/chats`](#getccnac)
 - [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
 
+- [POST `/commissions/:commissionId/updates`] (#postcu)
+- [PATCH `/commissions/:commissionId/updates/:updateNum`] (#patchcun)
+- [PATCH `/commissions/:commissionId/updates/:updateNum/waive`] (#patchcunw)
+
 - [POST `/stripe/accounts`] (#postsacc)
 - [POST `/stripe/customers`] (#postscust)
 - [PATCH `/stripe/commissions/:commissionId`] (#patchscomm)
@@ -223,11 +227,17 @@ This endpoint is used to load previous chats.
 ### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
 This *websocket* endpoint is used to communicate live with the other party - creating chat messages and receiving *live* updates should be done through this socket.
 
+### <a name="postcu"></a> POST `/commissions/:commissionId/updates`
+This post method should be used to send the payment for a commission. By doing so, it begins the commission process on the backend. For a buyer to use this method, they must first be a valid stripe customer, which requires calling `/stripe/customers`. The user must be logged, and the user must send over a cookie in order to use this route. This route cannot not be called by the artist, otherwise it will return a 403 error.
+
+### <a name="patchcun"></a> PATCH `/commissions/:commissionId/updates/:updateNum`
+Patch method to be called by the artist when submitting an update to the buyer. If the user is not the artist, this will return a 403 error. This method requires that an array of pictures be sent in the form of a formdata. This array is limited to four pictures. If this method is called successfully it will send an update object to the user. It will also initiate a transfer of money on the backend from us to the artist. In order to call this method, the artist must be logged in and a cookie must be sent to the backend.
+
+### <a name="patchcunw"></a> PATCH `/commissions/:commissionId/updates/:updateNum/waive`
+Patch method to be called by the buyer when they want to waive an update. If the user is not the buyer, then it will return a 403 error. If called successfully, this will send a money transfer from us to the artist. The current update will also increment. In order to call this method, the artist must be logged in and a cookie must be sent to the backend.
+
 ### <a name="#postsacc"></a> POST `/stripe/accounts`
 This post method should be used to create a seller account for an artist. It takes in data containing the authorization code obtained from stripe on the frontend. This route requires that the user be logged in, and that the user sends over a cookie in order to be used.
 
 ### <a name="#postscust"></a> POST `/stripe/customers`
 This post method should be used to create a customer account on the backend. It requires that the frontend send over a stripeToken for a payment source related to that user (e.g. credit card). The user must be logged, and the user must send over a cookie in order to use this route.
-
-### <a name="#patchscomm"></a> POST `/stripe/commissions/:commissionId`
-This patch method should be used to send the payment for a commission. By doing so, it begins the commission process on the backend. For a buyer to use this method, they must first be a valid stripe customer, which requires calling `/stripe/customers`. The user must be logged, and the user must send over a cookie in order to use this route.
