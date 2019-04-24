@@ -41,7 +41,8 @@ class Commission extends BaseModel {
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
         },
         tags: { type: "array", items: { type: "string" } },
-        deleted: { type: "boolean" }
+        deleted: { type: "boolean" }, // TODO: do I need this?
+        stripeCharge: { type: "object" }
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
@@ -75,20 +76,21 @@ class Commission extends BaseModel {
           to: "reviews.id"
         }
       },
-      payments: {
-        relation: BaseModel.HasManyRelation,
-        modelClass: "payment",
-        join: {
-          from: "commissions.id",
-          to: "payments.commission_id"
-        }
-      },
       updates: {
         relation: BaseModel.HasManyRelation,
         modelClass: "update",
         join: {
           from: "commissions.id",
           to: "updates.commission_id"
+        },
+        filter: {}
+      },
+      artist: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: "user",
+        join: {
+          from: "commissions.artist_id",
+          to: "users.id"
         }
       }
     }
@@ -200,28 +202,31 @@ class Commission extends BaseModel {
     return negotiations
   }
 
+  get transferGroup() {
+    return `commission-${this.id}`
+  }
+
   // pays for the commission, adds update rows, and kickstarts update jobs
   async beginCommission(stripeCustomerId, trx) {
-    const charge = await stripe.charges.create({
+    const stripeCharge = await stripe.charges.create({
       amount: this.price,
       currency: this.priceUnit,
-      transfer_group: `commission-${this.id}`,
+      transfer_group: this.transferGroup,
       customer: stripeCustomerId
     })
 
-    await this.$relatedQuery("payments", trx).insert({
-      buyerId: this.buyerId,
-      artistId: this.artistId,
-      price: this.price,
-      priceUnit: this.priceUnit,
-      stripeChargeId: charge.id
+    await this.$query(trx).patch({
+      status: "in progress",
+      stripeCharge
     })
-
-    await this.$query(trx).patch({ status: "in progress" })
 
     const updateRows = []
     const now = dayjs()
     const days = dayjs(this.deadline).diff(now, "day")
+
+    // take application fees up front
+    // TODO: check that this doesn't actually modify the database value
+    this.price *= 1 - process.env.APPLICATION_FEE
 
     for (let i = 0; i <= this.numUpdates; i++) {
       const update = {

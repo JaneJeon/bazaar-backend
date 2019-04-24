@@ -13,6 +13,14 @@ class BaseModel extends tableName(DbErrors(Model)) {
     return [__dirname]
   }
 
+  static get useLimitInFirst() {
+    return true
+  }
+
+  static get defaultEagerAlgorithm() {
+    return Model.JoinEagerAlgorithm
+  }
+
   static get reservedPostFields() {
     return []
   }

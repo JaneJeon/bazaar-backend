@@ -11,9 +11,8 @@ queue.process(taskName, async (job, data) => {
   await transaction(Commission.knex(), async trx => {
     // check whether buyer has paid
     const commission = await Commission.query(trx).findById(data.commissionId)
-    const payments = await commission.$relatedQuery("payments", trx).count()
 
-    if (payments) {
+    if (commission.stripeCharge) {
       // push commission deadline if buyer is late
       if (data.late)
         await commission.$query(trx).patch({

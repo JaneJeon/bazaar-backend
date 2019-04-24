@@ -22,7 +22,9 @@ class Update extends BaseModel {
           items: { type: "string" },
           minItems: 1,
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
-        }
+        },
+        stripeTransfer: { type: "object" },
+        stripeRefund: { type: "object" }
       },
       required: [
         "updateNum",
@@ -38,15 +40,19 @@ class Update extends BaseModel {
 
   static get relationMappings() {
     return {
-      payment: {
-        relation: BaseModel.HasOneRelation,
-        modelClass: "payment",
+      commission: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: "commission",
         join: {
-          from: "updates.payment_id",
-          to: "payments.id"
+          from: "updates.commission_id",
+          to: "commissions.id"
         }
       }
     }
+  }
+
+  get jobId() {
+    return `${this.commissionId}-${this.updateNum}`
   }
 
   async processInput() {
@@ -57,9 +63,7 @@ class Update extends BaseModel {
         )
       )
     if (this.pictures || this.waived)
-      await commissionCheckUpdateJob.trigger(
-        `${this.commissionId}-${this.updateNum}`
-      )
+      await commissionCheckUpdateJob.trigger(this.jobId)
   }
 
   async $beforeUpdate(opt, queryContext) {

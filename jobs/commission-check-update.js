@@ -25,10 +25,15 @@ queue.process(taskName, async (job, data) => {
     ])
 
     if (update.pictures || update.waived) {
+      // immediately pay out if late
+      const now = dayjs()
+      const deadline = dayjs(update.deadline)
+      let delay = 0
+
+      if (!now.isAfter(deadline)) delay = now.diff(deadline)
+
       // proceed to payment, scheduled for the deadline
-      await commissionPayoutJob.add(data, {
-        delay: dayjs().diff(dayjs(update.deadline))
-      })
+      await commissionPayoutJob.add(data, { delay, jobId: update.jobId })
     } else {
       // check if 48h grace period has passed
       if (data.late == 2) {
@@ -36,7 +41,7 @@ queue.process(taskName, async (job, data) => {
         await commissionCancelJob.add(data)
       } else {
         // reschedule self
-        data.late++
+        await update.$query(trx).patch({ delays: ++data.late })
         await queue.add(taskName, data, { delay: 24 * 60 * 60 * 1000 })
       }
     }

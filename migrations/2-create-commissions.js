@@ -20,6 +20,8 @@ exports.up = knex =>
     table.jsonb("tags").notNullable()
     table.text("description").notNullable()
 
+    table.jsonb("stripe_charge")
+
     table.timestamps(true, true)
     table
       .boolean("deleted")
