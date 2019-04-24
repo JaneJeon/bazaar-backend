@@ -4,8 +4,14 @@ exports.up = knex =>
   knex.schema.table(tableName, table => {
     table.text("stripe_account_id")
     table.text("stripe_customer_id")
-    table.boolean("has_stripe_account").notNullable()
-    table.boolean("is_stripe_customer").notNullable()
+    table
+      .boolean("has_stripe_account")
+      .notNullable()
+      .defaultTo(false)
+    table
+      .boolean("is_stripe_customer")
+      .notNullable()
+      .defaultTo(false)
   })
 
 exports.down = knex =>
