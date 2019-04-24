@@ -2,6 +2,7 @@ const { Router } = require("express")
 const { Commission } = require("../models")
 const { transaction } = require("objection")
 const upload = require("../config/multer")
+const commissionPayoutJob = require("../jobs/commission-payout")
 
 module.exports = Router({ mergeParams: true })
   .use(async (req, res, next) => {
@@ -12,6 +13,23 @@ module.exports = Router({ mergeParams: true })
 
     // limit access
     next(assert(req.isArtist !== undefined, 403))
+  })
+  .get("/:updateNum", async (req, res) => {
+    const update = await req.commission
+      .$relatedQuery("updates")
+      .findOne({ updateNum: req.params.updateNum })
+
+    if (
+      !req.isArtist &&
+      !update.waived &&
+      update.pictures &&
+      !update.stripeTransfer
+    ) {
+      // trigger job to be run NOW and wait until it's done
+      await commissionPayoutJob.complete(update.jobId)
+    }
+
+    res.send(update)
   })
   // endpoint for buyer to actually start the commission
   .post("/", async (req, res) => {
@@ -32,7 +50,7 @@ module.exports = Router({ mergeParams: true })
 
       let update = await req.update
         .$relatedQuery("updates")
-        .findOne({ update_num: req.params.updateNum })
+        .findOne({ updateNum: req.params.updateNum })
 
       update = await update
         .$query()
@@ -46,7 +64,7 @@ module.exports = Router({ mergeParams: true })
 
     let update = await req.update
       .$relatedQuery("updates")
-      .findOne({ update_num: req.params.updateNum })
+      .findOne({ updateNum: req.params.updateNum })
 
     await update.$query().patch({ waived: true })
 

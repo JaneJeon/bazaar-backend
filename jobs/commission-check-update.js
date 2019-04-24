@@ -33,7 +33,7 @@ queue.process(taskName, async (job, data) => {
       if (!now.isAfter(deadline)) delay = now.diff(deadline)
 
       // proceed to payment, scheduled for the deadline
-      await commissionPayoutJob.add(data, { delay })
+      await commissionPayoutJob.add(data, { delay, jobId: update.jobId })
     } else {
       // check if 48h grace period has passed
       if (data.late == 2) {

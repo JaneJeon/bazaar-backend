@@ -4,7 +4,19 @@ const { transaction } = require("objection")
 const { Update } = require("../models")
 const stripe = require("../lib/stripe")
 
-exports.add = async (data, opts) => queue.add(taskName, data, opts)
+exports.add = async (data, opts) => {
+  if (opts.jobId) opts.jobId = `${taskName}-${opts.jobId}`
+  return queue.add(taskName, data, opts)
+}
+
+exports.complete = async jobId => {
+  const job = await queue.getJob(`${taskName}-${jobId}`)
+
+  if (job !== null) {
+    await job.promote()
+    await job.finished()
+  }
+}
 
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {

@@ -51,6 +51,10 @@ class Update extends BaseModel {
     }
   }
 
+  get jobId() {
+    return `${this.commissionId}-${this.updateNum}`
+  }
+
   async processInput() {
     if (this.pictures)
       this.pictures = await Promise.all(
@@ -59,9 +63,7 @@ class Update extends BaseModel {
         )
       )
     if (this.pictures || this.waived)
-      await commissionCheckUpdateJob.trigger(
-        `${this.commissionId}-${this.updateNum}`
-      )
+      await commissionCheckUpdateJob.trigger(this.jobId)
   }
 
   async $beforeUpdate(opt, queryContext) {
