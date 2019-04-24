@@ -19,8 +19,6 @@ exports.up = knex =>
 
     table.jsonb("stripe_transfer")
     table.jsonb("stripe_refund")
-
-    table.integer("payment_id").references("payments.id")
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)

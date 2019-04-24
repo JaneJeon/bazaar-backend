@@ -13,6 +13,10 @@ class BaseModel extends tableName(DbErrors(Model)) {
     return [__dirname]
   }
 
+  static get useLimitInFirst() {
+    return true
+  }
+
   static get reservedPostFields() {
     return []
   }

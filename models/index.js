@@ -11,7 +11,6 @@ const Commission = require("./commission")
 const Negotiation = require("./negotiation")
 const Chat = require("./chat")
 const Favorite = require("./favorite")
-const Payment = require("./payment")
 const Update = require("./update")
 
 Model.knex(knex(knexfile)) // yo dawg
@@ -23,6 +22,5 @@ module.exports = {
   Negotiation,
   Chat,
   Favorite,
-  Payment,
   Update
 }
