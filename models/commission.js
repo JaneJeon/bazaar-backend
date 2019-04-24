@@ -208,7 +208,7 @@ class Commission extends BaseModel {
 
   // pays for the commission, adds update rows, and kickstarts update jobs
   async beginCommission(stripeCustomerId, trx) {
-    const charge = await stripe.charges.create({
+    const stripeCharge = await stripe.charges.create({
       amount: this.price,
       currency: this.priceUnit,
       transfer_group: this.transferGroup,
@@ -217,7 +217,7 @@ class Commission extends BaseModel {
 
     await this.$query(trx).patch({
       status: "in progress",
-      stripeCharge: charge
+      stripeCharge
     })
 
     const updateRows = []

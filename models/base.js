@@ -17,6 +17,10 @@ class BaseModel extends tableName(DbErrors(Model)) {
     return true
   }
 
+  static get defaultEagerAlgorithm() {
+    return Model.JoinEagerAlgorithm
+  }
+
   static get reservedPostFields() {
     return []
   }
