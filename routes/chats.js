@@ -37,7 +37,7 @@ module.exports = Router({ mergeParams: true })
         const obj = { userId: req.user.id, message }
         const chat = await req.negotiation.$relatedQuery("chats").insert(obj)
 
-        await pub.publish("chat", `${req.path}:${JSON.stringify(chat)}`)
+        await pub.publish("chat", `${ws.url}:${JSON.stringify(chat)}`)
       } catch (err) {
         console.error(err)
       }
@@ -46,7 +46,7 @@ module.exports = Router({ mergeParams: true })
     // messages from the other person
     sub.on("message", (channel, message) => {
       // every time a message comes in from redis, post that
-      if (channel == "chat" && message.startsWith(req.path)) {
+      if (channel == "chat" && message.startsWith(ws.url)) {
         try {
           ws.send(message.substr(req.path.length + 1))
         } catch (err) {
