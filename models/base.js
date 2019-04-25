@@ -82,18 +82,18 @@ class BaseModel extends tableName(DbErrors(Model)) {
     return algoliaIndex(this.tableName)
   }
 
-  get algoliaId() {
-    return Array.isArray(this.constructor.idColumn)
-      ? this.constructor.idColumn.map(field => this[field]).join("-")
-      : this[this.constructor.idColumn]
+  static algoliaId(obj) {
+    return Array.isArray(this.idColumn)
+      ? this.idColumn.map(field => obj[field]).join("-")
+      : obj[this.idColumn]
   }
 
   // rename fields for algolia indexing
-  get algoliaCopy() {
+  algoliaCopy(id) {
     const copy = this.$clone()
 
     // id -> objectID
-    copy.objectID = copy.algoliaId
+    copy.objectID = id || this.constructor.algoliaId(copy)
     if (Array.isArray(this.constructor.idColumn)) {
       this.constructor.idColumn.forEach(field => delete copy[field])
     } else {
@@ -111,17 +111,20 @@ class BaseModel extends tableName(DbErrors(Model)) {
 
   async $afterInsert(queryContext) {
     await super.$afterInsert(queryContext)
-    await this.constructor.index.addObject(this.algoliaCopy)
+    await this.constructor.index.addObject(this.algoliaCopy())
   }
 
   async $afterUpdate(opt, queryContext) {
     await super.$afterUpdate(opt, queryContext)
-    await this.constructor.index.partialUpdateObject(this.algoliaCopy)
+    // id from opt.old, updated properties
+    await this.constructor.index.partialUpdateObject(
+      this.algoliaCopy(this.constructor.algoliaId(opt.old))
+    )
   }
 
-  async $afterDelete(queryContext) {
-    await super.$afterDelete(queryContext)
-    await this.constructor.index.deleteObject(this.algoliaId)
+  async $beforeDelete(queryContext) {
+    await super.$beforeDelete(queryContext)
+    await this.constructor.index.deleteObject(this.constructor.algoliaId(this))
   }
 }
 
