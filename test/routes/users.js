@@ -48,7 +48,7 @@ describe("user routes", () => {
     })
   })
 
-  describe("PATCH /users/verify/:token", () => {
+  describe("PATCH /users/verify", () => {
     let token
 
     before(async () => {
@@ -56,11 +56,11 @@ describe("user routes", () => {
     })
 
     it("should verify user given the right token", async () => {
-      await request.patch(`/users/verify/${token}`).expect(200)
+      await request.patch(`/users/verify?token=${token}`).expect(200)
     })
 
     it("should reject token doesn't match any user", async () => {
-      await request.patch(`/users/verify/${token}1`).expect(404)
+      await request.patch(`/users/verify?token=${token}1`).expect(404)
     })
 
     it("should not allow a token to be used twice", async () => {
@@ -83,7 +83,7 @@ describe("user routes", () => {
     })
   })
 
-  describe("PATCH /users/reset/:token", () => {
+  describe("PATCH /users/reset", () => {
     let token
 
     before(async () => {
@@ -92,13 +92,13 @@ describe("user routes", () => {
 
     it("should reset password given the right token", async () => {
       await request
-        .patch(`/users/reset/${token}`)
+        .patch(`/users/reset?token=${token}`)
         .send({ password: "987654321" })
         .expect(200)
     })
 
     it("should reject token doesn't match any user", async () => {
-      await request.patch(`/users/reset/${token}1`).expect(404)
+      await request.patch(`/users/reset?token=${token}1`).expect(404)
     })
 
     it("should not allow a token to be used twice", async () => {
