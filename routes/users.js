@@ -70,7 +70,7 @@ module.exports = Router()
 
     // email verification
     await user.sendEmail("verify", {
-      url: `${process.env.FRONTEND_URL}/users/verify/${token}`
+      url: `${process.env.FRONTEND_URL}/users/verify?token=${token}`
     })
   })
   // password reset when user forgets their password while logging in
@@ -81,11 +81,11 @@ module.exports = Router()
     res.end()
 
     await user.sendEmail("reset", {
-      url: `${process.env.FRONTEND_URL}/users/reset/${token}`
+      url: `${process.env.FRONTEND_URL}/users/reset?token=${token}`
     })
   })
-  .patch("/verify/:token", async (req, res) => {
-    const id = await tempToken.fetch("verify", req.params.token)
+  .patch("/verify", async (req, res) => {
+    const id = await tempToken.fetch("verify", req.query.token)
     let user = await User.query().findById(id)
 
     user = await user.$query().patch({ verified: true })
@@ -94,8 +94,8 @@ module.exports = Router()
 
     await tempToken.consume("verify", id)
   })
-  .patch("/reset/:token", async (req, res) => {
-    const id = await tempToken.fetch("reset", req.params.token)
+  .patch("/reset", async (req, res) => {
+    const id = await tempToken.fetch("reset", req.query.token)
     let user = await User.query().findById(id)
 
     user = await user.$query().patch({ password: req.body.password })
