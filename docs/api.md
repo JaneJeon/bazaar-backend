@@ -93,10 +93,10 @@ There are two types of stripe accounts. A seller account and a customer account 
 - [DELETE `/sessions`](#dels)
 
 - [POST `/users`](#postu)
-- [PATCH `/users/verify/:token`](#patchuvt)
+- [PATCH `/users/verify`](#patchuvt)
 - [GET `/users/:userId`](#getuu)
 - [POST `/users/reset`](#postur)
-- [PATCH `/users/reset/:token`](#patchurt)
+- [PATCH `/users/reset`](#patchurt)
 - [PATCH `/users`](#patchu)
 - [DELETE `/users`](#delu)
 
@@ -145,8 +145,8 @@ This endpoint is used to logout users who are already logged in.
 ### <a name="postu"></a>POST `/users`
 Additionally, an email is sent out to the user's email asking for verification containing a link to `/users/verify/:token` when their account is created successfully.
 
-### <a name="patchuvt"></a>PATCH `/users/verify/:token`
-When a user accesses a page of form `/users/verify/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` parameter value) to verify the user's email address. No fields are expected.
+### <a name="patchuvt"></a>PATCH `/users/verify`
+When a user accesses a page of form `/users/verify?token=YOUR_TOKEN_HERE`, a PATCH request should be sent to this endpoint (containing the exact same `YOUR_TOKEN_HERE` querystring value) to verify the user's email address. No fields are expected.
 
 ### <a name="getuu"></a>GET `/users/:userId`
 
@@ -156,7 +156,7 @@ This endpoint is used to request a password reset in case a user forgot it. Fiel
 On success, sends out an email with the password reset link of form `/users/reset/:token`.
 
 ### <a name="patchurt"></a>PATCH `/users/reset/:token`
-When a user accesses a page of form `/users/reset/:token`, a PATCH request should be sent to this endpoint (containing the exact same `:token` parameter value) to reset the user's password. Field `password` is expected (the new password).
+When a user accesses a page of form `/users/reset?token=YOUR_TOKEN_HERE`, a PATCH request should be sent to this endpoint (containing the exact same `YOUR_TOKEN_HERE` querystring value) to reset the user's password. Field `password` is expected (the new password).
 
 ### <a name="patchu"></a>PATCH `/users`
 
