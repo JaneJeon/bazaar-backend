@@ -16,9 +16,9 @@ describe("text", () => {
   describe("#extractTags()", () => {
     it("should return lower-cased and stripped tags", () => {
       assert.deepStrictEqual(text.extractTags("#fOo #1 2 blah #_bar"), [
-        "#foo",
-        "#1",
-        "#_bar"
+        "foo",
+        "1",
+        "_bar"
       ])
     })
 
