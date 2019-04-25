@@ -97,8 +97,5 @@
   		"pre-commit": "prettier --write '**/*.js'",
   		"pre-push": "yarn test"
   	}
-  },
-  "engines": {
-    "node": "11.x"
   }
 }
