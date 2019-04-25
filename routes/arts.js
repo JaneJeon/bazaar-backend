@@ -68,7 +68,7 @@ module.exports = Router()
       transfer_group: `${req.params.artId}`,
       customer: req.user.stripeCustomerId
     })
-    
+
     res.sendStatus(204)
   })
   .delete("/:artId", async (req, res) => {

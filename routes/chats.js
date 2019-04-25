@@ -37,7 +37,7 @@ module.exports = Router({ mergeParams: true })
         const obj = { userId: req.user.id, message }
         const chat = await req.negotiation.$relatedQuery("chats").insert(obj)
 
-        await pub.publish("chats", `${req.path}:${JSON.stringify(chat)}`)
+        await pub.publish("chat", `${req.path}:${JSON.stringify(chat)}`)
       } catch (err) {
         console.error(err)
       }
