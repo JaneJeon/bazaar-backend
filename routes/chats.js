@@ -48,7 +48,7 @@ module.exports = Router({ mergeParams: true })
       // every time a message comes in from redis, post that
       if (channel == "chat" && message.startsWith(ws.url)) {
         try {
-          ws.send(message.substr(req.path.length + 1))
+          ws.send(message.substr(ws.url + 1))
         } catch (err) {
           console.error(err)
         }
