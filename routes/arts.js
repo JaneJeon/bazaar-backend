@@ -68,11 +68,8 @@ module.exports = Router()
       transfer_group: `${req.params.artId}`,
       customer: req.user.stripeCustomerId
     })
-
-    art = await art.$query().patch({ status: "sold" })
-
-    let bought = req.user.$relatedQuery("artsBought").relate(art)
-    res.send(bought)
+    
+    res.sendStatus(204)
   })
   .delete("/:artId", async (req, res) => {
     const art = await req.user.$relatedQuery("arts").findById(req.params.artId)
