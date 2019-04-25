@@ -18,7 +18,7 @@ module.exports = Router()
       }
     )
 
-    await req.user.$query().patch({ stripe_account_id: data.stripe_user_id })
+    await req.user.$query().patch({ stripeAccountId: data.stripe_user_id })
 
     res.end()
   })
@@ -32,7 +32,7 @@ module.exports = Router()
       source: req.body.stripeToken
     })
 
-    await req.user.$query().patch({ stripe_customer_id: customer.id })
+    await req.user.$query().patch({ stripeCustomerId: customer.id })
 
     res.end()
   })
