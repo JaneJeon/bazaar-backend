@@ -82,6 +82,7 @@
     "axios": "^0.18.0",
     "debug": "^4.1.1",
     "faker": "^4.1.0",
+    "husky": "^2.1.0",
     "mocha": "^6.0.2",
     "nodemon": "^1.18.10",
     "prettier": "^1.16.3",
@@ -90,5 +91,11 @@
   },
   "prettier": {
     "semi": false
+  },
+  "husky": {
+  	"hooks": {
+  		"pre-commit": "prettier --write '**/*.js'",
+  		"pre-push": "yarn test"
+  	}
   }
 }
