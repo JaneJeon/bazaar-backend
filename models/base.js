@@ -3,6 +3,9 @@ const { DbErrors } = require("objection-db-errors")
 const tableName = require("@xyluet/objection-table-name")()
 const isEmpty = require("lodash/isEmpty")
 const assert = require("http-assert")
+const algolia = require("../lib/algolia")
+const memoize = require("lodash/memoize")
+const algoliaIndex = memoize(str => algolia.initIndex(str))
 
 class BaseModel extends tableName(DbErrors(Model)) {
   static get columnNameMappers() {
@@ -46,7 +49,7 @@ class BaseModel extends tableName(DbErrors(Model)) {
   }
 
   static get pageSize() {
-    return process.env.PAGE_SIZE || 15
+    return process.env.PAGE_SIZE
   }
 
   static get QueryBuilder() {
@@ -73,6 +76,52 @@ class BaseModel extends tableName(DbErrors(Model)) {
         return super.patch(obj).returning("*")
       }
     }
+  }
+
+  static get index() {
+    return algoliaIndex(this.tableName)
+  }
+
+  get algoliaId() {
+    return Array.isArray(this.constructor.idColumn)
+      ? this.constructor.idColumn.map(field => this[field]).join("-")
+      : this[this.constructor.idColumn]
+  }
+
+  // rename fields for algolia indexing
+  get algoliaCopy() {
+    const copy = this.$clone()
+
+    // id -> objectID
+    copy.objectID = copy.algoliaId
+    if (Array.isArray(this.constructor.idColumn)) {
+      this.constructor.idColumn.forEach(field => delete copy[field])
+    } else {
+      delete copy[this.constructor.idColumn]
+    }
+
+    // tags -> _tags
+    if (this.hasOwnProperty("tags")) {
+      copy._tags = this.tags
+      delete copy.tags
+    }
+
+    return copy
+  }
+
+  async $afterInsert(queryContext) {
+    await super.$afterInsert(queryContext)
+    await this.constructor.index.addObject(this.algoliaCopy)
+  }
+
+  async $afterUpdate(opt, queryContext) {
+    await super.$afterUpdate(opt, queryContext)
+    await this.constructor.index.partialUpdateObject(this.algoliaCopy)
+  }
+
+  async $afterDelete(queryContext) {
+    await super.$afterDelete(queryContext)
+    await this.constructor.index.deleteObject(this.algoliaId)
   }
 }
 
