@@ -92,9 +92,9 @@
     "semi": false
   },
   "husky": {
-  	"hooks": {
-  		"pre-commit": "prettier --write '**/*.js'",
-  		"pre-push": "yarn test"
-  	}
+    "hooks": {
+      "pre-commit": "prettier --write '**/*.js'",
+      "pre-push": "yarn test"
+    }
   }
 }
