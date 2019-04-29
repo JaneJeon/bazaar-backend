@@ -105,14 +105,6 @@ module.exports = Router()
     await tempToken.consume("reset", id)
   })
   .use((req, res, next) => next(assert(req.user, 401)))
-  .patch("/stripe/authorize/callback", async (req, res) => {
-    const { data } = await stripe.connectArtist(req.query.code)
-    const user = await req.user
-      .$query()
-      .patch({ stripe_account_id: data.stripe_user_id })
-
-    res.send(user)
-  })
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req.body)
     console.log("HERE", req.body)
