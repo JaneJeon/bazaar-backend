@@ -105,14 +105,6 @@ module.exports = Router()
     await tempToken.consume("reset", id)
   })
   .use((req, res, next) => next(assert(req.user, 401)))
-  .get("/negotiations", async (req, res) => {
-    const negotiations = await Negotiation.query()
-      .where("artist_id", req.user.id)
-      .where("finalized", false)
-      .paginate(req.query.after)
-
-    res.send(negotiations)
-  })
   .patch("/stripe/authorize/callback", async (req, res) => {
     const { data } = await stripe.connectArtist(req.query.code)
     const user = await req.user
