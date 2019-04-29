@@ -43,7 +43,8 @@ class Commission extends BaseModel {
         },
         tags: { type: "array", items: { type: "string" } },
         deleted: { type: "boolean" }, // TODO: do I need this?
-        stripeChargeId: { type: "string" }
+        stripeChargeId: { type: "string" },
+        stripeRefundId: { type: "string" }
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
@@ -51,7 +52,7 @@ class Commission extends BaseModel {
   }
 
   static get hidden() {
-    return ["stripeChargeId"]
+    return ["stripeChargeId", "stripeRefundId"]
   }
 
   static get relationMappings() {
@@ -97,12 +98,28 @@ class Commission extends BaseModel {
           from: "commissions.artist_id",
           to: "users.id"
         }
+      },
+      buyer: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: "user",
+        join: {
+          from: "commissions.buyer_id",
+          to: "users.id"
+        }
       }
     }
   }
 
   static get reservedPostFields() {
-    return ["isPrivate", "status", "cancelledBy", "tags", "deleted"]
+    return [
+      "isPrivate",
+      "status",
+      "cancelledBy",
+      "tags",
+      "deleted",
+      "stripeChargeId",
+      "stripeRefundId"
+    ]
   }
 
   static get negotiationFields() {
@@ -211,6 +228,16 @@ class Commission extends BaseModel {
     return `commission-${this.id}`
   }
 
+  static get updatePriceRatios() {
+    return [
+      [5, 5],
+      [4, 2, 4],
+      [3, 2, 2, 3],
+      [2, 2, 2, 2, 2],
+      [1, 2, 2, 2, 2, 1]
+    ]
+  }
+
   // pays for the commission, adds update rows, and kickstarts update jobs
   async beginCommission(stripeCustomerId, trx) {
     const charge = await stripe.charges.create({
@@ -234,18 +261,9 @@ class Commission extends BaseModel {
       1 - process.env.APPLICATION_FEE
     )
 
-    // hard-coded table
-    const ratios = [
-      [5, 5],
-      [4, 2, 4],
-      [3, 2, 2, 3],
-      [2, 2, 2, 2, 2],
-      [1, 2, 2, 2, 2, 1]
-    ]
-
     const prices = dinero({ amount: this.price })
       .multiply(1 - process.env.APPLICATION_FEE)
-      .allocate(ratios[this.numUpdates])
+      .allocate(this.constructor.updatePriceRatios[this.numUpdates])
 
     for (let i = 0; i <= this.numUpdates; i++) {
       const update = {
