@@ -61,7 +61,7 @@ module.exports = Router()
   })
   .post("/", upload.single("avatar"), async (req, res) => {
     User.filterPost(req.body)
-    if (this.file) req.body.avatar = this.file
+    if (req.file) req.body.avatar = req.file
 
     const user = await User.query().insert(req.body)
     const token = await tempToken.generate("verify", user.id, user.id)
@@ -116,7 +116,7 @@ module.exports = Router()
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req.body)
     console.log("HERE", req.body)
-    if (this.file) req.body.avatar = this.file
+    if (req.file) req.body.avatar = req.file
 
     const user = await req.user.$query().patch(req.body)
 
