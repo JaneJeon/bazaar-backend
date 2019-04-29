@@ -187,6 +187,9 @@ class Commission extends BaseModel {
       negotiations[1].accepted &&
       newFormsAreEqual
     ) {
+      // convert to string
+      forms[0].deadline = dayjs(forms[0].deadline).format("YYYY-MM-DD")
+
       // noinspection JSUnnecessarySemicolon
       ;[negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
