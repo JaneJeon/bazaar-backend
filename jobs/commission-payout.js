@@ -3,6 +3,7 @@ const taskName = "commissionPayout"
 const { transaction } = require("objection")
 const { Update } = require("../models")
 const stripe = require("../lib/stripe")
+const dinero = require("dinero.js")
 
 exports.add = async (data, opts) => {
   if (opts.jobId) opts.jobId = `${taskName}-${opts.jobId}`
@@ -24,11 +25,14 @@ queue.process(taskName, async (job, data) => {
       .findById([data.commissionId, data.updateNum])
       .eager({ commission: { artist: true } })
 
-    const penalty = (update.commission.price / 20) * update.delays // 5%
+    const prices = dinero({ amount: update.price }).allocate([
+      20 - 5 * update.delays,
+      5 * update.delays
+    ])
 
     // pay out the artist
     const transfer = await stripe.transfers.create({
-      amount: update.price - penalty,
+      amount: prices[0].getAmount(),
       currency: update.priceUnit,
       destination: update.commission.artist.stripeAccountId,
       transfer_group: update.commission.transferGroup
@@ -37,10 +41,10 @@ queue.process(taskName, async (job, data) => {
     const changes = { stripeTransferId: transfer.id }
 
     // if the artist is late, refund certain amount to the buyer
-    if (penalty) {
+    if (update.delays) {
       const refund = await stripe.refunds.create({
         charge: update.commission.stripeCharge.id,
-        amount: penalty
+        amount: prices[1].getAmount()
       })
 
       changes.stripeRefundId = refund.id

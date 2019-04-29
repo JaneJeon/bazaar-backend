@@ -8,6 +8,7 @@ const dayjs = require("dayjs")
 const stripe = require("../lib/stripe")
 const commissionCheckPaymentJob = require("../jobs/commission-check-payment")
 const commissionCheckUpdateJob = require("../jobs/commission-check-update")
+const dinero = require("dinero.js")
 
 class Commission extends BaseModel {
   static get jsonSchema() {
@@ -229,26 +230,35 @@ class Commission extends BaseModel {
     const days = dayjs(this.deadline).diff(now, "day")
 
     // take application fees up front
-    // TODO: check that this doesn't actually modify the database value
-    this.price *= 1 - process.env.APPLICATION_FEE
+    this.price = dinero({ amount: this.price }).multiply(
+      1 - process.env.APPLICATION_FEE
+    )
+
+    // hard-coded table
+    const ratios = [
+      [5, 5],
+      [4, 2, 4],
+      [3, 2, 2, 3],
+      [2, 2, 2, 2, 2],
+      [1, 2, 2, 2, 2, 1]
+    ]
+
+    const prices = dinero({ amount: this.price })
+      .multiply(1 - process.env.APPLICATION_FEE)
+      .allocate(ratios[this.numUpdates])
 
     for (let i = 0; i <= this.numUpdates; i++) {
       const update = {
         updateNum: i,
+        price: prices[i].getAmount(),
         priceUnit: this.priceUnit,
         deadline: dayjs()
           .add(Math.ceil((i * days) / this.numUpdates), "day")
           .format("YYYY-MM-DD")
       }
 
-      if (i == 0) {
-        update.price = (this.price * (1 - this.numUpdates / 5)) / 2
-        update.pictures = [""]
-      } else if (i == this.numUpdates - 1) {
-        update.price = this.price / 5
-      } else {
-        update.price = (this.price * (1 - this.numUpdates / 5)) / 2
-      }
+      // first hit is free!
+      if (i == 0) update.pictures = [""]
 
       updateRows.push(update)
     }
