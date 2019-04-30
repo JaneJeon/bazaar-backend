@@ -6,6 +6,10 @@ const assert = require("http-assert")
 const algolia = require("../lib/algolia")
 const memoize = require("lodash/memoize")
 const algoliaIndex = memoize(str => algolia.initIndex(str))
+const camelCase = require("lodash/camelCase")
+const idColumnCamelCase = memoize(x =>
+  Array.isArray(x) ? x.map(camelCase) : camelCase(x)
+)
 
 class BaseModel extends tableName(DbErrors(Model)) {
   static get columnNameMappers() {
@@ -82,10 +86,14 @@ class BaseModel extends tableName(DbErrors(Model)) {
     return algoliaIndex(this.tableName)
   }
 
+  static get objIdColumn() {
+    return idColumnCamelCase(this.idColumn)
+  }
+
   static algoliaId(obj) {
-    return Array.isArray(this.idColumn)
-      ? this.idColumn.map(field => obj[field]).join("-")
-      : obj[this.idColumn]
+    return Array.isArray(this.objIdColumn)
+      ? this.objIdColumn.map(field => obj[field]).join("-")
+      : obj[this.objIdColumn]
   }
 
   // rename fields for algolia indexing
@@ -94,11 +102,9 @@ class BaseModel extends tableName(DbErrors(Model)) {
 
     // id -> objectID
     copy.objectID = id || this.constructor.algoliaId(copy)
-    if (Array.isArray(this.constructor.idColumn)) {
-      this.constructor.idColumn.forEach(field => delete copy[field])
-    } else {
-      delete copy[this.constructor.idColumn]
-    }
+    if (Array.isArray(this.constructor.objIdColumn))
+      this.constructor.objIdColumn.forEach(field => delete copy[field])
+    else delete copy[this.constructor.objIdColumn]
 
     // tags -> _tags
     if (this.hasOwnProperty("tags")) {
