@@ -1,6 +1,9 @@
 // return results of COUNT(*) as integer, NOT string!!
 // https://github.com/brianc/node-pg-types#use
-require("pg").types.setTypeParser(20, parseInt)
+const { types } = require("pg")
+const dayjs = require("dayjs")
+types.setTypeParser(20, parseInt) // cast SELECT COUNT(*) to integer
+types.setTypeParser(1082, obj => dayjs(obj).format("YYYY-MM-DD"))
 
 const { Model } = require("objection")
 const knex = require("knex")

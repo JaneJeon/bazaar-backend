@@ -134,7 +134,6 @@ class Commission extends BaseModel {
       this,
       (v, k) => v !== null && this.constructor.negotiationFields.includes(k)
     )
-    base.deadline = dayjs(this.deadline).format("YYYY-MM-DD")
 
     return this.$relatedQuery("negotiations").insert([
       // auto-accept for the buyer
@@ -187,9 +186,6 @@ class Commission extends BaseModel {
       negotiations[1].accepted &&
       newFormsAreEqual
     ) {
-      // convert to string
-      forms[0].deadline = dayjs(forms[0].deadline).format("YYYY-MM-DD")
-
       // noinspection JSUnnecessarySemicolon
       ;[negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
