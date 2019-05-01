@@ -152,6 +152,10 @@ class User extends visibility(password()(BaseModel)) {
     return ["password", "stripeAccountId", "stripeCustomerId"]
   }
 
+  static get searchEnabled() {
+    return true
+  }
+
   async processInput(opt) {
     if (this.username) this.id = this.username.toLowerCase()
     if (this.email) this.email = normalize(this.email)

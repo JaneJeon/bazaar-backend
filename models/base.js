@@ -82,6 +82,10 @@ class BaseModel extends tableName(DbErrors(Model)) {
     }
   }
 
+  static get searchEnabled() {
+    return false
+  }
+
   static get index() {
     return algoliaIndex(this.tableName)
   }
@@ -117,20 +121,25 @@ class BaseModel extends tableName(DbErrors(Model)) {
 
   async $afterInsert(queryContext) {
     await super.$afterInsert(queryContext)
-    await this.constructor.index.addObject(this.algoliaCopy())
+    if (this.constructor.searchEnabled)
+      await this.constructor.index.addObject(this.algoliaCopy())
   }
 
   async $afterUpdate(opt, queryContext) {
     await super.$afterUpdate(opt, queryContext)
-    // id from opt.old, updated properties
-    await this.constructor.index.partialUpdateObject(
-      this.algoliaCopy(this.constructor.algoliaId(opt.old))
-    )
+    if (this.constructor.searchEnabled)
+      // id from opt.old, updated properties
+      await this.constructor.index.partialUpdateObject(
+        this.algoliaCopy(this.constructor.algoliaId(opt.old))
+      )
   }
 
   async $beforeDelete(queryContext) {
     await super.$beforeDelete(queryContext)
-    await this.constructor.index.deleteObject(this.constructor.algoliaId(this))
+    if (this.constructor.searchEnabled)
+      await this.constructor.index.deleteObject(
+        this.constructor.algoliaId(this)
+      )
   }
 }
 

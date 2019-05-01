@@ -108,6 +108,10 @@ class Commission extends BaseModel {
     return ["price", "priceUnit", "deadline", "numUpdates", "copyright"]
   }
 
+  static get searchEnabled() {
+    return true
+  }
+
   processInput() {
     if (this.artistId) this.isPrivate = true
     if (this.description) {
