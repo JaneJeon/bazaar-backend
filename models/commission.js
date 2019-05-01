@@ -187,6 +187,7 @@ class Commission extends BaseModel {
       negotiations[1].accepted &&
       newFormsAreEqual
     ) {
+      console.log('THE OBJECT IS:', Object.assign({artistId}, forms[0]))
       // noinspection JSUnnecessarySemicolon
       ;[negotiations] = await Promise.all([
         this.$relatedQuery("negotiations", trx)
