@@ -1,4 +1,3 @@
-// return results of COUNT(*) as integer, NOT string!!
 // https://github.com/brianc/node-pg-types#use
 const { types } = require("pg")
 const dayjs = require("dayjs")
