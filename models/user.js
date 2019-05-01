@@ -123,10 +123,10 @@ class User extends visibility(password(BaseModel)) {
       },
       review: {
         relation: BaseModel.ManyToManyRelation,
-        modelClass: "art",
+        modelClass: "review",
         join: {
           from: "users.id",
-          to: "reviews.review_id"
+          to: "reviews.id"
         }
       },
       reviewed: {
@@ -134,7 +134,7 @@ class User extends visibility(password(BaseModel)) {
         modelClass: "review",
         join: {
           from: "users.id",
-          to: "reviews.reviewed_id"
+          to: "reviews.id"
         }
       }
     }
