@@ -10,6 +10,7 @@ const Art = require("./art")
 const Commission = require("./commission")
 const Negotiation = require("./negotiation")
 const Chat = require("./chat")
+const Review = require("./review")
 const Favorite = require("./favorite")
 const Update = require("./update")
 
@@ -21,6 +22,7 @@ module.exports = {
   Commission,
   Negotiation,
   Chat,
+  Review,
   Favorite,
   Update
 }

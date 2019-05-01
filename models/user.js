@@ -1,5 +1,5 @@
 const BaseModel = require("./base")
-const password = require("objection-password-argon2")()
+const password = require("objection-password-argon2")
 const { default: visibility } = require("objection-visibility")
 const { createHash } = require("crypto")
 const normalize = require("normalize-email")
@@ -7,7 +7,7 @@ const text = require("../lib/text")
 const image = require("../lib/image")
 const ses = require("../lib/ses")
 
-class User extends visibility(password(BaseModel)) {
+class User extends visibility(password()(BaseModel)) {
   static get jsonSchema() {
     return {
       type: "object",
@@ -126,7 +126,7 @@ class User extends visibility(password(BaseModel)) {
         modelClass: "review",
         join: {
           from: "users.id",
-          to: "reviews.id"
+          to: "reviews.review_id"
         }
       },
       reviewed: {
@@ -134,7 +134,7 @@ class User extends visibility(password(BaseModel)) {
         modelClass: "review",
         join: {
           from: "users.id",
-          to: "reviews.id"
+          to: "reviews.reviewed_id"
         }
       }
     }

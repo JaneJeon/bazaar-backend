@@ -23,7 +23,7 @@ module.exports = Router()
 
   })
 
-  .patch("/", async (req, res) => {
+  .patch("/:userId/:reviewId", async (req, res) => {
 
     Review.filterPatch(req.body)
 
@@ -32,18 +32,18 @@ module.exports = Router()
     const review = await req.user
     .$query()
     .patch(req.body)
-    .where("user_id", req.user.id)
+    .where("id", req.params.reviewId)
 
     const reviewed = await reviewee
     .$query()
     .patch(req.body)
-    .where("user_id", reviewee.id)
+    .where("id", req.params.reviewId)
 
     res.send(review)
 
     })
 
-  .delete("/", async (req, res) => {
+  .delete("/:userId/:reviewId", async (req, res) => {
 
 
     const reviewee = await User.query().findById(req.params.userId)
@@ -51,12 +51,12 @@ module.exports = Router()
     const review = await req.user
     .$relatedQuery(review)
     .delete()
-    .where("user_id", req.user.id)
+    .where("id", req.params.reviewId)
 
     const reviewed = await reviewee
     .$relatedQuery(reviewed)
     .delete()
-    .where("user_id", reviewee.id)
+    .where("id", req.params.reviewId)
 
     res.sendStatus(204)
 

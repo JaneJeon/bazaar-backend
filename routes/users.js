@@ -36,7 +36,7 @@ module.exports = Router()
   .get("/:userId/review", async (req, res) => {
     const user = await User.query().findById(req.params.userId, req.user)
 
-    const reviews = await userReview
+    const reviews = await user
       .$relatedQuery("review")
       .paginate(req.query.after)
 
@@ -45,7 +45,7 @@ module.exports = Router()
   .get("/:userId/reviewed", async (req, res) => {
     const user = await User.query().findById(req.params.userId, req.user)
 
-    const reviewed = await userReview
+    const reviewed = await user
       .$relatedQuery("reviewed")
       .paginate(req.query.after)
 
