@@ -190,13 +190,13 @@ class Commission extends BaseModel {
       negotiations[1].accepted &&
       newFormsAreEqual
     ) {
-      // noinspection JSUnnecessarySemicolon
-      ;[negotiations] = await Promise.all([
-        this.$relatedQuery("negotiations", trx)
-          .where("artist_id", artistId)
-          .patch({ finalized: true }),
+      const updates = await Promise.all([
+        negotiations[0].$query(trx).patch({ finalized: true }),
+        negotiations[1].$query(trx).patch({ finalized: true }),
         this.$query(trx).patch(Object.assign({ artistId }, forms[0]))
       ])
+
+      negotiations = updates.slice(0, 2)
 
       // add job only when the finalization is confirmed to work, since
       // we don't keep track of jobs in our database

@@ -6,10 +6,6 @@ const assert = require("http-assert")
 const algolia = require("../lib/algolia")
 const memoize = require("lodash/memoize")
 const algoliaIndex = memoize(str => algolia.initIndex(str))
-const camelCase = require("lodash/camelCase")
-const idColumnCamelCase = memoize(x =>
-  Array.isArray(x) ? x.map(camelCase) : camelCase(x)
-)
 
 class BaseModel extends tableName(DbErrors(Model)) {
   static get columnNameMappers() {
@@ -90,25 +86,18 @@ class BaseModel extends tableName(DbErrors(Model)) {
     return algoliaIndex(this.tableName)
   }
 
-  static get objIdColumn() {
-    return idColumnCamelCase(this.idColumn)
-  }
-
-  static algoliaId(obj) {
-    return Array.isArray(this.objIdColumn)
-      ? this.objIdColumn.map(field => obj[field]).join("-")
-      : obj[this.objIdColumn]
+  get algoliaId() {
+    const id = this.$id()
+    return Array.isArray(id) ? id.join("-") : id
   }
 
   // rename fields for algolia indexing
-  algoliaCopy(id) {
+  algoliaCopy(old) {
     const copy = this.$clone()
 
-    // id -> objectID
-    copy.objectID = id || this.constructor.algoliaId(copy)
-    if (Array.isArray(this.constructor.objIdColumn))
-      this.constructor.objIdColumn.forEach(field => delete copy[field])
-    else delete copy[this.constructor.objIdColumn]
+    // attach objectID for algolia
+    const instance = old ? this.constructor.fromJson(old) : copy
+    copy.objectID = instance.algoliaId
 
     // tags -> _tags
     if (this.hasOwnProperty("tags")) {
@@ -127,19 +116,17 @@ class BaseModel extends tableName(DbErrors(Model)) {
 
   async $afterUpdate(opt, queryContext) {
     await super.$afterUpdate(opt, queryContext)
-    if (this.constructor.searchEnabled)
+    if (this.constructor.searchEnabled && opt.old)
       // id from opt.old, updated properties
       await this.constructor.index.partialUpdateObject(
-        this.algoliaCopy(this.constructor.algoliaId(opt.old))
+        this.algoliaCopy(opt.old)
       )
   }
 
   async $beforeDelete(queryContext) {
     await super.$beforeDelete(queryContext)
     if (this.constructor.searchEnabled)
-      await this.constructor.index.deleteObject(
-        this.constructor.algoliaId(this)
-      )
+      await this.constructor.index.deleteObject(this.algoliaId)
   }
 }
 
