@@ -3,7 +3,6 @@
   "scripts": {
     "start": "node app",
     "watch": "DEBUG=knex nodemon app",
-    "pretest": "yarn seed",
     "test": "NODE_ENV=test mocha --bail --exit --recursive --slow 500",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
     "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
@@ -15,6 +14,7 @@
   "dependencies": {
     "@xyluet/objection-table-name": "^2.0.0",
     "algoliasearch": "^3.32.1",
+    "axios": "^0.18.0",
     "aws-sdk": "^2.431.0",
     "bull": "^3.7.0",
     "cookie-session": "^2.0.0-beta.3",
@@ -80,7 +80,6 @@
     "@types/sharp": "^0.22.1",
     "@types/stripe": "^6.25.7",
     "@types/uid-safe": "^2.1.2",
-    "axios": "^0.18.0",
     "debug": "^4.1.1",
     "faker": "^4.1.0",
     "husky": "^2.1.0",

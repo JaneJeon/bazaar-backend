@@ -10,8 +10,10 @@ const {
 } = require("objection-db-errors")
 
 const logError = err => {
-  err.stack = err.stack.slice(0, err.stack.lastIndexOf("at newFn")).trimRight()
-  console.error(err)
+  err.stack = err.stack.slice(0, err.stack.indexOf("at newFn")).trimRight()
+  const err2 = JSON.parse(JSON.stringify(err.stack))
+  err2.data = JSON.stringify(err.data)
+  console.error(err2)
 }
 
 module.exports = (err, res) => {
@@ -58,7 +60,11 @@ module.exports = (err, res) => {
     err.name = "UnknownError"
   }
 
-  if (err.statusCode == 500 || process.env.NODE_ENV == "development")
+  if (
+    err.statusCode == 500 ||
+    process.env.NODE_ENV == "development" ||
+    err.name.startsWith("AlgoliaSearch")
+  )
     logError(err)
 
   res.status(err.statusCode).send({

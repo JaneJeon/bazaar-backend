@@ -126,6 +126,10 @@ class Commission extends BaseModel {
     return ["price", "priceUnit", "deadline", "numUpdates", "copyright"]
   }
 
+  static get searchEnabled() {
+    return true
+  }
+
   processInput() {
     if (this.artistId) this.isPrivate = true
     if (this.description) {
@@ -152,7 +156,6 @@ class Commission extends BaseModel {
       this,
       (v, k) => v !== null && this.constructor.negotiationFields.includes(k)
     )
-    base.deadline = dayjs(this.deadline).format("YYYY-MM-DD")
 
     return this.$relatedQuery("negotiations").insert([
       // auto-accept for the buyer
@@ -205,13 +208,13 @@ class Commission extends BaseModel {
       negotiations[1].accepted &&
       newFormsAreEqual
     ) {
-      // noinspection JSUnnecessarySemicolon
-      ;[negotiations] = await Promise.all([
-        this.$relatedQuery("negotiations", trx)
-          .where("artist_id", artistId)
-          .patch({ finalized: true }),
+      const updates = await Promise.all([
+        negotiations[0].$query(trx).patch({ finalized: true }),
+        negotiations[1].$query(trx).patch({ finalized: true }),
         this.$query(trx).patch(Object.assign({ artistId }, forms[0]))
       ])
+
+      negotiations = updates.slice(0, 2)
 
       // add job only when the finalization is confirmed to work, since
       // we don't keep track of jobs in our database

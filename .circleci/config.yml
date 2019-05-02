@@ -40,7 +40,9 @@ jobs:
       - run: |
           yarn rollback
           yarn migrate
-          yarn test
+          yarn seed
+
+      - run: yarn test
 
   deploy:
     docker:

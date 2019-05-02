@@ -63,6 +63,8 @@ For purposes of preservation, when a user deletes their account, their account i
 
 And when a user is first created, the user is not `verified`, and so they cannot create art/commission/negotiation until they verify their account. The frontend should read this value and nudge the user to verify their account whenever possible.
 
+The default seeded users all have the password 123456789
+
 ### Art
 An art can have 1-4 `pictures` attached to it. However, the `pictures` may not be changed after upload.
 

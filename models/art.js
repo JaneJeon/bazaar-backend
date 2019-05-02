@@ -62,6 +62,10 @@ class Art extends BaseModel {
     return ["pictures", "tags"]
   }
 
+  static get searchEnabled() {
+    return true
+  }
+
   static get QueryBuilder() {
     return class extends BaseModel.QueryBuilder {
       selectWithFavorite(id = null) {
