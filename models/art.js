@@ -23,7 +23,10 @@ class Art extends BaseModel {
           minItems: 1,
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
-        status: { type: "string", enum: ["bought", "for sale"] },
+        status: {
+          type: "string",
+          enum: ["bought", "for sale", "not for sale"]
+        },
         price: { type: "string", pattern: "^\\d+$" },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         tags: { type: "array", items: { type: "string" } }
