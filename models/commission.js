@@ -211,7 +211,7 @@ class Commission extends BaseModel {
       const updates = await Promise.all([
         negotiations[0].$query(trx).patch({ finalized: true }),
         negotiations[1].$query(trx).patch({ finalized: true }),
-        this.$query(trx).patch(Object.assign({ artistId }, forms[0]))
+        this.$query(trx).patch(Object.assign({ artistId, status: "accepted" }, forms[0]))
       ])
 
       negotiations = updates.slice(0, 2)
