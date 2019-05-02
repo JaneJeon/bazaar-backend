@@ -159,10 +159,7 @@ class Commission extends BaseModel {
 
     return this.$relatedQuery("negotiations").insert([
       // auto-accept for the buyer
-      Object.assign(
-        { artistId, buyerId, isArtist: false, accepted: true },
-        base
-      ),
+      Object.assign({ artistId, buyerId, isArtist: false }, base),
       Object.assign({ artistId, buyerId, isArtist: true }, base)
     ])
   }
