@@ -44,6 +44,10 @@ class User extends visibility(password()(BaseModel)) {
     }
   }
 
+  static get hidden() {
+    return ["password", "stripeAccountId", "stripeCustomerId"]
+  }
+
   static get reservedPostFields() {
     return [
       "id",
@@ -146,10 +150,6 @@ class User extends visibility(password()(BaseModel)) {
         }
       }
     }
-  }
-
-  static get hidden() {
-    return ["password", "stripeAccountId", "stripeCustomerId"]
   }
 
   static get searchEnabled() {

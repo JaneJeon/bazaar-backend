@@ -69,6 +69,11 @@
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.4.tgz#56eec47706f0fd0b7c694eae2f3172e6b0b769da"
   integrity sha512-D9MyoQFI7iP5VdpEyPZyjjqIJ8Y8EDNQFIFVLOmeg1rI1xiHOChyUPMPRUVfqFCerxfE+yS3vMyj37F6IdtOoQ==
 
+"@types/dinero.js@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@types/dinero.js/-/dinero.js-1.4.0.tgz#d00097a9dbbc7a732a26a814c3c999054285aa4e"
+  integrity sha512-5zvqxoVCrZkxhNzf7rMeiuJ0vpO7jKxmRQJvurSucvsZlPJPjVuemx/twqrDU7JPSOTCyF5TNfe4EmkhVVUJqw==
+
 "@types/events@*":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
@@ -1200,6 +1205,11 @@ diff@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
+
+dinero.js@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/dinero.js/-/dinero.js-1.6.0.tgz#d1e4fc4c1784cd8a853c2f1f1b1bb765736ec709"
+  integrity sha512-cmmC6N2XzJvynnUgMJkvUmPeiRgjv0t7G81EhcwbOtcOnLhhzhHN4qvYBYcqx1zuF0GOcEPg75KxPnVar7zYdQ==
 
 dns-prefetch-control@0.1.0:
   version "0.1.0"

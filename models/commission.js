@@ -8,6 +8,7 @@ const dayjs = require("dayjs")
 const stripe = require("../lib/stripe")
 const commissionCheckPaymentJob = require("../jobs/commission-check-payment")
 const commissionCheckUpdateJob = require("../jobs/commission-check-update")
+const dinero = require("dinero.js")
 
 class Commission extends BaseModel {
   static get jsonSchema() {
@@ -42,7 +43,8 @@ class Commission extends BaseModel {
         },
         tags: { type: "array", items: { type: "string" } },
         deleted: { type: "boolean" }, // TODO: do I need this?
-        stripeChargeId: { type: "string" }
+        stripeChargeId: { type: "string" },
+        stripeRefundId: { type: "string" }
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
@@ -50,7 +52,7 @@ class Commission extends BaseModel {
   }
 
   static get hidden() {
-    return ["stripeChargeId"]
+    return ["stripeChargeId", "stripeRefundId"]
   }
 
   static get relationMappings() {
@@ -96,12 +98,28 @@ class Commission extends BaseModel {
           from: "commissions.artist_id",
           to: "users.id"
         }
+      },
+      buyer: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: "user",
+        join: {
+          from: "commissions.buyer_id",
+          to: "users.id"
+        }
       }
     }
   }
 
   static get reservedPostFields() {
-    return ["isPrivate", "status", "cancelledBy", "tags", "deleted"]
+    return [
+      "isPrivate",
+      "status",
+      "cancelledBy",
+      "tags",
+      "deleted",
+      "stripeChargeId",
+      "stripeRefundId"
+    ]
   }
 
   static get negotiationFields() {
@@ -202,7 +220,7 @@ class Commission extends BaseModel {
       // we don't keep track of jobs in our database
       await commissionCheckPaymentJob.add(
         { commissionId: this.id, late: 0 },
-        { delay: 24 * 60 * 60 * 1000 } // schedule to be run in 24h
+        { delay: 24 * 60 * 60 * 1000, jobId: `${this.id}-0` } // schedule to be run in 24h
       )
     }
 
@@ -211,6 +229,16 @@ class Commission extends BaseModel {
 
   get transferGroup() {
     return `commission-${this.id}`
+  }
+
+  static get updatePriceRatios() {
+    return [
+      [5, 5],
+      [4, 2, 4],
+      [3, 2, 2, 3],
+      [2, 2, 2, 2, 2],
+      [1, 2, 2, 2, 2, 1]
+    ]
   }
 
   // pays for the commission, adds update rows, and kickstarts update jobs
@@ -232,26 +260,26 @@ class Commission extends BaseModel {
     const days = dayjs(this.deadline).diff(now, "day")
 
     // take application fees up front
-    // TODO: check that this doesn't actually modify the database value
-    this.price *= 1 - process.env.APPLICATION_FEE
+    this.price = dinero({ amount: this.price }).multiply(
+      1 - process.env.APPLICATION_FEE
+    )
+
+    const prices = dinero({ amount: this.price })
+      .multiply(1 - process.env.APPLICATION_FEE)
+      .allocate(this.constructor.updatePriceRatios[this.numUpdates])
 
     for (let i = 0; i <= this.numUpdates; i++) {
       const update = {
         updateNum: i,
+        price: prices[i].getAmount(),
         priceUnit: this.priceUnit,
         deadline: dayjs()
           .add(Math.ceil((i * days) / this.numUpdates), "day")
           .format("YYYY-MM-DD")
       }
 
-      if (i == 0) {
-        update.price = (this.price * (1 - this.numUpdates / 5)) / 2
-        update.pictures = [""]
-      } else if (i == this.numUpdates - 1) {
-        update.price = this.price / 5
-      } else {
-        update.price = (this.price * (1 - this.numUpdates / 5)) / 2
-      }
+      // first hit is free!
+      if (i == 0) update.pictures = [""]
 
       updateRows.push(update)
     }
@@ -269,13 +297,17 @@ class Commission extends BaseModel {
           },
           {
             delay: dayjs(update.deadline).diff(now),
-            jobId: `${this.id}-${update.updateNum}`
+            jobId: update.jobId
           }
         )
       )
     )
 
     return updates
+  }
+
+  static get maxPaymentLate() {
+    return 2
   }
 }
 

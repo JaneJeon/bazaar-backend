@@ -5,7 +5,18 @@ const { Commission } = require("../models")
 const commissionCancelJob = require("./commission-cancel")
 const dayjs = require("dayjs")
 
-exports.add = async (data, opts) => queue.add(taskName, data, opts)
+exports.add = async (data, opts) => {
+  if (opts.jobId) opts.jobId = `${taskName}-${opts.jobId}`
+  return queue.add(taskName, data, opts)
+}
+
+exports.cancelJobs = async ids => {
+  const jobs = await Promise.all(
+    ids.map(id => queue.getJob(`${taskName}-${id}`))
+  )
+
+  await Promise.all(jobs.filter(v => v).map(job => job.remove()))
+}
 
 queue.process(taskName, async (job, data) => {
   await transaction(Commission.knex(), async trx => {
@@ -21,14 +32,16 @@ queue.process(taskName, async (job, data) => {
             .format("YYYY-MM-DD")
         })
     } else {
-      if (data.late == 1)
+      if (++data.late == Commission.maxPaymentLate)
         // check after 48h and the buyer still hasn't paid
         // cancel commission
         await commissionCancelJob.add(data)
       else {
         // reschedule job 24h later
-        data.late++
-        await queue.add(taskName, data, { delay: 24 * 60 * 60 * 1000 })
+        await queue.add(taskName, data, {
+          delay: 24 * 60 * 60 * 1000,
+          jobId: `${taskName}-${commission.id}-${data.late}`
+        })
       }
     }
   })
