@@ -27,6 +27,7 @@ module.exports = Router()
       .$relatedQuery("favoriteArts")
       .selectWithFavorite((req.user || {}).id)
       .paginate(req.query.after)
+      .where("status", req.query.status)
 
     res.send(arts)
   })
