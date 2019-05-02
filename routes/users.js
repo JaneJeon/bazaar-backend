@@ -13,15 +13,11 @@ module.exports = Router()
   })
   .get("/:userId/arts", async (req, res) => {
     const user = await User.query().findById(req.params.userId, req.user)
-    const arts = await user.$relatedQuery("arts").paginate(req.query.after)
-
-    res.send(arts)
-  })
-  .get(":userId/arts/bought", async (req, res) => {
-    const user = await User.query().findById(req.params.userId, req.user)
     const arts = await user
-      .$relatedQuery("artsBought")
+      .$relatedQuery("arts")
+      .selectWithFavorite((req.user || {}).id)
       .paginate(req.query.after)
+      .where("status", req.query.bought ? "bought" : undefined)
 
     res.send(arts)
   })
@@ -29,6 +25,7 @@ module.exports = Router()
     const user = await User.query().findById(req.params.userId, req.user)
     const arts = await user
       .$relatedQuery("favoriteArts")
+      .selectWithFavorite((req.user || {}).id)
       .paginate(req.query.after)
 
     res.send(arts)
