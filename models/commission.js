@@ -220,7 +220,7 @@ class Commission extends BaseModel {
       // we don't keep track of jobs in our database
       await commissionCheckPaymentJob.add(
         { commissionId: this.id, late: 0 },
-        { delay: 24 * 60 * 60 * 1000 } // schedule to be run in 24h
+        { delay: 24 * 60 * 60 * 1000, jobId: `${this.id}-0` } // schedule to be run in 24h
       )
     }
 
@@ -297,13 +297,17 @@ class Commission extends BaseModel {
           },
           {
             delay: dayjs(update.deadline).diff(now),
-            jobId: `${this.id}-${update.updateNum}`
+            jobId: update.jobId
           }
         )
       )
     )
 
     return updates
+  }
+
+  static get maxPaymentLate() {
+    return 2
   }
 }
 

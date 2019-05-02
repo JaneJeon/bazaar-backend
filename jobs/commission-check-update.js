@@ -17,6 +17,14 @@ exports.trigger = async jobId => {
   if (job !== null) await job.promote()
 }
 
+exports.cancelJobs = async ids => {
+  const jobs = await Promise.all(
+    ids.map(id => queue.getJob(`${taskName}-${id}`))
+  )
+
+  await Promise.all(jobs.filter(v => v).map(job => job.remove()))
+}
+
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {
     const update = await Update.query(trx).findById([

@@ -19,11 +19,21 @@ exports.complete = async jobId => {
   }
 }
 
+exports.cancelJobs = async ids => {
+  const jobs = await Promise.all(
+    ids.map(id => queue.getJob(`${taskName}-${id}`))
+  )
+
+  await Promise.all(jobs.filter(v => v).map(job => job.remove()))
+}
+
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {
     const update = await Update.query(trx)
       .findById([data.commissionId, data.updateNum])
       .eager({ commission: { artist: true } })
+    const commission = update.commission
+    const artist = commission.artist
 
     const prices = dinero({ amount: update.price }).allocate([
       20 - 5 * update.delays,
@@ -34,8 +44,8 @@ queue.process(taskName, async (job, data) => {
     const transfer = await stripe.transfers.create({
       amount: prices[0].getAmount(),
       currency: update.priceUnit,
-      destination: update.commission.artist.stripeAccountId,
-      transfer_group: update.commission.transferGroup
+      destination: artist.stripeAccountId,
+      transfer_group: commission.transferGroup
     })
 
     const changes = { stripeTransferId: transfer.id }
@@ -43,7 +53,7 @@ queue.process(taskName, async (job, data) => {
     // if the artist is late, refund certain amount to the buyer
     if (update.delays) {
       const refund = await stripe.refunds.create({
-        charge: update.commission.stripeCharge.id,
+        charge: commission.stripeCharge.id,
         amount: prices[1].getAmount()
       })
 
@@ -55,6 +65,6 @@ queue.process(taskName, async (job, data) => {
 
     // if final, mark commission 'complete'
     if (update.updateNum == commission.numUpdates)
-      await update.commission.$query(trx).patch({ status: "complete" })
+      await commission.$query(trx).patch({ status: "complete" })
   })
 })
