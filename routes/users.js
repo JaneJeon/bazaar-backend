@@ -17,7 +17,7 @@ module.exports = Router()
       .$relatedQuery("arts")
       .selectWithFavorite((req.user || {}).id)
       .paginate(req.query.after)
-      .where("status", req.query.bought ? "bought" : undefined)
+      .where("status", req.query.bought === "true" ? "bought" : undefined)
 
     res.send(arts)
   })
