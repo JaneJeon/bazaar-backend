@@ -9,7 +9,7 @@ const users = []
 for (let i = 0; i < n; i++)
   users.push({
     username: faker.random.alphaNumeric(15),
-    password: faker.internet.password(10),
+    password: "123456789",
     email: faker.internet.email()
   })
 

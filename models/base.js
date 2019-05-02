@@ -96,7 +96,9 @@ class BaseModel extends tableName(DbErrors(Model)) {
     const copy = this.$clone()
 
     // attach objectID for algolia
-    const instance = old ? this.constructor.fromJson(old) : copy
+    const instance = old
+      ? this.constructor.fromJson(old, { skipValidation: true })
+      : copy
     copy.objectID = instance.algoliaId
 
     // tags -> _tags
