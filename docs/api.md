@@ -81,8 +81,12 @@ Once an `artistId` is set, you cannot change it or delete it again.
 
 The `deadline` is a date (of format `YYYY-MM-DD`), not a datetime/timestamp, and it is specified in the UTC timezone.
 
+`GET` operations return additional fields: `artistAvatar` is the `avatar` property of the artist (may be null), and `buyerAvatar` is the `avatar` property of the buyer.
+
 ### Negotiation
 A commission can have multiple ongoing negotiations with different artists. When an artist makes an offer for a commission and begin the process of negotiation, both the artist and the buyer are given negotiation forms. They can edit the details of the negotiation (they can only edit their own form), and once the forms are equal they are allowed to set `accepted` as true. Once they both accept, artists may no longer make an offer for the commission, and the negotiation and the commission details are `finalized` (true) and cannot be changed any more.
+
+`GET` operations return additional fields: `artistAvatar` is the `avatar` property of the artist, and `buyerAvatar` is the `avatar` property of the buyer.
 
 ### Chat
 Each negotiation has a chat room in which the buyer and the artist can discuss the details of the negotiation.
