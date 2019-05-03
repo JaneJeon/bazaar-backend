@@ -70,9 +70,9 @@ module.exports = (err, req, res) => {
 
   debug(req.method + " " + req.url)
   debug(err)
-  debug("user: " + req.user)
-  debug("request body: " + req.body)
-  debug("request query: " + req.query)
+  debug("user: " + JSON.stringify(req.user))
+  debug("request body: " + JSON.stringify(req.body))
+  debug("request query: " + JSON.stringify(req.query))
 
   res.status(err.statusCode).send({
     message: err.message,
