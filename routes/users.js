@@ -66,7 +66,7 @@ module.exports = Router()
     const user = await User.query().insert(req.body)
     const token = await tempToken.generate("verify", user.id, user.id)
 
-    req.login(user, () => res.status(201).send(req.user))
+    req.login(user, () => res.status(201).send(req.user.stripeCopy))
 
     // email verification
     await user.sendEmail("verify", {

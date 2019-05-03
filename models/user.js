@@ -35,9 +35,7 @@ class User extends visibility(password()(BaseModel)) {
         bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH },
         rating: { type: "integer" },
         stripeAccountId: { type: "string" },
-        stripeCustomerId: { type: "string" },
-        hasStripeAccount: { type: "boolean" },
-        isStripeCustomer: { type: "boolean" }
+        stripeCustomerId: { type: "string" }
       },
       required: ["username", "email", "password"],
       additionalProperties: false
@@ -164,10 +162,6 @@ class User extends visibility(password()(BaseModel)) {
     if (this.bio) this.bio = text.clean(this.bio)
     if (!opt || (this.avatar || this.avatar === null))
       this.avatar = await this.generateAvatar(opt)
-    if (this.stripeAccountId) this.hasStripeAccount = true
-    else if (this.stripeAccountId === null) this.hasStripeAccount = false
-    if (this.stripeCustomerId) this.isStripeCustomer = true
-    else if (this.stripeCustomerId === null) this.isStripeCustomer = false
   }
 
   async generateAvatar(opt) {
@@ -209,6 +203,14 @@ class User extends visibility(password()(BaseModel)) {
         TemplateData: JSON.stringify(data)
       })
       .promise()
+  }
+
+  get stripeCopy() {
+    const obj = this.toJSON() // convert to POJO
+    obj.stripeAccountId = this.stripeAccountId
+    obj.stripeCustomerId = this.stripeCustomerId
+
+    return obj
   }
 }
 

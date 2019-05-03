@@ -92,7 +92,9 @@ A commission can have multiple ongoing negotiations with different artists. When
 Each negotiation has a chat room in which the buyer and the artist can discuss the details of the negotiation.
 
 ### Stripe
-There are two types of stripe accounts. A seller account and a customer account used to make purchases. In order to make a customer account, you must submit credit card information in the form of a stripe token to the backend. It will be impossible to begin a commission on the buyer side without first making a customer account. The seller account is required for artists to accept payments. In order to establish a seller account, an authorization code must be sent to the backend. The User model has `hasStripeAccount` and `isStripeCustomer` properties so that the frontend can verify whether or not the appropriate stripe account exists.
+There are two types of stripe accounts. A seller account and a customer account used to make purchases. In order to make a customer account, you must submit credit card information in the form of a stripe token to the backend. It will be impossible to begin a commission on the buyer side without first making a customer account. The seller account is required for artists to accept payments. In order to establish a seller account, an authorization code must be sent to the backend.
+
+These stripe information - `stripeAccountId` and `stripeCustomerId` - will NOT be visible to users by default, since you can charge people with just this information. However, when a user signs up/logs in, these fields will be included in the object returned since we know that it's the user's own information.
 
 ## Routes
 - [POST `/sessions`](#posts)
