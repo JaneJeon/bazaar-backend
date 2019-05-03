@@ -8,6 +8,7 @@ const {
   CheckViolationError,
   DataError
 } = require("objection-db-errors")
+const debug = require("debug")("bazaar:error")
 
 const logError = err => {
   err.stack = err.stack.slice(0, err.stack.indexOf("at newFn")).trimRight()
@@ -16,7 +17,7 @@ const logError = err => {
   console.error(err2)
 }
 
-module.exports = (err, res) => {
+module.exports = (err, req, res) => {
   // errors can happen after the response is sent when sending email
   if (res.headersSent) {
     logError(err)
@@ -66,6 +67,12 @@ module.exports = (err, res) => {
     err.name.startsWith("AlgoliaSearch")
   )
     logError(err)
+
+  debug(req.method + " " + req.url)
+  debug(err)
+  debug("user: " + req.user)
+  debug("request body: " + req.body)
+  debug("request query: " + req.query)
 
   res.status(err.statusCode).send({
     message: err.message,
