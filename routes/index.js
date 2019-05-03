@@ -24,6 +24,7 @@ module.exports = Router()
   .use((req, res, next) => next(req.ensureVerified()))
   .get("/negotiations", async (req, res) => {
     const negotiations = await Negotiation.query()
+      .selectWithAvatars()
       .where("artist_id", req.user.id)
       .where("is_artist", true)
       .where("finalized", false)

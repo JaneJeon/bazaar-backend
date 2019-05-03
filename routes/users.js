@@ -44,12 +44,14 @@ module.exports = Router()
             ? "commissionsAsArtist"
             : "commissionsAsBuyer"
         )
+        .selectWithAvatars()
         .where("status", req.query.status || "open")
         .paginate(req.query.after)
     } else {
       // public, open commissions by the user
       commissions = await user
         .$relatedQuery("commissionsAsBuyer")
+        .selectWithAvatars()
         .where("status", "open")
         .where("is_private", false)
         .paginate(req.query.after)

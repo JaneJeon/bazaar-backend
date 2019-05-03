@@ -148,6 +148,22 @@ class Commission extends BaseModel {
     this.processInput()
   }
 
+  static get QueryBuilder() {
+    return class extends BaseModel.QueryBuilder {
+      selectWithAvatars() {
+        return this.select(
+          "*",
+          Commission.relatedQuery("artist")
+            .column("avatar")
+            .as("artistAvatar"),
+          Commission.relatedQuery("buyer")
+            .column("avatar")
+            .as("buyerAvatar")
+        )
+      }
+    }
+  }
+
   async beginNegotiation(isBuyer, artistId, buyerId) {
     // buyer can't create negotiation with themselves, duh
     assert(!isBuyer, 403)

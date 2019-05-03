@@ -6,6 +6,7 @@ module.exports = Router()
   .get("/", async (req, res) => {
     // TODO: FOR NOW, the results are not personalized
     const commissions = await Commission.query()
+      .selectWithAvatars()
       .where("is_private", false)
       .where("status", "open")
       .paginate(req.query.after)
@@ -13,9 +14,9 @@ module.exports = Router()
     res.send(commissions)
   })
   .get("/:commissionId", async (req, res) => {
-    const commission = await Commission.query().findById(
-      req.params.commissionId
-    )
+    const commission = await Commission.query()
+      .selectWithAvatars()
+      .findById(req.params.commissionId)
 
     res.send(commission)
   })

@@ -30,6 +30,7 @@ module.exports = Router({ mergeParams: true })
     //  field at once even when we're changing only one party's form!!
     const negotiations = await req.commission
       .$relatedQuery("artistForms")
+      .selectWithAvatars()
       .paginate(req.query.after, "update_id")
 
     res.send(negotiations)
@@ -37,6 +38,7 @@ module.exports = Router({ mergeParams: true })
   .get("/:artistId", async (req, res) => {
     const negotiations = await req.commission
       .$relatedQuery("negotiations")
+      .selectWithAvatars()
       .where("artist_id", req.params.artistId)
 
     res.send(negotiations)
