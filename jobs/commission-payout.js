@@ -4,13 +4,17 @@ const { transaction } = require("objection")
 const { Update } = require("../models")
 const stripe = require("../lib/stripe")
 const dinero = require("dinero.js")
+const debug = require("debug")("bazaar:jobs:commissionPayout")
 
 exports.add = async (data, opts) => {
   if (opts.jobId) opts.jobId = `${taskName}-${opts.jobId}`
+  debug("adding job " + opts.jobId || null)
+
   return queue.add(taskName, data, opts)
 }
 
 exports.complete = async jobId => {
+  debug("immediately completing job " + jobId)
   const job = await queue.getJob(`${taskName}-${jobId}`)
 
   if (job !== null) {
@@ -29,6 +33,10 @@ exports.cancelJobs = async ids => {
 
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {
+    debug("processing job " + job.id)
+    debug("job data:")
+    debug(job.data)
+
     const update = await Update.query(trx)
       .findById([data.commissionId, data.updateNum])
       .eager({ commission: { artist: true } })
@@ -40,6 +48,9 @@ queue.process(taskName, async (job, data) => {
       5 * update.delays
     ])
 
+    debug("prices:")
+    debug(prices)
+
     // pay out the artist
     const transfer = await stripe.transfers.create({
       amount: prices[0].getAmount(),
@@ -47,6 +58,8 @@ queue.process(taskName, async (job, data) => {
       destination: artist.stripeAccountId,
       transfer_group: commission.transferGroup
     })
+
+    debug("paid artist")
 
     const changes = { stripeTransferId: transfer.id }
 
@@ -58,6 +71,8 @@ queue.process(taskName, async (job, data) => {
       })
 
       changes.stripeRefundId = refund.id
+
+      debug("refunded buyer")
     }
 
     // record payments

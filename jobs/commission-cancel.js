@@ -8,11 +8,21 @@ const commissionCheckPaymentJob = require("./commission-check-payment")
 const dinero = require("dinero.js")
 const slice = require("lodash/slice")
 const stripe = require("../lib/stripe")
+const debug = require("debug")("bazaar:jobs:commissionCancel")
 
-exports.add = async (data, opts) => queue.add(taskName, data, opts)
+exports.add = async (data, opts) => {
+  if (opts.jobId) opts.jobId = `${taskName}-${opts.jobId}`
+  debug("adding job " + opts.jobId || null)
+
+  return queue.add(taskName, data, opts)
+}
 
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {
+    debug("processing job " + job.id)
+    debug("job data:")
+    debug(job.data)
+
     // the update from which to refund all
     const update = await Update.query(trx)
       .findById([data.commissionId, data.updateNum])
@@ -29,11 +39,20 @@ queue.process(taskName, async (job, data) => {
     )
     const payoutJobIds = checkUpdateJobIds.slice(0) // copy
 
+    debug("checkPaymentJobIds:")
+    debug(checkPaymentJobIds)
+    debug("checkUpdateJobIds:")
+    debug(checkUpdateJobIds)
+    debug("payoutJobIds:")
+    debug(payoutJobIds)
+
     await Promise.all([
       commissionCheckPaymentJob.cancelJobs(checkPaymentJobIds),
       commissionCheckUpdateJob.cancelJobs(checkUpdateJobIds),
       commissionPayoutJob.cancelJobs(payoutJobIds)
     ])
+
+    debug("all jobs cancelled!")
 
     // refund the rest of the payment to B
     const ratio = Commission.updatePriceRatios[commission.numUpdates]
@@ -41,6 +60,9 @@ queue.process(taskName, async (job, data) => {
       (x, y) => x + y
     )
     const toRefund = slice(ratio, update.updateNum).reduce((x, y) => x + y)
+
+    debug("ratio: " + JSON.stringify(ratio))
+    debug(`already paid ${alreadyPaid}, to refund ${toRefund}`)
 
     const amount = dinero({ amount: commission.price })
       .multiply(1 - process.env.APPLICATION_FEE)
@@ -52,9 +74,13 @@ queue.process(taskName, async (job, data) => {
       amount
     })
 
+    debug("refunded " + amount)
+
     // mark commission as cancelled
     await commission
       .$query(trx)
       .patch({ status: "cancelled", stripeRefundId: refund.id })
+
+    debug("commission cancelled done")
   })
 })
