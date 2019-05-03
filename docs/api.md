@@ -72,7 +72,7 @@ If the art has a `description`, `tags` will be automatically extracted from it -
 
 The art does have a `priceUnit`; however, for now the only possible value for this field is "USD" (and it is the default value for the field).
 
-`GET` operations return additional fields: `likes` counting the number of likes the art has, and `liked` (an integer, but you can use it as a boolean since 0 is falsey and 1 is truthy in javascript) indicating whether the current user (if the user is signed in) liked the art. If the user is not signed in, `liked` is always 0.
+`GET` operations return additional fields: `likes` counting the number of likes the art has, and `liked` (an integer, but you can use it as a boolean since 0 is falsey and 1 is truthy in javascript) indicating whether the current user (if the user is signed in) liked the art. If the user is not signed in, `liked` is always 0. And finally, `artistAvatar` is the `avatar` property of the artist.
 
 ### Commission
 When a buyer creates a commission, they can specify an artist of their choosing. Whenever a commission specifies an artist (and `artistId` can actually be set even after the commission is created as a public commission), it will be turned into a private commission.

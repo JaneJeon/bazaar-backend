@@ -57,6 +57,14 @@ class Art extends BaseModel {
           },
           to: "users.id"
         }
+      },
+      artist: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: "user",
+        join: {
+          from: "arts.artist_id",
+          to: "users.id"
+        }
       }
     }
   }
@@ -80,7 +88,10 @@ class Art extends BaseModel {
           Art.relatedQuery("favorites")
             .where("user_id", id)
             .count()
-            .as("liked")
+            .as("liked"),
+          Art.relatedQuery("artist")
+            .column("avatar")
+            .as("artistAvatar")
         )
       }
     }
