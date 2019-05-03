@@ -94,7 +94,7 @@ Each negotiation has a chat room in which the buyer and the artist can discuss t
 ### Stripe
 There are two types of stripe accounts. A seller account and a customer account used to make purchases. In order to make a customer account, you must submit credit card information in the form of a stripe token to the backend. It will be impossible to begin a commission on the buyer side without first making a customer account. The seller account is required for artists to accept payments. In order to establish a seller account, an authorization code must be sent to the backend.
 
-These stripe information - `stripeAccountId` and `stripeCustomerId` - will NOT be visible to users by default, since you can charge people with just this information. However, when a user signs up/logs in, these fields will be included in the object returned since we know that it's the user's own information.
+These stripe information - `stripeAccountId` and `stripeCustomerId` - will NOT be visible to users by default, since you can charge people with just this information. However, when a user signs up/logs in/adds a card/creates a stripe account, these fields will be included in the object returned since we know that it's the user's own information.
 
 ## Routes
 - [POST `/sessions`](#posts)
@@ -250,7 +250,11 @@ Patch method to be called by the artist when submitting an update to the buyer. 
 Patch method to be called by the buyer when they want to waive an update. If the user is not the buyer, then it will return a 403 error. If called successfully, this will send a money transfer from us to the artist. The current update will also increment. In order to call this method, the artist must be logged in and a cookie must be sent to the backend.
 
 ### <a name="#postsacc"></a> POST `/stripe/accounts`
-This post method should be used to create a seller account for an artist. It takes in data containing the authorization code obtained from stripe on the frontend. This route requires that the user be logged in, and that the user sends over a cookie in order to be used.
+This post method should be used to create a seller account for an artist. It takes in data containing the authorization `code` obtained from stripe on the frontend. This route requires that the user be logged in, and that the user sends over a cookie in order to be used.
+
+Returns the new user information when successful.
 
 ### <a name="#postscust"></a> POST `/stripe/customers`
-This post method should be used to create a customer account on the backend. It requires that the frontend send over a stripeToken for a payment source related to that user (e.g. credit card). The user must be logged, and the user must send over a cookie in order to use this route.
+This post method should be used to create a customer account on the backend. It requires that the frontend send over a `stripeToken` for a payment source related to that user (e.g. credit card). The user must be logged, and the user must send over a cookie in order to use this route.
+
+Returns the new user information when successful.
