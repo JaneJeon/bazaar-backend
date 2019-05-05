@@ -106,6 +106,14 @@ class Commission extends BaseModel {
           from: "commissions.buyer_id",
           to: "users.id"
         }
+      },
+      reviews: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: 'review',
+        join: {
+          from: 'commissions.id',
+          to: 'reviews.commission_id'
+        }
       }
     }
   }

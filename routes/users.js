@@ -33,17 +33,11 @@ module.exports = Router()
   })
   .get("/:userId/reviews", async (req, res) => {
     const user = await User.query().findById(req.params.userId, req.user)
-    const reviews = await user.$relatedQuery("review").paginate(req.query.after)
+    const relation = req.query.as == 'reviewer' ? 'reviewsAsReviewer' : 'reviewsAsReviewee'
+
+    const reviews = await user.$relatedQuery(relation).paginate(req.query.after)
 
     res.send(reviews)
-  })
-  .get("/:userId/reviewed", async (req, res) => {
-    const user = await User.query().findById(req.params.userId, req.user)
-    const reviewed = await user
-      .$relatedQuery("reviewed")
-      .paginate(req.query.after)
-
-    res.send(reviewed)
   })
   .get("/:userId/commissions", async (req, res) => {
     const user = await User.query().findById(req.params.userId, req.user)

@@ -9,9 +9,9 @@ module.exports = Router()
 
     const reviewee = await User.query().findById(req.params.userId)
 
-    const review = await req.user.$relatedQuery("review").insert(req.body)
+    const review = await req.user.$relatedQuery("reviewsAsReviewer").insert(req.body)
 
-    const reviewed = await reviewee.$relatedQuery("reviewed").insert(req.body)
+    const reviewed = await reviewee.$relatedQuery("reviewsAsReviewee").insert(req.body)
 
     res.send(review)
   })
@@ -22,12 +22,12 @@ module.exports = Router()
     const reviewee = await User.query().findById(req.params.userId)
 
     const review = await req.user
-      .$query()
+      .$relatedQueryquery("reviewsAsReviewer")
       .patch(req.body)
       .where("id", req.params.reviewId)
 
     const reviewed = await reviewee
-      .$query()
+      .$query("reviewsAsReviewee")
       .patch(req.body)
       .where("id", req.params.reviewId)
 
@@ -38,12 +38,12 @@ module.exports = Router()
     const reviewee = await User.query().findById(req.params.userId)
 
     const review = await req.user
-      .$relatedQuery(review)
+      .$relatedQuery("reviewsAsReviewer")
       .delete()
       .where("id", req.params.reviewId)
 
     const reviewed = await reviewee
-      .$relatedQuery(reviewed)
+      .$relatedQuery("reviewsAsReviewee")
       .delete()
       .where("id", req.params.reviewId)
 

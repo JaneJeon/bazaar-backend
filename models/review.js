@@ -5,28 +5,21 @@ class Review extends BaseModel {
     return {
       type: "object",
       properties: {
+        reviewer_id: {type: 'string'},
+        reviewee_id: {type: 'string'},
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
         },
-        rating: { type: "integer", minimum: process.env.MIN_PRICE }
+        rating: { type: "integer", minimum: 1, maximum: 5 }
       },
       required: ["Description", "rating"],
       additionalProperties: false
     }
   }
 
-  static get relationMappings() {
-    return {
-      relatedCommission: {
-        relation: BaseModel.BelongsToOneRelation,
-        modelClass: "commission",
-        join: {
-          from: "userReview.id",
-          to: "commission.id"
-        }
-      }
-    }
+  static get reservedPostFields() {
+    return ['reviewer_id', 'reviewee_id']
   }
 
   static get searchEnabled() {
