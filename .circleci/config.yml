@@ -8,7 +8,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node
+      - image: circleci/node:11
         environment:
           PGHOST: 127.0.0.1
           PGUSER: knex
@@ -40,7 +40,9 @@ jobs:
       - run: |
           yarn rollback
           yarn migrate
-          yarn test
+          yarn seed
+
+      - run: yarn test
 
   deploy:
     docker:

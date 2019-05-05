@@ -50,6 +50,22 @@ class Negotiation extends BaseModel {
           ],
           to: ["chats.commission_id", "chats.artist_id", "chats.dummy_field"]
         }
+      },
+      artist: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: "user",
+        join: {
+          from: "negotiations.artist_id",
+          to: "users.id"
+        }
+      },
+      buyer: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: "user",
+        join: {
+          from: "negotiations.buyer_id",
+          to: "users.id"
+        }
       }
     }
   }
@@ -70,6 +86,22 @@ class Negotiation extends BaseModel {
   $beforeUpdate(opt, queryContext) {
     super.$beforeUpdate(opt, queryContext)
     this.processInput()
+  }
+
+  static get QueryBuilder() {
+    return class extends BaseModel.QueryBuilder {
+      selectWithAvatars() {
+        return this.select(
+          "*",
+          Negotiation.relatedQuery("artist")
+            .column("avatar")
+            .as("artistAvatar"),
+          Negotiation.relatedQuery("buyer")
+            .column("avatar")
+            .as("buyerAvatar")
+        )
+      }
+    }
   }
 }
 

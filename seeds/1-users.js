@@ -9,20 +9,13 @@ const users = []
 for (let i = 0; i < n; i++)
   users.push({
     username: faker.random.alphaNumeric(15),
-    password: faker.internet.password(10),
+    password: "123456789",
     email: faker.internet.email()
   })
 
 exports.users = users.map(user => pick(user, ["username", "password"]))
 
 exports.seed = async knex => {
-  await knex("chats").del()
-  await knex("negotiations").del()
-  await knex("commissions").del()
-  await knex("favorites").del()
-  await knex("arts").del()
-  await knex("users").del()
-
   await User.query().insert(users)
 
   // make the users verified since they're here more for testing

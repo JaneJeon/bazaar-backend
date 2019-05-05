@@ -1,7 +1,7 @@
 const session = require("supertest-session")
 const app = require("../../app")
 const request = session(app)
-const { users } = require("../../seeds/0-users")
+const { users } = require("../../seeds/1-users")
 
 exports.users = users
 

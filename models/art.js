@@ -23,7 +23,10 @@ class Art extends BaseModel {
           minItems: 1,
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
-        status: { type: "string" },
+        status: {
+          type: "string",
+          enum: ["bought", "for sale", "not for sale"]
+        },
         price: { type: "string", pattern: "^\\d+$" },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
         tags: { type: "array", items: { type: "string" } }
@@ -54,12 +57,24 @@ class Art extends BaseModel {
           },
           to: "users.id"
         }
+      },
+      artist: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: "user",
+        join: {
+          from: "arts.artist_id",
+          to: "users.id"
+        }
       }
     }
   }
 
   static get reservedPostFields() {
     return ["pictures", "tags"]
+  }
+
+  static get searchEnabled() {
+    return true
   }
 
   static get QueryBuilder() {
@@ -73,7 +88,10 @@ class Art extends BaseModel {
           Art.relatedQuery("favorites")
             .where("user_id", id)
             .count()
-            .as("liked")
+            .as("liked"),
+          Art.relatedQuery("artist")
+            .column("avatar")
+            .as("artistAvatar")
         )
       }
     }

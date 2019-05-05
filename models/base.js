@@ -78,27 +78,28 @@ class BaseModel extends tableName(DbErrors(Model)) {
     }
   }
 
+  static get searchEnabled() {
+    return false
+  }
+
   static get index() {
     return algoliaIndex(this.tableName)
   }
 
-  static algoliaId(obj) {
-    return Array.isArray(this.idColumn)
-      ? this.idColumn.map(field => obj[field]).join("-")
-      : obj[this.idColumn]
+  get algoliaId() {
+    const id = this.$id()
+    return Array.isArray(id) ? id.join("-") : id
   }
 
   // rename fields for algolia indexing
-  algoliaCopy(id) {
+  algoliaCopy(old) {
     const copy = this.$clone()
 
-    // id -> objectID
-    copy.objectID = id || this.constructor.algoliaId(copy)
-    if (Array.isArray(this.constructor.idColumn)) {
-      this.constructor.idColumn.forEach(field => delete copy[field])
-    } else {
-      delete copy[this.constructor.idColumn]
-    }
+    // attach objectID for algolia
+    const instance = old
+      ? this.constructor.fromJson(old, { skipValidation: true })
+      : copy
+    copy.objectID = instance.algoliaId
 
     // tags -> _tags
     if (this.hasOwnProperty("tags")) {
@@ -111,20 +112,23 @@ class BaseModel extends tableName(DbErrors(Model)) {
 
   async $afterInsert(queryContext) {
     await super.$afterInsert(queryContext)
-    await this.constructor.index.addObject(this.algoliaCopy())
+    if (this.constructor.searchEnabled)
+      await this.constructor.index.addObject(this.algoliaCopy())
   }
 
   async $afterUpdate(opt, queryContext) {
     await super.$afterUpdate(opt, queryContext)
-    // id from opt.old, updated properties
-    await this.constructor.index.partialUpdateObject(
-      this.algoliaCopy(this.constructor.algoliaId(opt.old))
-    )
+    if (this.constructor.searchEnabled && opt.old)
+      // id from opt.old, updated properties
+      await this.constructor.index.partialUpdateObject(
+        this.algoliaCopy(opt.old)
+      )
   }
 
   async $beforeDelete(queryContext) {
     await super.$beforeDelete(queryContext)
-    await this.constructor.index.deleteObject(this.constructor.algoliaId(this))
+    if (this.constructor.searchEnabled)
+      await this.constructor.index.deleteObject(this.algoliaId)
   }
 }
 

@@ -32,6 +32,10 @@ class Review extends BaseModel {
       }
     }
   }
+
+  static get searchEnabled() {
+    return true
+  }
 }
 
 module.exports = Review

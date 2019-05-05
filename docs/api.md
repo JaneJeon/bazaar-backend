@@ -63,6 +63,8 @@ For purposes of preservation, when a user deletes their account, their account i
 
 And when a user is first created, the user is not `verified`, and so they cannot create art/commission/negotiation until they verify their account. The frontend should read this value and nudge the user to verify their account whenever possible.
 
+The default seeded users all have the password 123456789
+
 ### Art
 An art can have 1-4 `pictures` attached to it. However, the `pictures` may not be changed after upload.
 
@@ -70,7 +72,7 @@ If the art has a `description`, `tags` will be automatically extracted from it -
 
 The art does have a `priceUnit`; however, for now the only possible value for this field is "USD" (and it is the default value for the field).
 
-`GET` operations return additional fields: `likes` counting the number of likes the art has, and `liked` (an integer, but you can use it as a boolean since 0 is falsey and 1 is truthy in javascript) indicating whether the current user (if the user is signed in) liked the art. If the user is not signed in, `liked` is always 0.
+`GET` operations return additional fields: `likes` counting the number of likes the art has, and `liked` (an integer, but you can use it as a boolean since 0 is falsey and 1 is truthy in javascript) indicating whether the current user (if the user is signed in) liked the art. If the user is not signed in, `liked` is always 0. And finally, `artistAvatar` is the `avatar` property of the artist.
 
 ### Commission
 When a buyer creates a commission, they can specify an artist of their choosing. Whenever a commission specifies an artist (and `artistId` can actually be set even after the commission is created as a public commission), it will be turned into a private commission.
@@ -79,14 +81,20 @@ Once an `artistId` is set, you cannot change it or delete it again.
 
 The `deadline` is a date (of format `YYYY-MM-DD`), not a datetime/timestamp, and it is specified in the UTC timezone.
 
+`GET` operations return additional fields: `artistAvatar` is the `avatar` property of the artist (may be null), and `buyerAvatar` is the `avatar` property of the buyer.
+
 ### Negotiation
 A commission can have multiple ongoing negotiations with different artists. When an artist makes an offer for a commission and begin the process of negotiation, both the artist and the buyer are given negotiation forms. They can edit the details of the negotiation (they can only edit their own form), and once the forms are equal they are allowed to set `accepted` as true. Once they both accept, artists may no longer make an offer for the commission, and the negotiation and the commission details are `finalized` (true) and cannot be changed any more.
+
+`GET` operations return additional fields: `artistAvatar` is the `avatar` property of the artist, and `buyerAvatar` is the `avatar` property of the buyer.
 
 ### Chat
 Each negotiation has a chat room in which the buyer and the artist can discuss the details of the negotiation.
 
 ### Stripe
-There are two types of stripe accounts. A seller account and a customer account used to make purchases. In order to make a customer account, you must submit credit card information in the form of a stripe token to the backend. It will be impossible to begin a commission on the buyer side without first making a customer account. The seller account is required for artists to accept payments. In order to establish a seller account, an authorization code must be sent to the backend. The User model has `hasStripeAccount` and `isStripeCustomer` properties so that the frontend can verify whether or not the appropriate stripe account exists.
+There are two types of stripe accounts. A seller account and a customer account used to make purchases. In order to make a customer account, you must submit credit card information in the form of a stripe token to the backend. It will be impossible to begin a commission on the buyer side without first making a customer account. The seller account is required for artists to accept payments. In order to establish a seller account, an authorization code must be sent to the backend.
+
+These stripe information - `stripeAccountId` and `stripeCustomerId` - will NOT be visible to users by default, since you can charge people with just this information. However, when a user signs up/logs in/adds a card/creates a stripe account, these fields will be included in the object returned since we know that it's the user's own information.
 
 ## Routes
 - [POST `/sessions`](#posts)
@@ -242,7 +250,11 @@ Patch method to be called by the artist when submitting an update to the buyer. 
 Patch method to be called by the buyer when they want to waive an update. If the user is not the buyer, then it will return a 403 error. If called successfully, this will send a money transfer from us to the artist. The current update will also increment. In order to call this method, the artist must be logged in and a cookie must be sent to the backend.
 
 ### <a name="#postsacc"></a> POST `/stripe/accounts`
-This post method should be used to create a seller account for an artist. It takes in data containing the authorization code obtained from stripe on the frontend. This route requires that the user be logged in, and that the user sends over a cookie in order to be used.
+This post method should be used to create a seller account for an artist. It takes in data containing the authorization `code` obtained from stripe on the frontend. This route requires that the user be logged in, and that the user sends over a cookie in order to be used.
+
+Returns the new user information when successful.
 
 ### <a name="#postscust"></a> POST `/stripe/customers`
-This post method should be used to create a customer account on the backend. It requires that the frontend send over a stripeToken for a payment source related to that user (e.g. credit card). The user must be logged, and the user must send over a cookie in order to use this route.
+This post method should be used to create a customer account on the backend. It requires that the frontend send over a `stripeToken` for a payment source related to that user (e.g. credit card). The user must be logged, and the user must send over a cookie in order to use this route.
+
+Returns the new user information when successful.

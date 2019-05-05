@@ -1,7 +1,6 @@
 const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art } = require("../models")
-const assert = require("http-assert")
 const stripe = require("../lib/stripe")
 
 module.exports = Router()
@@ -11,13 +10,16 @@ module.exports = Router()
     const arts = await Art.query()
       .selectWithFavorite((req.user || {}).id)
       .paginate(req.query.after)
+      .where("status", req.query.status)
 
     res.send(arts)
   })
   .get("/:artId", async (req, res) => {
     const art = await Art.query()
+      .skipUndefined()
       .selectWithFavorite((req.user || {}).id)
       .findById(req.params.artId)
+      .where("status", req.query.status)
 
     res.send(art)
   })
