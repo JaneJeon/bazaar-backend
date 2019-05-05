@@ -109,10 +109,10 @@ class Commission extends BaseModel {
       },
       reviews: {
         relation: BaseModel.HasManyRelation,
-        modelClass: 'review',
+        modelClass: "review",
         join: {
-          from: 'commissions.id',
-          to: 'reviews.commission_id'
+          from: "commissions.id",
+          to: "reviews.commission_id"
         }
       }
     }

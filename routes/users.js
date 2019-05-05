@@ -33,7 +33,8 @@ module.exports = Router()
   })
   .get("/:userId/reviews", async (req, res) => {
     const user = await User.query().findById(req.params.userId, req.user)
-    const relation = req.query.as == 'reviewer' ? 'reviewsAsReviewer' : 'reviewsAsReviewee'
+    const relation =
+      req.query.as == "reviewer" ? "reviewsAsReviewer" : "reviewsAsReviewee"
 
     const reviews = await user.$relatedQuery(relation).paginate(req.query.after)
 

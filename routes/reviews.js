@@ -9,9 +9,13 @@ module.exports = Router()
 
     const reviewee = await User.query().findById(req.params.userId)
 
-    const review = await req.user.$relatedQuery("reviewsAsReviewer").insert(req.body)
+    const review = await req.user
+      .$relatedQuery("reviewsAsReviewer")
+      .insert(req.body)
 
-    const reviewed = await reviewee.$relatedQuery("reviewsAsReviewee").insert(req.body)
+    const reviewed = await reviewee
+      .$relatedQuery("reviewsAsReviewee")
+      .insert(req.body)
 
     res.send(review)
   })
