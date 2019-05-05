@@ -71,6 +71,9 @@ module.exports = Router()
       customer: req.user.stripeCustomerId
     })
 
+    art = await art.$query().patch({ status: "sold" })
+
+    let bought = req.user.$relatedQuery("artsBought").relate(art)
     res.sendStatus(204)
   })
   .delete("/:artId", async (req, res) => {

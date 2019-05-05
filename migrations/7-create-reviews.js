@@ -5,19 +5,15 @@ exports.up = knex =>
     table.text("description")
     table.integer("rating").notNullable()
     table
-      .integer("relatedCommission_id")
-      .notNullable()
-      .references("commissions.id")
-    table
-      .text("buyer_id")
+      .text("review_id")
       .notNullable()
       .references("users.id")
     table
-      .text("artist_id")
+      .text("reviewed_id")
       .notNullable()
       .references("users.id")
 
-    table.primary(["relatedCommission_id", "buyer_id", "artist_id"])
+    table.primary(["review_id", "reviewed_id"])
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)
