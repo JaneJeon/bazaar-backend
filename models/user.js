@@ -124,7 +124,7 @@ class User extends visibility(password()(BaseModel)) {
         }
       },
       review: {
-        relation: BaseModel.ManyToManyRelation,
+        relation: BaseModel.HasManyRelation,
         modelClass: "review",
         join: {
           from: "users.id",
@@ -132,7 +132,7 @@ class User extends visibility(password()(BaseModel)) {
         }
       },
       reviewed: {
-        relation: BaseModel.ManyToManyRelation,
+        relation: BaseModel.HasManyRelation,
         modelClass: "review",
         join: {
           from: "users.id",

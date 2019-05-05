@@ -31,9 +31,8 @@ module.exports = Router()
 
     res.send(arts)
   })
-  .get("/:userId/review", async (req, res) => {
+  .get("/:userId/reviews", async (req, res) => {
     const user = await User.query().findById(req.params.userId, req.user)
-
     const reviews = await user.$relatedQuery("review").paginate(req.query.after)
 
     res.send(reviews)
