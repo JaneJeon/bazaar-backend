@@ -62,7 +62,7 @@ module.exports = Router()
     res.send(art)
   })
   .patch("/:artId/purchase", async (req, res) => {
-    assert(req.user.stripeCustomerId, 402)
+    req.ensureHasPayment()
 
     let art = await Art.query().findById(req.params.artId)
 

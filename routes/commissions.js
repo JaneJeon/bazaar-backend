@@ -21,6 +21,7 @@ module.exports = Router()
     res.send(commission)
   })
   .use((req, res, next) => next(req.ensureVerified()))
+  .use((req, res, next) => next(req.ensureHasPayment()))
   .post("/", async (req, res) => {
     Commission.filterPost(req.body)
 

@@ -14,6 +14,7 @@ const { Negotiation } = require("../models")
 module.exports = Router()
   .use((req, res, next) => {
     req.ensureVerified = () => assert(req.user && req.user.verified, 401)
+    req.ensureHasPayment = () => assert(req.user.stripeCustomerId, 402)
     next()
   })
   .use("/sessions", sessions)
