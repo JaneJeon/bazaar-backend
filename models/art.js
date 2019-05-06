@@ -3,6 +3,7 @@ const text = require("../lib/text")
 const image = require("../lib/image")
 const assert = require("assert")
 const stripe = require("../lib/stripe")
+const dinero = require("dinero.js")
 
 class Art extends BaseModel {
   static get jsonSchema() {
@@ -140,7 +141,9 @@ class Art extends BaseModel {
       amount: this.price,
       currency: this.priceUnit,
       customer: stripeCustomerId,
-      application_fee_amount: 0
+      application_fee_amount: dinero({ amount: this.price })
+        .multiply(process.env.APPLICATION_FEE)
+        .getAmount()
     })
 
     // record the transaction
