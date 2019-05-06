@@ -21,6 +21,16 @@ module.exports = Router()
     res.send(commission)
   })
   .use((req, res, next) => next(req.ensureVerified()))
+  // change commission status, only available to the artist
+  .patch("/:commissionId/reject", async (req, res) => {
+    let commission = await req.user
+      .$relatedQuery("commissionsAsArtist")
+      .findById(req.params.commissionId)
+    commission = await commission.$query().patch({ status: "reject" })
+
+    res.send(commission)
+  })
+  .use((req, res, next) => next(req.ensureHasPayment()))
   .post("/", async (req, res) => {
     Commission.filterPost(req.body)
 
@@ -38,16 +48,6 @@ module.exports = Router()
       .$relatedQuery("commissionsAsBuyer")
       .findById(req.params.commissionId)
     commission = await commission.$query().patch(req.body)
-
-    res.send(commission)
-  })
-  // change commission status, only available to the artist
-  // accept is set from notifications
-  .patch("/:commissionId/reject", async (req, res) => {
-    let commission = await req.user
-      .$relatedQuery("commissionsAsArtist")
-      .findById(req.params.commissionId)
-    commission = await commission.$query().patch({ status: "reject" })
 
     res.send(commission)
   })

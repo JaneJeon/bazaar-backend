@@ -35,7 +35,12 @@ class User extends visibility(password()(BaseModel)) {
         bio: { type: "string", maxLength: process.env.MAX_BIO_LENGTH },
         rating: { type: "integer" },
         stripeAccountId: { type: "string" },
-        stripeCustomerId: { type: "string" }
+        stripeCustomerId: { type: "string" },
+        role: {
+          type: "string",
+          enum: ["user", "admin", "superuser"],
+          default: "user"
+        }
       },
       required: ["username", "email", "password"],
       additionalProperties: false
@@ -53,7 +58,8 @@ class User extends visibility(password()(BaseModel)) {
       "verified",
       "avatar",
       "stripeAccountId",
-      "stripeCustomerId"
+      "stripeCustomerId",
+      "role"
     ]
   }
 
@@ -65,7 +71,8 @@ class User extends visibility(password()(BaseModel)) {
       "verified",
       "avatar",
       "stripeAccountId",
-      "stripeCustomerId"
+      "stripeCustomerId",
+      "role"
     ]
   }
 

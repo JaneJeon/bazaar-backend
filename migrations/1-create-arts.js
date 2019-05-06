@@ -6,6 +6,7 @@ exports.up = knex =>
     table.text("title").notNullable()
     table.text("description")
     table.jsonb("pictures").notNullable()
+    table.text("status")
     table
       .text("artist_id")
       .notNullable()

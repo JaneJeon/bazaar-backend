@@ -12,8 +12,6 @@ class Update extends BaseModel {
       type: "object",
       properties: {
         updateNum: { type: "integer" },
-        price: { type: "number" },
-        priceUnit: { type: "string" },
         delays: { type: "integer", default: 0 },
         waived: { type: "boolean", default: false },
         deadline: { type: "string", format: "date" },
@@ -22,24 +20,11 @@ class Update extends BaseModel {
           items: { type: "string" },
           minItems: 1,
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
-        },
-        stripeTransferId: { type: "string" },
-        stripeRefundId: { type: "string" }
+        }
       },
-      required: [
-        "updateNum",
-        "price",
-        "priceUnit",
-        "delays",
-        "waived",
-        "deadline"
-      ],
+      required: ["updateNum", "delays", "waived", "deadline"],
       additionalProperties: false
     }
-  }
-
-  static get hidden() {
-    return ["stripeTransferId", "stripeRefundId"]
   }
 
   static get relationMappings() {
@@ -50,6 +35,14 @@ class Update extends BaseModel {
         join: {
           from: "updates.commission_id",
           to: "commissions.id"
+        }
+      },
+      transactions: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "transactions",
+        join: {
+          from: ["updates.commission_id", "updates.update_num"],
+          to: ["transactions.commission_id", "transactions.update_num"]
         }
       }
     }
