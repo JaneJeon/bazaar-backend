@@ -61,7 +61,9 @@ However, a user may choose to upload an avatar, in which case their `avatar` wil
 
 For purposes of preservation, when a user deletes their account, their account is marked as `deleted` *but* their actual account resource is not deleted. This allows the frontend to distinguish between active accounts and closed accounts when displaying art, for example.
 
-And when a user is first created, the user is not `verified`, and so they cannot create art/commission/negotiation until they verify their account. The frontend should read this value and nudge the user to verify their account whenever possible.
+And when a user is first created, the user is not `verified`, and so they cannot create art/commission/negotiation until they verify their account. The frontend should read this value and nudge the user to verify their account whenever possible. 
+
+A user can also possess one of three `roles`. These are `user`, `admin`, and `superuser`. A newly created account is defaults to being a `user`. However, in order to access or view reports, a user must be an `admin` or a `superuser`.
 
 The default seeded users all have the password 123456789
 
@@ -116,6 +118,7 @@ These stripe information - `stripeAccountId` and `stripeCustomerId` - will NOT b
 - [GET `/users/:userId/arts`](#getuua)
 - [GET `/users/:userId/favorites`](#getuuf)
 - [PATCH `/arts/:artId`](#patchaa)
+- [PATCH `/arts/:artId/purchase`](#patchaap)
 - [DELETE `/arts/:ArtId/favorites`](#delaf)
 - [DELETE `/arts/:artId`](#delaa)
 
@@ -176,20 +179,24 @@ When a user accesses a page of form `/users/reset?token=YOUR_TOKEN_HERE`, a PATC
 Command to favorite an art piece.
 
 ### <a name="geta"></a>GET `/arts`
-This is the "discover page". Currently, it returns the most recent pictures in anti-chronological order.
+This is the "discover page". Currently, it returns the most recent pictures in anti-chronological order. Art can be queried by the status of the piece by appending a querystring `?status=` to the end of the API call. There are three possible statuses: `sold`, `for sale`, and `not for sale`. If you omit the querystring, it will simply return all art.
 
 ### <a name="getaa"></a> GET `/arts/:artId`
+Returns the art piece associated with the given `artId`.
 
 ### <a name="getuuaf"></a>GET `/arts/:artId/favorites`
 Returns all of the users who favorites a specific piece of art.
 
 ### <a name="getuua"></a>GET `/users/:userId/arts`
-Returns all of the art created by a user.
+Returns all of the art created by a user. Art can be queried by the status of the piece by appending a querystring `?status=` to the end of the API call. There are three possible statuses: `sold`, `for sale`, and `not for sale`. If you omit the querystring, it will simply return all art.
 
 ### <a name="getuuf"></a>GET `/users/:userId/favorites`
 Returns all of the arts favorited by a user.
 
 ### <a name="patchaa"></a>PATCH `/arts/:artId`
+
+### <a name="patchaap"></a>PATCH `/arts/:artId/purchase`
+Patch request that charges the user a user for an art purchase. Changes the status of the art piece from `for sale` to `sold`. Requires that a user has a Stripe Customer Id, ensuring that the user has a valid form of payment. If the user has no customer id, the route returns a 402 error code back to the user. A successful call returns the art object back to the user.
 
 ### <a name="delaa"></a>DELETE `/arts/:artId`
 
