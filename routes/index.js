@@ -10,6 +10,7 @@ const reviews = require("./reviews")
 const stripe = require("./stripe")
 const updates = require("./updates")
 const { Negotiation } = require("../models")
+const reports = require("./reports")
 
 module.exports = Router()
   .use((req, res, next) => {
@@ -37,3 +38,4 @@ module.exports = Router()
   })
   .use("/stripe", stripe)
   .use("/commissions/:commissionId/updates", updates)
+  .use("/reports", reports)
