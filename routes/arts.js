@@ -2,6 +2,7 @@ const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art } = require("../models")
 const { transaction } = require("objection")
+const middlewares = require("../lib/middlewares")
 
 module.exports = Router()
   // the "discover" page
@@ -31,7 +32,7 @@ module.exports = Router()
 
     res.send(favorites)
   })
-  .use((req, res, next) => next(req.ensureVerified()))
+  .use(middlewares.ensureVerified)
   .post(
     "/",
     upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),
@@ -61,9 +62,7 @@ module.exports = Router()
 
     res.send(art)
   })
-  .patch("/:artId/purchase", async (req, res) => {
-    req.ensureHasPayment()
-
+  .patch("/:artId/purchase", middlewares.ensureHasPayment, async (req, res) => {
     let art = await Art.query().findById(req.params.artId)
 
     art = await transaction(Art.knex(), async trx =>

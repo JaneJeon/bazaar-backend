@@ -1,5 +1,6 @@
 const { Router } = require("express")
 const { Commission } = require("../models")
+const middlewares = require("../lib/middlewares")
 
 module.exports = Router()
   // commission board
@@ -20,7 +21,7 @@ module.exports = Router()
 
     res.send(commission)
   })
-  .use((req, res, next) => next(req.ensureVerified()))
+  .use(middlewares.ensureVerified)
   // change commission status, only available to the artist
   .patch("/:commissionId/reject", async (req, res) => {
     let commission = await req.user
@@ -30,7 +31,7 @@ module.exports = Router()
 
     res.send(commission)
   })
-  .use((req, res, next) => next(req.ensureHasPayment()))
+  .use(middlewares.ensureHasPayment)
   .post("/", async (req, res) => {
     Commission.filterPost(req.body)
 
