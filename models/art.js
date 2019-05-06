@@ -80,7 +80,7 @@ class Art extends BaseModel {
   }
 
   static get reservedPostFields() {
-    return ["pictures", "tags"]
+    return ["pictures", "tags", "status"]
   }
 
   static get searchEnabled() {
