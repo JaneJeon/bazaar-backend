@@ -17,6 +17,11 @@ exports.users = users.map(user => pick(user, ["username", "password"]))
 
 exports.seed = async knex => {
   await User.query().insert(users)
+  await User.query().insert({
+    username: "Taylor",
+    password: "123456789",
+    email: "sungil.ahn.19@dartmouth.edu"
+  })
 
   // make the users verified since they're here more for testing
   await knex("users").update({ verified: true })
