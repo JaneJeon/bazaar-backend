@@ -3,7 +3,6 @@ const text = require("../lib/text")
 const image = require("../lib/image")
 const assert = require("assert")
 const stripe = require("../lib/stripe")
-const pick = require("lodash/pick")
 
 class Art extends BaseModel {
   static get jsonSchema() {
@@ -146,10 +145,7 @@ class Art extends BaseModel {
 
     // record the transaction
     await this.$relatedQuery("transactions", trx).insert(
-      Object.assign(
-        pick(charge, ["id", "object", "amount", "currency", "created"]),
-        { artistId: this.artistId, buyerId }
-      )
+      stripe.packTransaction(charge, this.artistId, buyerId)
     )
 
     // update as sold

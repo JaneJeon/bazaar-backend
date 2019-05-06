@@ -74,12 +74,16 @@ queue.process(taskName, async (job, data) => {
       amount
     })
 
+    await commission
+      .$relatedQuery("transactions", trx)
+      .insert(
+        stripe.packTransaction(refund, commission.artistId, commission.buyerId)
+      )
+
     debug("refunded " + amount)
 
     // mark commission as cancelled
-    await commission
-      .$query(trx)
-      .patch({ status: "cancelled", stripeRefundId: refund.id })
+    await commission.$query(trx).patch({ status: "cancelled" })
 
     debug("commission cancelled done")
   })

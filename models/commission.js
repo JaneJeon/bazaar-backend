@@ -266,10 +266,12 @@ class Commission extends BaseModel {
       customer: stripeCustomerId
     })
 
-    await this.$query(trx).patch({
-      status: "in progress",
-      stripeChargeId: charge.id
-    })
+    // record the transaction
+    await this.$relatedQuery("transactions", trx).insert(
+      stripe.packTransaction(charge, this.artistId, this.buyerId)
+    )
+
+    await this.$query(trx).patch({ status: "in progress" })
 
     const updateRows = []
     const now = dayjs()

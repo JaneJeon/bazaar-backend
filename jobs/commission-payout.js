@@ -59,9 +59,18 @@ queue.process(taskName, async (job, data) => {
       transfer_group: commission.transferGroup
     })
 
-    debug("paid artist")
+    // record the transaction
+    await update
+      .$relatedQuery("transactions", trx)
+      .insert(
+        stripe.packTransaction(
+          transfer,
+          commission.artistId,
+          commission.buyerId
+        )
+      )
 
-    const changes = { stripeTransferId: transfer.id }
+    debug("paid artist")
 
     // if the artist is late, refund certain amount to the buyer
     if (update.delays) {
@@ -70,13 +79,18 @@ queue.process(taskName, async (job, data) => {
         amount: prices[1].getAmount()
       })
 
-      changes.stripeRefundId = refund.id
+      await update
+        .$relatedQuery("transactions", trx)
+        .insert(
+          stripe.packTransaction(
+            refund,
+            commission.artistId,
+            commission.buyerId
+          )
+        )
 
       debug("refunded buyer")
     }
-
-    // record payments
-    await update.$query(trx).patch(changes)
 
     // if final, mark commission 'complete'
     if (update.updateNum == commission.numUpdates)
