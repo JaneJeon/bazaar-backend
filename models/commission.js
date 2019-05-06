@@ -42,17 +42,11 @@ class Commission extends BaseModel {
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
         },
         tags: { type: "array", items: { type: "string" } },
-        deleted: { type: "boolean" }, // TODO: do I need this?
-        stripeChargeId: { type: "string" },
-        stripeRefundId: { type: "string" }
+        deleted: { type: "boolean" } // TODO: do I need this?
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
     }
-  }
-
-  static get hidden() {
-    return ["stripeChargeId", "stripeRefundId"]
   }
 
   static get relationMappings() {
@@ -88,8 +82,7 @@ class Commission extends BaseModel {
         join: {
           from: "commissions.id",
           to: "updates.commission_id"
-        },
-        filter: {}
+        }
       },
       artist: {
         relation: BaseModel.BelongsToOneRelation,
@@ -105,6 +98,14 @@ class Commission extends BaseModel {
         join: {
           from: "commissions.buyer_id",
           to: "users.id"
+        }
+      },
+      transactions: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "transaction",
+        join: {
+          from: "commissions.id",
+          to: "transactions.commission_id"
         }
       }
     }

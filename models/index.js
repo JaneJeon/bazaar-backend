@@ -15,6 +15,7 @@ const Chat = require("./chat")
 const Review = require("./review")
 const Favorite = require("./favorite")
 const Update = require("./update")
+const Transaction = require("./transaction")
 
 Model.knex(knex(knexfile)) // yo dawg
 
@@ -26,5 +27,6 @@ module.exports = {
   Chat,
   Review,
   Favorite,
-  Update
+  Update,
+  Transaction
 }

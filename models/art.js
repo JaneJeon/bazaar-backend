@@ -2,6 +2,8 @@ const BaseModel = require("./base")
 const text = require("../lib/text")
 const image = require("../lib/image")
 const assert = require("assert")
+const stripe = require("../lib/stripe")
+const pick = require("lodash/pick")
 
 class Art extends BaseModel {
   static get jsonSchema() {
@@ -25,7 +27,8 @@ class Art extends BaseModel {
         },
         status: {
           type: "string",
-          enum: ["bought", "for sale", "not for sale"]
+          enum: ["sold", "for sale", "not for sale"],
+          default: "not for sale"
         },
         price: { type: "string", pattern: "^\\d+$" },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
@@ -64,6 +67,14 @@ class Art extends BaseModel {
         join: {
           from: "arts.artist_id",
           to: "users.id"
+        }
+      },
+      transactions: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "transaction",
+        join: {
+          from: "arts.id",
+          to: "transactions.art_id"
         }
       }
     }
@@ -123,6 +134,26 @@ class Art extends BaseModel {
   async $beforeUpdate(opt, queryContext) {
     await super.$beforeUpdate(opt, queryContext)
     await this.processInput()
+  }
+
+  async purchase(buyerId, stripeCustomerId, trx) {
+    const charge = await stripe.charges.create({
+      amount: this.price,
+      currency: this.priceUnit,
+      customer: stripeCustomerId,
+      application_fee_amount: 0
+    })
+
+    // record the transaction
+    await this.$relatedQuery("transactions", trx).insert(
+      Object.assign(
+        pick(charge, ["id", "object", "amount", "currency", "created"]),
+        { artistId: this.artistId, buyerId }
+      )
+    )
+
+    // update as sold
+    return this.$query(trx).patch({ status: "sold" })
   }
 }
 
