@@ -31,6 +31,17 @@ module.exports = Router({ mergeParams: true })
 
     res.send(update)
   })
+  .get("/:updateNum/transactions", async (req, res) => {
+    const update = await req.commission
+      .$relatedQuery("updates")
+      .findOne({ updateNum: req.params.updateNum })
+    const transactions = await update
+      .$relatedQuery("transactions")
+      .selectWithAvatars()
+      .paginate(req.query.after)
+
+    res.send(transactions)
+  })
   // endpoint for buyer to actually start the commission
   .post("/", async (req, res) => {
     assert(req.isArtist === false, 403)
