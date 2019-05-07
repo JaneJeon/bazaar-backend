@@ -145,6 +145,30 @@ class User extends visibility(password()(BaseModel)) {
           from: "users.id",
           to: "reviews.reviewed_id"
         }
+      },
+      reports: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "report",
+        join: {
+          from: "users.id",
+          to: "reports.reporter_id"
+        }
+      },
+      transactionsAsBuyer: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "transaction",
+        join: {
+          from: "users.id",
+          to: "transactions.buyer_id"
+        }
+      },
+      transactionsAsArtist: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "transaction",
+        join: {
+          from: "users.id",
+          to: "transactions.artist_id"
+        }
       }
     }
   }

@@ -1,5 +1,7 @@
 const { Router } = require("express")
 const { Commission } = require("../models")
+const middlewares = require("../lib/middlewares")
+const assert = require("http-assert")
 
 module.exports = Router()
   // commission board
@@ -20,7 +22,31 @@ module.exports = Router()
 
     res.send(commission)
   })
-  .use((req, res, next) => next(req.ensureVerified()))
+  .get(
+    "/:commissionId/transactions",
+    middlewares.ensureSignedIn,
+    async (req, res) => {
+      const commission = await Commission.query().findById(
+        req.params.commissionId
+      )
+
+      // check that you're either the artist or the buyer
+      // (and, of course, the artist field could be empty)
+      assert(
+        req.user.id == commission.buyerId ||
+          (commission.artistId && req.user.id == commission.artistId),
+        403
+      )
+
+      const transactions = await commission
+        .$relatedQuery("transactions")
+        .selectWithAvatars()
+        .paginate(req.query.after)
+
+      res.send(transactions)
+    }
+  )
+  .use(middlewares.ensureVerified)
   // change commission status, only available to the artist
   .patch("/:commissionId/reject", async (req, res) => {
     let commission = await req.user
@@ -30,7 +56,7 @@ module.exports = Router()
 
     res.send(commission)
   })
-  .use((req, res, next) => next(req.ensureHasPayment()))
+  .use(middlewares.ensureHasPayment)
   .post("/", async (req, res) => {
     Commission.filterPost(req.body)
 

@@ -43,7 +43,6 @@ module.exports = Router({ mergeParams: true })
 
     res.send(negotiations)
   })
-  .use((req, res, next) => next(req.ensureVerified()))
   .post("/", async (req, res) => {
     // negotiation forms for buyer and artist
     // TODO: transaction-ify
