@@ -12,7 +12,7 @@ class Report extends BaseModel {
         transactionId: { type: "string" },
         details: { type: "string", maxLength: process.env.MAX_REPORT_LENGTH }
       },
-      required: [],
+      required: ["transactionId", "details"],
       additionalProperties: false
     }
   }
