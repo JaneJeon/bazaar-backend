@@ -9,12 +9,10 @@ const {
   DataError
 } = require("objection-db-errors")
 const debug = require("debug")("bazaar:error")
+const util = require("util")
 
 const logError = err => {
-  err.stack = err.stack.slice(0, err.stack.indexOf("at newFn")).trimRight()
-  const err2 = JSON.parse(JSON.stringify(err.stack))
-  err2.data = JSON.stringify(err.data)
-  console.error(err2)
+  console.error("%O", err)
 }
 
 module.exports = (err, req, res) => {
@@ -68,14 +66,7 @@ module.exports = (err, req, res) => {
   )
     logError(err)
 
-  debug(req.method + " " + req.url)
-  debug(err)
-  debug("user:")
-  debug(req.user)
-  debug("request body:")
-  debug(req.body)
-  debug("request query:")
-  debug(req.query)
+  debug(util.format("%O", req))
 
   res.status(err.statusCode).send({
     message: err.message,
