@@ -17,6 +17,10 @@ exports.up = knex =>
     table.integer("num_updates")
     table.text("copyright").notNullable()
 
+    table.text("medium")
+    table.text("style")
+    table.text("size")
+
     table.jsonb("tags").notNullable()
     table.text("description").notNullable()
 

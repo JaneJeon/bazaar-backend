@@ -37,6 +37,9 @@ class Commission extends BaseModel {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
         },
+        medium: { type: "string" },
+        style: { type: "string" },
+        size: { type: "string" },
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
