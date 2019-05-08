@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "watch": "nodemon app",
+    "watch": "nodemon app | pino-pretty -ct",
     "test": "NODE_ENV=test mocha --bail --exit --recursive --slow 500",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
     "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
@@ -42,6 +42,8 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.9.0",
+    "pino": "^5.12.3",
+    "pino-debug": "^1.2.0",
     "pluralize": "^7.0.0",
     "querystring": "^0.2.0",
     "rate-limit-redis": "^1.6.0",
@@ -59,6 +61,7 @@
     "husky": "^2.1.0",
     "mocha": "^6.0.2",
     "nodemon": "^1.18.10",
+    "pino-pretty": "^3.0.0",
     "prettier": "^1.16.3",
     "supertest": "^4.0.2",
     "supertest-session": "^4.0.0"

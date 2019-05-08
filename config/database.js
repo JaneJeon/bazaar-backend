@@ -1,4 +1,4 @@
-require("./env")
+require("./preload")
 const { join } = require("path")
 
 module.exports = {

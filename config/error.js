@@ -9,16 +9,12 @@ const {
   DataError
 } = require("objection-db-errors")
 const debug = require("debug")("bazaar:error")
-const util = require("util")
-
-const logError = err => {
-  console.error("%O", err)
-}
+const log = require("../lib/logger")
 
 module.exports = (err, req, res) => {
   // errors can happen after the response is sent when sending email
   if (res.headersSent) {
-    logError(err)
+    log.error(err)
     return
   }
 
@@ -68,9 +64,9 @@ module.exports = (err, req, res) => {
     process.env.NODE_ENV == "development" ||
     err.name.startsWith("AlgoliaSearch")
   )
-    logError(err)
+    log.error(err)
 
-  debug(util.format("%O", req))
+  debug(req)
 
   res.status(err.statusCode).send({
     message: err.message,
