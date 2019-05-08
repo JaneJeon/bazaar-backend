@@ -54,7 +54,7 @@ module.exports = (err, req, res) => {
   } else if (err instanceof DBError) {
     err.statusCode = 500
     err.name = "UnknownDatabaseError"
-  } else if (err.type.startsWith("Stripe")) {
+  } else if (err.type && err.type.startsWith("Stripe")) {
     // https://github.com/stripe/stripe-node/blob/master/lib/Error.js#L30
     this.name = this.type
     this.data = this.detail
