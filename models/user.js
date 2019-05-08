@@ -169,6 +169,18 @@ class User extends visibility(password()(BaseModel)) {
           from: "users.id",
           to: "transactions.artist_id"
         }
+      },
+      artsBought: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: "art",
+        join: {
+          from: "users.id",
+          through: {
+            from: "transactions.buyer_id",
+            to: "transactions.art_id"
+          },
+          to: "arts.id"
+        }
       }
     }
   }
