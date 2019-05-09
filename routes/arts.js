@@ -61,18 +61,14 @@ module.exports = Router()
 
     assert(req.user.id == art.artistId || req.query.as == "buyer", 401)
 
-    if(req.query.as == "buyer") {
+    if (req.query.as == "buyer") {
       req.body.reviewee_id = art.artistId
-    }
-    else [
-      req.body.reviewee_id = art.buyerId
-    ]
+    } else [(req.body.reviewee_id = art.buyerId)]
     req.body.reviewer_id = req.user.id
 
     const review = art.$relatedQuery("reviews").insert(req.body)
 
     res.status(201).send(review)
-
   })
   .patch("/:artId", async (req, res) => {
     Art.filterPatch(req.body)
@@ -98,7 +94,6 @@ module.exports = Router()
     res.sendStatus(204)
   })
   .patch("/:artId/reviews", async (req, res) => {
-
     Review.filterPatch(req.body)
 
     const art = await Art.query().findById(req.params.artId)
@@ -111,7 +106,6 @@ module.exports = Router()
       .where("reviewer_id", req.user.id)
 
     res.status(204).send(review)
-
   })
   .delete("/:artId", async (req, res) => {
     const art = await req.user.$relatedQuery("arts").findById(req.params.artId)
@@ -129,7 +123,6 @@ module.exports = Router()
     res.sendStatus(204)
   })
   .delete("/:artId/reviews", async (req, res) => {
-
     const art = await Art.query().findById(req.params.artId)
 
     assert(req.user.id == art.artistId || req.query.as == "buyer", 401)
@@ -140,5 +133,4 @@ module.exports = Router()
       .where("reviewer_id", req.user.id)
 
     res.sendStatus(204)
-
   })

@@ -34,22 +34,23 @@ module.exports = Router()
   .post("/:commissionId/reviews", async (req, res) => {
     Review.filterPost(req.body)
 
-    const commission = await Commission.query().findById(req.params.commissionId)
+    const commission = await Commission.query().findById(
+      req.params.commissionId
+    )
 
-    assert(req.user.id == commission.artistId || req.user.id == commission.buyerId, 401)
+    assert(
+      req.user.id == commission.artistId || req.user.id == commission.buyerId,
+      401
+    )
 
-    if(req.user.id == commission.buyerId) {
+    if (req.user.id == commission.buyerId) {
       req.body.reviewee_id = art.artistId
-    }
-    else [
-      req.body.reviewee_id = art.buyerId
-    ]
+    } else [(req.body.reviewee_id = art.buyerId)]
     req.body.reviewer_id = req.user.id
 
     const review = commission.$relatedQuery("reviews").insert(req.body)
 
     res.status(201).send(review)
-
   })
   // change commission details, only available to the buyer
   .patch("/:commissionId", async (req, res) => {
@@ -75,9 +76,14 @@ module.exports = Router()
   .patch("/:commissionId/reviews", async (req, res) => {
     Review.filterPatch(req.body)
 
-    const commission = await Commission.query().findById(req.params.commissionId)
+    const commission = await Commission.query().findById(
+      req.params.commissionId
+    )
 
-    assert(req.user.id == commission.artistId || req.user.id == commission.buyerId, 401)
+    assert(
+      req.user.id == commission.artistId || req.user.id == commission.buyerId,
+      401
+    )
 
     await commission
       .$relatedQuery("reviews")
@@ -85,7 +91,6 @@ module.exports = Router()
       .where("reviewer_id", req.user.id)
 
     res.status(204).send(review)
-
   })
   // TODO: completed, cancelled
   .delete("/:commissionId", async (req, res) => {
@@ -97,10 +102,14 @@ module.exports = Router()
     res.sendStatus(204)
   })
   .delete("/:commissionId/reviews", async (req, res) => {
+    const commission = await Commission.query().findById(
+      req.params.commissionId
+    )
 
-    const commission = await Commission.query().findById(req.params.commissionId)
-
-    assert(req.user.id == commission.artistId || req.user.id == commission.buyerId, 401)
+    assert(
+      req.user.id == commission.artistId || req.user.id == commission.buyerId,
+      401
+    )
 
     await commission
       .$relatedQuery("reviews")
@@ -108,5 +117,4 @@ module.exports = Router()
       .where("reviewer_id", req.user.id)
 
     res.sendStatus(204)
-
   })

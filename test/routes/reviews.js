@@ -29,21 +29,20 @@ describe("art routes", () => {
         .get(`/users/${users[0].username.toLowerCase()}/reviews?as=reviewer`)
         .expect(200)
     })
-
   })
 
   describe("POST /arts/:artId/reviews", () => {
     it("should successfully post a review about the artist", async () => {
       await request
         .post(`/arts/${arts[0].id}/reviews?as=buyer`)
-        .send({description: "He was nice", rating: 4})
+        .send({ description: "He was nice", rating: 4 })
         .expect(201)
     })
 
     it("should return 401, when user is not artist or buyer", async () => {
       await request
         .post(`/arts/${arts[0].id}/reviews`)
-        .send({description: "He was nice", rating: 4})
+        .send({ description: "He was nice", rating: 4 })
         .expect(401)
     })
   })
