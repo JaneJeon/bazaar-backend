@@ -1,5 +1,6 @@
 const { Router } = require("express")
-const { Commission } = require("../models")
+const { Commission, Review } = require("../models")
+const assert = require("http-assert")
 
 module.exports = Router()
   // commission board
@@ -30,6 +31,26 @@ module.exports = Router()
 
     res.status(201).send(commission)
   })
+  .post("/:commissionId/reviews", async (req, res) => {
+    Review.filterPost(req.body)
+
+    const commission = await Commission.query().findById(req.params.commissionId)
+
+    assert(req.user.id == commission.artistId || req.user.id == commission.buyerId, 401)
+
+    if(req.user.id == commission.buyerId) {
+      req.body.reviewee_id = art.artistId
+    }
+    else [
+      req.body.reviewee_id = art.buyerId
+    ]
+    req.body.reviewer_id = req.user.id
+
+    const review = commission.$relatedQuery("reviews").insert(req.body)
+
+    res.status(201).send(review)
+
+  })
   // change commission details, only available to the buyer
   .patch("/:commissionId", async (req, res) => {
     Commission.filterPatch(req.body)
@@ -51,6 +72,21 @@ module.exports = Router()
 
     res.send(commission)
   })
+  .patch("/:commissionId/reviews", async (req, res) => {
+    Review.filterPatch(req.body)
+
+    const commission = await Commission.query().findById(req.params.commissionId)
+
+    assert(req.user.id == commission.artistId || req.user.id == commission.buyerId, 401)
+
+    await commission
+      .$relatedQuery("reviews")
+      .patch(req.body)
+      .where("reviewer_id", req.user.id)
+
+    res.status(204).send(review)
+
+  })
   // TODO: completed, cancelled
   .delete("/:commissionId", async (req, res) => {
     const commission = await req.user
@@ -59,4 +95,18 @@ module.exports = Router()
     await commission.$query().patch({ deleted: true })
 
     res.sendStatus(204)
+  })
+  .delete("/:commissionId/reviews", async (req, res) => {
+
+    const commission = await Commission.query().findById(req.params.commissionId)
+
+    assert(req.user.id == commission.artistId || req.user.id == commission.buyerId, 401)
+
+    await commission
+      .$relatedQuery("reviews")
+      .delete()
+      .where("reviewer_id", req.user.id)
+
+    res.sendStatus(204)
+
   })

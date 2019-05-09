@@ -13,7 +13,7 @@ class Review extends BaseModel {
         },
         rating: { type: "integer", minimum: 1, maximum: 5 }
       },
-      required: ["Description", "rating"],
+      required: ["description", "rating"],
       additionalProperties: false
     }
   }
