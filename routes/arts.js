@@ -1,7 +1,8 @@
 const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art, Review } = require("../models")
-const stripe = require("../lib/stripe")
+const { transaction } = require("objection")
+const middlewares = require("../lib/middlewares")
 const assert = require("http-assert")
 
 module.exports = Router()
@@ -32,7 +33,27 @@ module.exports = Router()
 
     res.send(favorites)
   })
-  .use((req, res, next) => next(req.ensureVerified()))
+  .get("/:artId/transactions", middlewares.ensureSignedIn, async (req, res) => {
+    const art = await Art.query().findById(req.params.artId)
+
+    // check that you're either the artist or the buyer
+    assert(
+      req.user.id == art.id ||
+        (await art
+          .$relatedQuery("transactions")
+          .where("buyer_id", req.user.id)
+          .count()),
+      403
+    )
+
+    const transactions = await art
+      .$relatedQuery("transactions")
+      .selectWithAvatars()
+      .paginate(req.query.after)
+
+    res.send(transactions)
+  })
+  .use(middlewares.ensureVerified)
   .post(
     "/",
     upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),
@@ -79,20 +100,14 @@ module.exports = Router()
 
     res.send(art)
   })
-  .patch("/:artId/purchase", async (req, res) => {
-    const art = await Art.query().findById(req.params.artId)
+  .patch("/:artId/purchase", middlewares.ensureHasPayment, async (req, res) => {
+    let art = await Art.query().findById(req.params.artId)
 
-    const charge = await stripe.charges.create({
-      amount: art.price,
-      currency: art.priceUnit,
-      transfer_group: `${req.params.artId}`,
-      customer: req.user.stripeCustomerId
-    })
+    art = await transaction(Art.knex(), async trx =>
+      art.purchase(req.user.id, req.user.stripeCustomerId, trx)
+    )
 
-    art = await art.$query().patch({ status: "sold" })
-
-    let bought = req.user.$relatedQuery("artsBought").relate(art)
-    res.sendStatus(204)
+    res.send(art)
   })
   // change review details, available only to the reviewer
   .patch("/:artId/reviews", async (req, res) => {

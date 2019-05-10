@@ -2,6 +2,8 @@ const { Router } = require("express")
 const axios = require("axios").default
 const assert = require("http-assert")
 const stripe = require("../lib/stripe")
+const middlewares = require("../lib/middlewares")
+const pick = require("lodash/pick")
 
 module.exports = Router()
   // endpoint for artists to start getting paid
@@ -35,4 +37,19 @@ module.exports = Router()
     await req.user.$query().patch({ stripeCustomerId: customer.id })
 
     res.status(201).send(req.user.stripeCopy)
+  })
+  .get("/sources", middlewares.ensureHasPayment, async (req, res) => {
+    const customer = await stripe.customers.retrieve(req.user.stripeCustomerId)
+
+    // TODO: paginate the sources if has_more is true
+    const sources = pick(customer.sources.data, [
+      "id",
+      "created",
+      "bank_name",
+      "country",
+      "last4",
+      "brand"
+    ])
+
+    res.send(sources)
   })

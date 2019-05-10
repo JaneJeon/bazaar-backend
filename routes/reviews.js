@@ -2,8 +2,6 @@ const { Router } = require("express")
 const { Review } = require("../models")
 
 module.exports = Router()
-  .use((req, res, next) => next(req.ensureVerified()))
-
   .post("/:userId", async (req, res) => {
     Review.filterPost(req.body)
 
@@ -19,7 +17,6 @@ module.exports = Router()
 
     res.send(review)
   })
-
   .patch("/:userId/:reviewId", async (req, res) => {
     Review.filterPatch(req.body)
 
@@ -37,7 +34,6 @@ module.exports = Router()
 
     res.send(review)
   })
-
   .delete("/:userId/:reviewId", async (req, res) => {
     const reviewee = await User.query().findById(req.params.userId)
 

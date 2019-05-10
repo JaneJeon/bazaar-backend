@@ -58,7 +58,8 @@ class User extends visibility(password()(BaseModel)) {
       "verified",
       "avatar",
       "stripeAccountId",
-      "stripeCustomerId"
+      "stripeCustomerId",
+      "role"
     ]
   }
 
@@ -70,7 +71,8 @@ class User extends visibility(password()(BaseModel)) {
       "verified",
       "avatar",
       "stripeAccountId",
-      "stripeCustomerId"
+      "stripeCustomerId",
+      "role"
     ]
   }
 
@@ -142,6 +144,42 @@ class User extends visibility(password()(BaseModel)) {
         join: {
           from: "users.id",
           to: "reviews.reviewee_id"
+        }
+      },
+      reports: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "report",
+        join: {
+          from: "users.id",
+          to: "reports.reporter_id"
+        }
+      },
+      transactionsAsBuyer: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "transaction",
+        join: {
+          from: "users.id",
+          to: "transactions.buyer_id"
+        }
+      },
+      transactionsAsArtist: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "transaction",
+        join: {
+          from: "users.id",
+          to: "transactions.artist_id"
+        }
+      },
+      artsBought: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: "art",
+        join: {
+          from: "users.id",
+          through: {
+            from: "transactions.buyer_id",
+            to: "transactions.art_id"
+          },
+          to: "arts.id"
         }
       }
     }

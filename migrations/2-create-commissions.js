@@ -17,11 +17,12 @@ exports.up = knex =>
     table.integer("num_updates")
     table.text("copyright").notNullable()
 
+    table.text("medium")
+    table.text("style")
+    table.text("size")
+
     table.jsonb("tags").notNullable()
     table.text("description").notNullable()
-
-    table.text("stripe_charge_id")
-    table.text("stripe_refund_id")
 
     table.timestamps(true, true)
     table

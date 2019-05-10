@@ -1,8 +1,8 @@
 const { Router } = require("express")
 const { User } = require("../models")
 const tempToken = require("../lib/temp-token")
-const assert = require("http-assert")
 const upload = require("../config/multer")
+const middlewares = require("../lib/middlewares")
 
 module.exports = Router()
   // user info
@@ -15,9 +15,18 @@ module.exports = Router()
     const user = await User.query().findById(req.params.userId, req.user)
     const arts = await user
       .$relatedQuery("arts")
-      .selectWithFavorite((req.user || {}).id)
+      .selectWithFavorite(user.id)
       .paginate(req.query.after)
       .where("status", req.query.status)
+
+    res.send(arts)
+  })
+  .get("/:userId/artsBought", async (req, res) => {
+    const user = await User.query().findById(req.params.userId, req.user)
+    const arts = await user
+      .$relatedQuery("artsBought")
+      .selectWithFavorite(user.id)
+      .paginate(req.query.after)
 
     res.send(arts)
   })
@@ -113,7 +122,7 @@ module.exports = Router()
 
     await tempToken.consume("reset", id)
   })
-  .use((req, res, next) => next(assert(req.user, 401)))
+  .use(middlewares.ensureSignedIn)
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req.body)
     console.log("HERE", req.body)

@@ -37,22 +37,19 @@ class Commission extends BaseModel {
           type: "string",
           enum: ["artist owns the right", "buyer owns the right"]
         },
+        medium: { type: "string" },
+        style: { type: "string" },
+        size: { type: "string" },
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
         },
         tags: { type: "array", items: { type: "string" } },
-        deleted: { type: "boolean" }, // TODO: do I need this?
-        stripeChargeId: { type: "string" },
-        stripeRefundId: { type: "string" }
+        deleted: { type: "boolean" } // TODO: do I need this?
       },
       required: ["price", "deadline", "copyright", "description"],
       additionalProperties: false
     }
-  }
-
-  static get hidden() {
-    return ["stripeChargeId", "stripeRefundId"]
   }
 
   static get relationMappings() {
@@ -88,8 +85,7 @@ class Commission extends BaseModel {
         join: {
           from: "commissions.id",
           to: "updates.commission_id"
-        },
-        filter: {}
+        }
       },
       artist: {
         relation: BaseModel.BelongsToOneRelation,
@@ -113,6 +109,14 @@ class Commission extends BaseModel {
         join: {
           from: "commissions.id",
           to: "reviews.commission_id"
+        },
+      },
+      transactions: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "transaction",
+        join: {
+          from: "commissions.id",
+          to: "transactions.commission_id"
         }
       }
     }
@@ -265,18 +269,21 @@ class Commission extends BaseModel {
   }
 
   // pays for the commission, adds update rows, and kickstarts update jobs
-  async beginCommission(stripeCustomerId, trx) {
+  async beginCommission(customer, source, trx) {
     const charge = await stripe.charges.create({
       amount: this.price,
       currency: this.priceUnit,
       transfer_group: this.transferGroup,
-      customer: stripeCustomerId
+      customer,
+      ...(source && { source })
     })
 
-    await this.$query(trx).patch({
-      status: "in progress",
-      stripeChargeId: charge.id
-    })
+    // record the transaction
+    await this.$relatedQuery("transactions", trx).insert(
+      stripe.packTransaction(charge, this.artistId, this.buyerId)
+    )
+
+    await this.$query(trx).patch({ status: "in progress" })
 
     const updateRows = []
     const now = dayjs()

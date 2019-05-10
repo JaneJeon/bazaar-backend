@@ -9,18 +9,12 @@ const {
   DataError
 } = require("objection-db-errors")
 const debug = require("debug")("bazaar:error")
-
-const logError = err => {
-  err.stack = err.stack.slice(0, err.stack.indexOf("at newFn")).trimRight()
-  const err2 = JSON.parse(JSON.stringify(err.stack))
-  err2.data = JSON.stringify(err.data)
-  console.error(err2)
-}
+const log = require("../lib/logger")
 
 module.exports = (err, req, res) => {
   // errors can happen after the response is sent when sending email
   if (res.headersSent) {
-    logError(err)
+    log.error(err)
     return
   }
 
@@ -56,6 +50,10 @@ module.exports = (err, req, res) => {
   } else if (err instanceof DBError) {
     err.statusCode = 500
     err.name = "UnknownDatabaseError"
+  } else if (err.type && err.type.startsWith("Stripe")) {
+    // https://github.com/stripe/stripe-node/blob/master/lib/Error.js#L30
+    this.name = this.type
+    this.data = this.detail
   } else if (!err.statusCode) {
     err.statusCode = 500
     err.name = "UnknownError"
@@ -66,16 +64,9 @@ module.exports = (err, req, res) => {
     process.env.NODE_ENV == "development" ||
     err.name.startsWith("AlgoliaSearch")
   )
-    logError(err)
+    log.error(err)
 
-  debug(req.method + " " + req.url)
-  debug(err)
-  debug("user:")
-  debug(req.user)
-  debug("request body:")
-  debug(req.body)
-  debug("request query:")
-  debug(req.query)
+  debug(req)
 
   res.status(err.statusCode).send({
     message: err.message,

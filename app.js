@@ -1,4 +1,4 @@
-require("./config/env")
+require("./config/preload")
 require("./config/passport")
 require("express-async-errors")
 
