@@ -54,6 +54,7 @@ module.exports = Router()
 
     res.status(201).send(favorite)
   })
+    // add a review about the other party
   .post("/:artId/reviews", async (req, res) => {
     Review.filterPost(req.body)
 
@@ -62,9 +63,9 @@ module.exports = Router()
     assert(req.user.id == art.artistId || req.query.as == "buyer", 401)
 
     if (req.query.as == "buyer") {
-      req.body.reviewee_id = art.artistId
-    } else [(req.body.reviewee_id = art.buyerId)]
-    req.body.reviewer_id = req.user.id
+      req.body.revieweeId = art.artistId
+    } else [(req.body.revieweeId = art.buyerId)]
+    req.body.reviewerId = req.user.id
 
     const review = art.$relatedQuery("reviews").insert(req.body)
 
@@ -93,6 +94,7 @@ module.exports = Router()
     let bought = req.user.$relatedQuery("artsBought").relate(art)
     res.sendStatus(204)
   })
+  // change review details, available only to the reviewer
   .patch("/:artId/reviews", async (req, res) => {
     Review.filterPatch(req.body)
 
@@ -103,7 +105,7 @@ module.exports = Router()
     let review = await art
       .$relatedQuery("reviews")
       .patch(req.body)
-      .where("reviewer_id", req.user.id)
+      .where("reviewerId", req.user.id)
 
     res.status(204).send(review)
   })
@@ -122,6 +124,7 @@ module.exports = Router()
 
     res.sendStatus(204)
   })
+  // delete a review written by the user
   .delete("/:artId/reviews", async (req, res) => {
     const art = await Art.query().findById(req.params.artId)
 
@@ -130,7 +133,7 @@ module.exports = Router()
     await art
       .$relatedQuery("reviews")
       .delete()
-      .where("reviewer_id", req.user.id)
+      .where("reviewerId", req.user.id)
 
     res.sendStatus(204)
   })

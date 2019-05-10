@@ -5,8 +5,8 @@ class Review extends BaseModel {
     return {
       type: "object",
       properties: {
-        reviewer_id: { type: "string" },
-        reviewee_id: { type: "string" },
+        reviewerId: { type: "string" },
+        revieweeId: { type: "string" },
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
@@ -19,7 +19,7 @@ class Review extends BaseModel {
   }
 
   static get reservedPostFields() {
-    return ["reviewer_id", "reviewee_id"]
+    return ["reviewerId", "revieweeId"]
   }
 
   static get searchEnabled() {

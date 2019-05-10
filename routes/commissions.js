@@ -31,6 +31,7 @@ module.exports = Router()
 
     res.status(201).send(commission)
   })
+  // add a review about the other party
   .post("/:commissionId/reviews", async (req, res) => {
     Review.filterPost(req.body)
 
@@ -44,9 +45,9 @@ module.exports = Router()
     )
 
     if (req.user.id == commission.buyerId) {
-      req.body.reviewee_id = art.artistId
-    } else [(req.body.reviewee_id = art.buyerId)]
-    req.body.reviewer_id = req.user.id
+      req.body.revieweeId = art.artistId
+    } else [(req.body.revieweeId = art.buyerId)]
+    req.body.reviewerId = req.user.id
 
     const review = commission.$relatedQuery("reviews").insert(req.body)
 
@@ -73,6 +74,7 @@ module.exports = Router()
 
     res.send(commission)
   })
+  // change review details, available to the reviewer
   .patch("/:commissionId/reviews", async (req, res) => {
     Review.filterPatch(req.body)
 
@@ -88,7 +90,7 @@ module.exports = Router()
     await commission
       .$relatedQuery("reviews")
       .patch(req.body)
-      .where("reviewer_id", req.user.id)
+      .where("reviewerId", req.user.id)
 
     res.status(204).send(review)
   })
@@ -101,6 +103,7 @@ module.exports = Router()
 
     res.sendStatus(204)
   })
+  // delete a review written by the user
   .delete("/:commissionId/reviews", async (req, res) => {
     const commission = await Commission.query().findById(
       req.params.commissionId
@@ -114,7 +117,7 @@ module.exports = Router()
     await commission
       .$relatedQuery("reviews")
       .delete()
-      .where("reviewer_id", req.user.id)
+      .where("reviewerId", req.user.id)
 
     res.sendStatus(204)
   })
