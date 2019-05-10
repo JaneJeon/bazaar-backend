@@ -43,6 +43,7 @@ module.exports = Router()
 
     // TODO: paginate the sources if has_more is true
     const sources = pick(customer.sources.data, [
+      "id",
       "created",
       "bank_name",
       "country",
