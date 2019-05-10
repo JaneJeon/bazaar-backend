@@ -54,7 +54,7 @@ module.exports = Router()
 
     res.status(201).send(favorite)
   })
-    // add a review about the other party
+  // add a review about the other party
   .post("/:artId/reviews", async (req, res) => {
     Review.filterPost(req.body)
 
