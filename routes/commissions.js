@@ -90,7 +90,7 @@ module.exports = Router()
     await commission
       .$relatedQuery("reviews")
       .patch(req.body)
-      .where("reviewerId", req.user.id)
+      .where("reviewer_id", req.user.id)
 
     res.status(204).send(review)
   })
@@ -117,7 +117,7 @@ module.exports = Router()
     await commission
       .$relatedQuery("reviews")
       .delete()
-      .where("reviewerId", req.user.id)
+      .where("reviewer_id", req.user.id)
 
     res.sendStatus(204)
   })
