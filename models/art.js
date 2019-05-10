@@ -69,6 +69,14 @@ class Art extends BaseModel {
           to: "users.id"
         }
       },
+      reviews: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "review",
+        join: {
+          from: "arts.id",
+          to: "reviews.id"
+        }
+      },
       transactions: {
         relation: BaseModel.HasManyRelation,
         modelClass: "transaction",

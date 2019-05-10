@@ -1,5 +1,5 @@
 const { Router } = require("express")
-const { Commission } = require("../models")
+const { Commission, Review } = require("../models")
 const middlewares = require("../lib/middlewares")
 const assert = require("http-assert")
 
@@ -66,6 +66,28 @@ module.exports = Router()
 
     res.status(201).send(commission)
   })
+  // add a review about the other party
+  .post("/:commissionId/reviews", async (req, res) => {
+    Review.filterPost(req.body)
+
+    const commission = await Commission.query().findById(
+      req.params.commissionId
+    )
+
+    assert(
+      req.user.id == commission.artistId || req.user.id == commission.buyerId,
+      401
+    )
+
+    if (req.user.id == commission.buyerId) {
+      req.body.revieweeId = art.artistId
+    } else [(req.body.revieweeId = art.buyerId)]
+    req.body.reviewerId = req.user.id
+
+    const review = commission.$relatedQuery("reviews").insert(req.body)
+
+    res.status(201).send(review)
+  })
   // change commission details, only available to the buyer
   .patch("/:commissionId", async (req, res) => {
     Commission.filterPatch(req.body)
@@ -77,12 +99,60 @@ module.exports = Router()
 
     res.send(commission)
   })
+  // change commission status, only available to the artist
+  // accept is set from notifications
+  .patch("/:commissionId/reject", async (req, res) => {
+    let commission = await req.user
+      .$relatedQuery("commissionsAsArtist")
+      .findById(req.params.commissionId)
+    commission = await commission.$query().patch({ status: "reject" })
+
+    res.send(commission)
+  })
+  // change review details, available to the reviewer
+  .patch("/:commissionId/reviews", async (req, res) => {
+    Review.filterPatch(req.body)
+
+    const commission = await Commission.query().findById(
+      req.params.commissionId
+    )
+
+    assert(
+      req.user.id == commission.artistId || req.user.id == commission.buyerId,
+      401
+    )
+
+    await commission
+      .$relatedQuery("reviews")
+      .patch(req.body)
+      .where("reviewer_id", req.user.id)
+
+    res.status(204).send(review)
+  })
   // TODO: completed, cancelled
   .delete("/:commissionId", async (req, res) => {
     const commission = await req.user
       .$relatedQuery("commissionsAsBuyer")
       .findById(req.params.commissionId)
     await commission.$query().patch({ deleted: true })
+
+    res.sendStatus(204)
+  })
+  // delete a review written by the user
+  .delete("/:commissionId/reviews", async (req, res) => {
+    const commission = await Commission.query().findById(
+      req.params.commissionId
+    )
+
+    assert(
+      req.user.id == commission.artistId || req.user.id == commission.buyerId,
+      401
+    )
+
+    await commission
+      .$relatedQuery("reviews")
+      .delete()
+      .where("reviewer_id", req.user.id)
 
     res.sendStatus(204)
   })

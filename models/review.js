@@ -1,36 +1,25 @@
 const BaseModel = require("./base")
 
 class Review extends BaseModel {
-  static get idColumn() {
-    return ["buyer_id", "artist_id, relatedCommission_id"]
-  }
-
   static get jsonSchema() {
     return {
       type: "object",
       properties: {
+        reviewerId: { type: "string" },
+        revieweeId: { type: "string" },
         description: {
           type: "string",
           maxLength: process.env.MAX_DESCRIPTION_LENGTH
         },
-        rating: { type: "integer", minimum: process.env.MIN_PRICE }
+        rating: { type: "integer", minimum: 1, maximum: 5 }
       },
-      required: ["Description", "rating"],
+      required: ["description", "rating"],
       additionalProperties: false
     }
   }
 
-  static get relationMappings() {
-    return {
-      relatedCommission: {
-        relation: BaseModel.BelongsToOneRelation,
-        modelClass: "commission",
-        join: {
-          from: "userReview.id",
-          to: "commission.id"
-        }
-      }
-    }
+  static get reservedPostFields() {
+    return ["reviewerId", "revieweeId"]
   }
 
   static get searchEnabled() {

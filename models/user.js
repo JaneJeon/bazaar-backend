@@ -130,20 +130,20 @@ class User extends visibility(password()(BaseModel)) {
           to: "arts.id"
         }
       },
-      review: {
+      reviewsAsReviewer: {
         relation: BaseModel.HasManyRelation,
         modelClass: "review",
         join: {
           from: "users.id",
-          to: "reviews.review_id"
+          to: "reviews.reviewer_id"
         }
       },
-      reviewed: {
+      reviewsAsReviewee: {
         relation: BaseModel.HasManyRelation,
         modelClass: "review",
         join: {
           from: "users.id",
-          to: "reviews.reviewed_id"
+          to: "reviews.reviewee_id"
         }
       },
       reports: {
