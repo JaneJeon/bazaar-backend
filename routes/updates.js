@@ -47,7 +47,11 @@ module.exports = Router({ mergeParams: true })
     assert(req.isArtist === false, 403)
 
     const updates = await transaction(Commission.knex(), async trx =>
-      req.commission.beginCommission(req.user.stripeCustomerId, trx)
+      req.commission.beginCommission(
+        req.user.stripeCustomerId,
+        req.body.source,
+        trx
+      )
     )
 
     res.status(201).send(updates)

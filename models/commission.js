@@ -261,12 +261,13 @@ class Commission extends BaseModel {
   }
 
   // pays for the commission, adds update rows, and kickstarts update jobs
-  async beginCommission(stripeCustomerId, trx) {
+  async beginCommission(customer, source, trx) {
     const charge = await stripe.charges.create({
       amount: this.price,
       currency: this.priceUnit,
       transfer_group: this.transferGroup,
-      customer: stripeCustomerId
+      customer,
+      ...(source && { source })
     })
 
     // record the transaction
