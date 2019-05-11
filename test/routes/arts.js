@@ -24,6 +24,18 @@ describe("art routes", () => {
     })
   })
 
+  describe("GET /arts?status=for sale", () => {
+    it("should fetch arts currently for sale", async () => {
+      await request.get("/arts?status=for sale").expect(200)
+    })
+  })
+
+  describe("GET /arts?status=sold", () => {
+    it("should fetch arts which have already been purchased", async () => {
+      await request.get("/arts?status=sold").expect(200)
+    })
+  })
+
   describe("GET /arts/:artId", () => {
     it("should fetch a specific art", async () => {
       await request.get(`/arts/${arts[0].id}`).expect(200)
@@ -34,6 +46,18 @@ describe("art routes", () => {
     it("should list arts by a user", async () => {
       await request
         .get(`/users/${users[0].username.toLowerCase()}/arts`)
+        .expect(200)
+    })
+
+    it("should list arts currently for sale by a user", async () => {
+      await request
+        .get(`/users/${users[0].username.toLowerCase()}/arts?status=for sale`)
+        .expect(200)
+    })
+
+    it("should list arts currently by a user that have already been purchased", async () => {
+      await request
+        .get(`/users/${users[0].username.toLowerCase()}/arts?status=sold`)
         .expect(200)
     })
 
