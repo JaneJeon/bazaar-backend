@@ -1,5 +1,5 @@
 const BaseModel = require("./base")
-const password = require("objection-password-argon2")
+const password = require("objection-password")
 const { default: visibility } = require("objection-visibility")
 const { createHash } = require("crypto")
 const normalize = require("normalize-email")
