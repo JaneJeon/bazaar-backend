@@ -109,7 +109,7 @@ class Commission extends BaseModel {
         join: {
           from: "commissions.id",
           to: "reviews.commission_id"
-        },
+        }
       },
       transactions: {
         relation: BaseModel.HasManyRelation,
@@ -117,6 +117,14 @@ class Commission extends BaseModel {
         join: {
           from: "commissions.id",
           to: "transactions.commission_id"
+        }
+      },
+      chats: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: "chats",
+        join: {
+          from: "commissions.id",
+          to: "chats.commission_id"
         }
       }
     }
@@ -284,6 +292,12 @@ class Commission extends BaseModel {
     )
 
     await this.$query(trx).patch({ status: "in progress" })
+
+    const negotiations = this.$relatedQuery("negotiations")
+    const chats = negotiations.$relatedQuery("chats")
+    this.$relatedQuery("chats").insert(chats)
+      
+    await this.$relatedQuery("negotiations").delete()
 
     const updateRows = []
     const now = dayjs()
