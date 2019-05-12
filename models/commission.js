@@ -293,11 +293,11 @@ class Commission extends BaseModel {
 
     await this.$query(trx).patch({ status: "in progress" })
 
-    const negotiations = this.$relatedQuery("negotiations")
-    const chats = negotiations.$relatedQuery("chats")
-    this.$relatedQuery("chats").insert(chats)
+    const negotiations = this.$relatedQuery("negotiations", trx)
+    const chats = negotiations.$relatedQuery("chats", trx)
+    this.$relatedQuery("chats", trx).insert(chats)
 
-    await this.$relatedQuery("negotiations").delete()
+    await this.$relatedQuery("negotiations", trx).delete()
 
     const updateRows = []
     const now = dayjs()
