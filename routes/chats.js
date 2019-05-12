@@ -6,6 +6,7 @@ const { pub, sub } = require("../lib/redis")
 module.exports = Router({ mergeParams: true })
   .use(async (req, res, next) => {
     req.commission = await Commission.query().findById(req.params.commissionId)
+    if (req.commission.status == "open" || req.commission.status == "accepted") {
     req.negotiation = await req.commission
       .$relatedQuery("negotiations")
       .where("artist_id", req.params.artistId)
@@ -20,14 +21,33 @@ module.exports = Router({ mergeParams: true })
         403
       )
     )
+    }
+    else {
+      next(
+        assert(
+          req.user.id == req.commission.buyerId ||
+            req.user.id == req.commission.artistId,
+          403
+        )
+      )
+    }
   })
   // get previous chat records
   .get("/", async (req, res) => {
+    if (req.commission.status == "open" || req.commission.status == "accepted") {
     const chats = await req.negotiation
       .$relatedQuery("chats")
       .paginate(req.query.after)
 
     res.send(chats)
+    }
+    else {
+      const chats = await req.commission
+      .$relatedQuery("chats")
+      .paginate(req.query.after)
+
+    res.send(chats)
+    }
   })
   .ws("/", (ws, req) => {
     const room = `${req.params.commissionId}:${req.params.artistId}`
@@ -36,7 +56,12 @@ module.exports = Router({ mergeParams: true })
     ws.on("message", async message => {
       try {
         const obj = { userId: req.user.id, message }
-        const chat = await req.negotiation.$relatedQuery("chats").insert(obj)
+        if (req.commission.status == "open" || req.commission.status == "accepted") {
+          const chat = await req.negotiation.$relatedQuery("chats").insert(obj)
+        }
+        else {
+          const chat = await req.commission.$relatedQuery("chats").insert(obj)
+        }
 
         await pub.publish("chat", `${room}:${JSON.stringify(chat)}`)
       } catch (err) {

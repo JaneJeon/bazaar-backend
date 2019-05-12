@@ -296,7 +296,7 @@ class Commission extends BaseModel {
     const negotiations = this.$relatedQuery("negotiations")
     const chats = negotiations.$relatedQuery("chats")
     this.$relatedQuery("chats").insert(chats)
-      
+
     await this.$relatedQuery("negotiations").delete()
 
     const updateRows = []
