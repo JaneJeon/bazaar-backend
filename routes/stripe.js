@@ -51,5 +51,7 @@ module.exports = Router()
       "brand"
     ])
 
+    console.log("This is the length: " + sources.length)
+
     res.send(sources)
   })

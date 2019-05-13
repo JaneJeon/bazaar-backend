@@ -14,7 +14,7 @@ describe("art routes", () => {
   })
 
   beforeEach(async () => {
-    await request.post("/sessions").send(users[1])
+    await request.post("/sessions").send(users[0])
   })
 
   describe("GET /users/:userId/reviews", () => {
@@ -34,33 +34,21 @@ describe("art routes", () => {
   describe("POST /arts/:artId/reviews", () => {
     it("should successfully post a review about the artist", async () => {
       await request
-        .post(`/arts/${arts[0].id}/reviews?as=buyer`)
+        .post(`/arts/${arts[0].id}/reviews`)
         .send({ description: "He was nice", rating: 4 })
         .expect(201)
     })
 
-    it("should return 401, when user is not artist or buyer", async () => {
-      await request
-        .post(`/arts/${arts[0].id}/reviews`)
-        .send({ description: "He was nice", rating: 4 })
-        .expect(401)
-    })
   })
 
   describe("PATCH /arts/:artId/reviews", () => {
     it("should successfully edit a review about the artist", async () => {
       await request
-        .patch(`/arts/${arts[0].id}/reviews?as=buyer`)
+        .patch(`/arts/${arts[0].id}/reviews`)
         .send({ description: "changed!" })
         .expect(204)
     })
 
-    it("should return 401, when user is not artist or buyer", async () => {
-      await request
-        .patch(`/arts/${arts[0].id}/reviews`)
-        .send({ description: "changed!" })
-        .expect(401)
-    })
   })
 
   describe("DELETE /arts/:artId/reviews", () => {
@@ -68,8 +56,5 @@ describe("art routes", () => {
       await request.delete(`/arts/${arts[0].id}/reviews?as=buyer`).expect(204)
     })
 
-    it("should return 401, when user is not artist or buyer", async () => {
-      await request.delete(`/arts/${arts[0].id}/reviews`).expect(401)
-    })
   })
 })
