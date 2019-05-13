@@ -66,7 +66,10 @@ module.exports = (err, req, res) => {
   )
     log.error(err)
 
-  debug(req)
+  debug("BODY:")
+  debug(req.body)
+  debug("USER:")
+  debug(req.user)
 
   res.status(err.statusCode).send({
     message: err.message,
