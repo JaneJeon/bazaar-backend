@@ -6,23 +6,25 @@ const { pub, sub } = require("../lib/redis")
 module.exports = Router({ mergeParams: true })
   .use(async (req, res, next) => {
     req.commission = await Commission.query().findById(req.params.commissionId)
-    if (req.commission.status == "open" || req.commission.status == "accepted") {
-    req.negotiation = await req.commission
-      .$relatedQuery("negotiations")
-      .where("artist_id", req.params.artistId)
-      .where("is_artist", true)
-      .first()
+    if (
+      req.commission.status == "open" ||
+      req.commission.status == "accepted"
+    ) {
+      req.negotiation = await req.commission
+        .$relatedQuery("negotiations")
+        .where("artist_id", req.params.artistId)
+        .where("is_artist", true)
+        .first()
 
-    // only the artist and the buyer can access
-    next(
-      assert(
-        req.user.id == req.commission.buyerId ||
-          req.user.id == req.negotiation.artistId,
-        403
+      // only the artist and the buyer can access
+      next(
+        assert(
+          req.user.id == req.commission.buyerId ||
+            req.user.id == req.negotiation.artistId,
+          403
+        )
       )
-    )
-    }
-    else {
+    } else {
       next(
         assert(
           req.user.id == req.commission.buyerId ||
@@ -34,19 +36,21 @@ module.exports = Router({ mergeParams: true })
   })
   // get previous chat records
   .get("/", async (req, res) => {
-    if (req.commission.status == "open" || req.commission.status == "accepted") {
-    const chats = await req.negotiation
-      .$relatedQuery("chats")
-      .paginate(req.query.after)
+    if (
+      req.commission.status == "open" ||
+      req.commission.status == "accepted"
+    ) {
+      const chats = await req.negotiation
+        .$relatedQuery("chats")
+        .paginate(req.query.after)
 
-    res.send(chats)
-    }
-    else {
+      res.send(chats)
+    } else {
       const chats = await req.commission
-      .$relatedQuery("chats")
-      .paginate(req.query.after)
+        .$relatedQuery("chats")
+        .paginate(req.query.after)
 
-    res.send(chats)
+      res.send(chats)
     }
   })
   .ws("/", (ws, req) => {
@@ -56,10 +60,12 @@ module.exports = Router({ mergeParams: true })
     ws.on("message", async message => {
       try {
         const obj = { userId: req.user.id, message }
-        if (req.commission.status == "open" || req.commission.status == "accepted") {
+        if (
+          req.commission.status == "open" ||
+          req.commission.status == "accepted"
+        ) {
           const chat = await req.negotiation.$relatedQuery("chats").insert(obj)
-        }
-        else {
+        } else {
           const chat = await req.commission.$relatedQuery("chats").insert(obj)
         }
 

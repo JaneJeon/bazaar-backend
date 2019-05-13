@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "watch": "nodemon app 2>&1 | pino-pretty -ct",
+    "watch": "DEBUG=bazaar:* nodemon app 2>&1 | pino-pretty -ct",
     "test": "NODE_ENV=test mocha --bail --exit --recursive --slow 500",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
     "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
