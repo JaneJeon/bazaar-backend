@@ -81,7 +81,7 @@ module.exports = Router()
 
     const art = await Art.query().findById(req.params.artId)
 
-    assert(req.user.id == art.artistId || req.query.as == "buyer", 401)
+    assert(req.user.id == art.artistId || req.user.id == art.buyerId, 401)
 
     if (req.query.as == "buyer") {
       req.body.revieweeId = art.artistId
@@ -115,7 +115,7 @@ module.exports = Router()
 
     const art = await Art.query().findById(req.params.artId)
 
-    assert(req.user.id == art.artistId || req.query.as == "buyer", 401)
+    assert(req.user.id == art.artistId || req.user.id == art.buyerId, 401)
 
     let review = await art
       .$relatedQuery("reviews")
@@ -143,7 +143,7 @@ module.exports = Router()
   .delete("/:artId/reviews", async (req, res) => {
     const art = await Art.query().findById(req.params.artId)
 
-    assert(req.user.id == art.artistId || req.query.as == "buyer", 401)
+    assert(req.user.id == art.artistId || req.user.id == art.buyerId, 401)
 
     await art
       .$relatedQuery("reviews")
