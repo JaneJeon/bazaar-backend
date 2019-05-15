@@ -22,7 +22,10 @@ app
   .use(
     cookieSession({
       keys: [process.env.SESSION_SECRET],
-      sameSite: "lax"
+      sameSite: "lax",
+      cookie: {
+        secure: process.env.NODE_ENV == "production"
+      }
     })
   )
   .use(passport.initialize())
