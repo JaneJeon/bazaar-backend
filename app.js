@@ -23,7 +23,7 @@ app
     cookieSession({
       keys: [process.env.SESSION_SECRET],
       sameSite: "lax",
-      secureProxy: true, // https://stackoverflow.com/a/26225870
+      secureProxy: process.env.NODE_ENV == "production", // https://stackoverflow.com/a/26225870
       cookie: {
         secure: process.env.NODE_ENV == "production",
         httpOnly: true
