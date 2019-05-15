@@ -14,7 +14,7 @@ const rateLimiter = require("./config/ratelimit")
 const router = require("./routes")
 const errorHandler = require("./config/error")
 
-if (process.env.NODE_ENV == "production") app.enable("trust proxy")
+// if (process.env.NODE_ENV == "production") app.enable("trust proxy")
 app
   .use(helmet())
   .use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
@@ -24,7 +24,8 @@ app
       keys: [process.env.SESSION_SECRET],
       sameSite: "lax",
       cookie: {
-        secure: process.env.NODE_ENV == "production"
+        secure: process.env.NODE_ENV == "production",
+        httpOnly: true
       }
     })
   )

@@ -38,7 +38,6 @@ describe("art routes", () => {
         .send({ description: "He was nice", rating: 4 })
         .expect(201)
     })
-
   })
 
   describe("PATCH /arts/:artId/reviews", () => {
@@ -48,13 +47,11 @@ describe("art routes", () => {
         .send({ description: "changed!" })
         .expect(204)
     })
-
   })
 
   describe("DELETE /arts/:artId/reviews", () => {
     it("should successfully delete a review about the artist", async () => {
       await request.delete(`/arts/${arts[0].id}/reviews?as=buyer`).expect(204)
     })
-
   })
 })
