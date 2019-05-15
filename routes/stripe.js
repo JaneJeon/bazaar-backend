@@ -4,6 +4,7 @@ const assert = require("http-assert")
 const stripe = require("../lib/stripe")
 const middlewares = require("../lib/middlewares")
 const pick = require("lodash/pick")
+const debug = require("debug")("bazaar:stripe")
 
 module.exports = Router()
   // endpoint for artists to start getting paid
@@ -29,6 +30,9 @@ module.exports = Router()
     // unless they want to integrate a payment source (e.g. card)
     assert(req.body.stripeToken, 401)
 
+    debug("STRIPE TOKEN")
+    debug(req.body.stripeToken)
+
     const customer = await stripe.customers.create({
       email: req.user.email,
       source: req.body.stripeToken
@@ -41,6 +45,9 @@ module.exports = Router()
   .get("/sources", middlewares.ensureHasPayment, async (req, res) => {
     const customer = await stripe.customers.retrieve(req.user.stripeCustomerId)
 
+    debug("RETRIEVING CUSTOMER")
+    debug(customer)
+
     // TODO: paginate the sources if has_more is true
     const sources = pick(customer.sources.data, [
       "id",
@@ -50,8 +57,6 @@ module.exports = Router()
       "last4",
       "brand"
     ])
-
-    console.log("This is the length: " + sources.length)
 
     res.send(sources)
   })
