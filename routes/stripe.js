@@ -30,8 +30,7 @@ module.exports = Router()
     // unless they want to integrate a payment source (e.g. card)
     assert(req.body.stripeToken, 401)
 
-    debug("STRIPE TOKEN")
-    debug(req.body.stripeToken)
+    debug("STRIPE TOKEN: %o", req.body.stripeToken)
 
     const customer = await stripe.customers.create({
       email: req.user.email,
@@ -45,8 +44,7 @@ module.exports = Router()
   .get("/sources", middlewares.ensureHasPayment, async (req, res) => {
     const customer = await stripe.customers.retrieve(req.user.stripeCustomerId)
 
-    debug("RETRIEVING CUSTOMER")
-    debug(customer)
+    debug("RETRIEVING CUSTOMER %o", customer)
 
     // TODO: paginate the sources if has_more is true
     const sources = pick(customer.sources.data, [

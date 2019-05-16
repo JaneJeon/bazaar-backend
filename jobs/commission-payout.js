@@ -34,8 +34,7 @@ exports.cancelJobs = async ids => {
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {
     debug("processing job " + job.id)
-    debug("job data:")
-    debug(job.data)
+    debug("job data: %o", job.data)
 
     const update = await Update.query(trx)
       .findById([data.commissionId, data.updateNum])
@@ -48,8 +47,7 @@ queue.process(taskName, async (job, data) => {
       5 * update.delays
     ])
 
-    debug("prices:")
-    debug(prices)
+    debug("prices: %o", prices)
 
     // pay out the artist
     const transfer = await stripe.transfers.create({

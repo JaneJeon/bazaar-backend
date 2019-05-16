@@ -13,6 +13,7 @@ const passport = require("passport")
 const rateLimiter = require("./config/ratelimit")
 const router = require("./routes")
 const errorHandler = require("./config/error")
+require("debug")("bazaar:startup")("HELLO WORLD!")
 
 app
   .use(helmet())

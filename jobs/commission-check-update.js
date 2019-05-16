@@ -34,8 +34,7 @@ exports.cancelJobs = async ids => {
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {
     debug("processing job " + job.id)
-    debug("job data:")
-    debug(job.data)
+    debug("job data: %o", job.data)
 
     const update = await Update.query(trx).findById([
       data.commissionId,
@@ -52,8 +51,7 @@ queue.process(taskName, async (job, data) => {
 
       if (!now.isAfter(deadline)) delay = now.diff(deadline)
 
-      debug("delay:")
-      debug(delay)
+      debug("delay: %o", delay)
 
       // proceed to payment, scheduled for the deadline
       await commissionPayoutJob.add(data, { delay, jobId: update.jobId })

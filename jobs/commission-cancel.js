@@ -20,8 +20,7 @@ exports.add = async (data, opts) => {
 queue.process(taskName, async (job, data) => {
   await transaction(Update.knex(), async trx => {
     debug("processing job " + job.id)
-    debug("job data:")
-    debug(job.data)
+    debug("job data: %o", job.data)
 
     // the update from which to refund all
     const update = await Update.query(trx)
@@ -39,12 +38,9 @@ queue.process(taskName, async (job, data) => {
     )
     const payoutJobIds = checkUpdateJobIds.slice(0) // copy
 
-    debug("checkPaymentJobIds:")
-    debug(checkPaymentJobIds)
-    debug("checkUpdateJobIds:")
-    debug(checkUpdateJobIds)
-    debug("payoutJobIds:")
-    debug(payoutJobIds)
+    debug("checkPaymentJobIds: %o", checkPaymentJobIds)
+    debug("checkUpdateJobIds: %o", checkUpdateJobIds)
+    debug("payoutJobIds: %o", payoutJobIds)
 
     await Promise.all([
       commissionCheckPaymentJob.cancelJobs(checkPaymentJobIds),

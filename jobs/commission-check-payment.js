@@ -24,8 +24,7 @@ exports.cancelJobs = async ids => {
 queue.process(taskName, async (job, data) => {
   await transaction(Commission.knex(), async trx => {
     debug("processing job " + job.id)
-    debug("job data:")
-    debug(job.data)
+    debug("job data: %o", job.data)
 
     // check whether buyer has paid
     const commission = await Commission.query(trx).findById(data.commissionId)
