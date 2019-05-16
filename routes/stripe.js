@@ -47,14 +47,9 @@ module.exports = Router()
     debug("RETRIEVING CUSTOMER %o", customer)
 
     // TODO: paginate the sources if has_more is true
-    const sources = pick(customer.sources.data, [
-      "id",
-      "created",
-      "bank_name",
-      "country",
-      "last4",
-      "brand"
-    ])
+    const sources = customer.sources.data.map(source =>
+      pick(source, ["id", "created", "bank_name", "country", "last4", "brand"])
+    )
 
     res.send(sources)
   })
