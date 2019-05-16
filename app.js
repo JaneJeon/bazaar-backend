@@ -24,7 +24,7 @@ app
       keys: [process.env.SESSION_SECRET],
       sameSite: "lax",
       cookie: {
-        secure: false,
+        secure: process.env.NODE_ENV == "production",
         httpOnly: false
       }
     })
