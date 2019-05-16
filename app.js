@@ -25,7 +25,7 @@ app
       sameSite: "lax",
       cookie: {
         secure: process.env.NODE_ENV == "production",
-        httpOnly: true
+        httpOnly: false
       }
     })
   )
