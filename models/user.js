@@ -40,7 +40,8 @@ class User extends visibility(password()(BaseModel)) {
           type: "string",
           enum: ["user", "admin", "superuser"],
           default: "user"
-        }
+        },
+        banned: { type: "boolean"}
       },
       required: ["username", "email", "password"],
       additionalProperties: false
@@ -48,7 +49,7 @@ class User extends visibility(password()(BaseModel)) {
   }
 
   static get hidden() {
-    return ["password", "stripeAccountId", "stripeCustomerId"]
+    return ["password", "stripeAccountId", "stripeCustomerId", "banned"]
   }
 
   static get reservedPostFields() {
@@ -59,7 +60,8 @@ class User extends visibility(password()(BaseModel)) {
       "avatar",
       "stripeAccountId",
       "stripeCustomerId",
-      "role"
+      "role",
+      "banned"
     ]
   }
 
@@ -72,7 +74,8 @@ class User extends visibility(password()(BaseModel)) {
       "avatar",
       "stripeAccountId",
       "stripeCustomerId",
-      "role"
+      "role",
+      "banned"
     ]
   }
 
