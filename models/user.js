@@ -41,7 +41,7 @@ class User extends visibility(password()(BaseModel)) {
           enum: ["user", "admin", "superuser"],
           default: "user"
         },
-        banned: { type: "boolean"}
+        banned: { type: "boolean" }
       },
       required: ["username", "email", "password"],
       additionalProperties: false

@@ -144,10 +144,9 @@ module.exports = Router()
     const user = await User.query().findById(req.params.userId)
 
     if (req.query.action == "revoke") {
-      user = await user.$query().patch({banned: false})
-    }
-    else {
-      user = await user.$query().patch({banned: true})
+      user = await user.$query().patch({ banned: false })
+    } else {
+      user = await user.$query().patch({ banned: true })
     }
 
     res.send(user)
@@ -158,10 +157,9 @@ module.exports = Router()
     const user = await User.query().findById(req.params.userId)
 
     if (req.query.action == "demote") {
-      user = await user.$query().patch({role: "user"})
-    }
-    else {
-      user = await user.$query().patch({role: "admin"})
+      user = await user.$query().patch({ role: "user" })
+    } else {
+      user = await user.$query().patch({ role: "admin" })
     }
     res.send(user)
   })
