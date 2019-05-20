@@ -3,9 +3,10 @@ const passport = require("passport")
 
 module.exports = Router()
   // CREATE session
-  .post("/", passport.authenticate("local"), (req, res) =>
+  .post("/", passport.authenticate("local"), (req, res) => {
+    assert(req.user.banned == false, 401)
     res.status(201).send(req.user.stripeCopy)
-  )
+  })
   // DELETE session
   .delete("/", (req, res) => {
     req.session = null

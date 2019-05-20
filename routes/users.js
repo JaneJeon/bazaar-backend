@@ -139,6 +139,32 @@ module.exports = Router()
       })
     }
   })
+  .patch("/:userId/ban", async (req, res) => {
+    assert(req.user.role == "superuser" || req.user.role == "admin", 401)
+    const user = await User.query().findById(req.params.userId)
+
+    if (req.query.action == "revoke") {
+      user = await user.$query().patch({banned: false})
+    }
+    else {
+      user = await user.$query().patch({banned: true})
+    }
+
+    res.send(user)
+  })
+  .patch("/:userId/promote", async (req, res) => {
+    assert(req.user.role == "superuser", 401)
+
+    const user = await User.query().findById(req.params.userId)
+
+    if (req.query.action == "demote") {
+      user = await user.$query().patch({role: "user"})
+    }
+    else {
+      user = await user.$query().patch({role: "admin"})
+    }
+    res.send(user)
+  })
   .delete("/", async (req, res) => {
     await req.user.$query().patch({ deleted: true })
 

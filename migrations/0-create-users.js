@@ -21,6 +21,10 @@ exports.up = knex =>
       .boolean("deleted")
       .notNullable()
       .defaultTo(false)
+    table
+      .boolean("banned")
+      .notNullable()
+      .defaultTo(false)  
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)
