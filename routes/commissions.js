@@ -76,12 +76,17 @@ module.exports = Router()
 
     assert(
       req.user.id == commission.artistId || req.user.id == commission.buyerId,
-      401
+      403
+    )
+    assert(
+      commission.status == "completed" || commission.status == "cancelled",
+      405
     )
 
-    if (req.user.id == commission.buyerId) {
-      req.body.revieweeId = art.artistId
-    } else [(req.body.revieweeId = art.buyerId)]
+    req.body.revieweeId =
+      req.user.id == commission.buyerId
+        ? commission.artistId
+        : commission.buyerId
     req.body.reviewerId = req.user.id
 
     const review = commission.$relatedQuery("reviews").insert(req.body)
@@ -109,50 +114,12 @@ module.exports = Router()
 
     res.send(commission)
   })
-  // change review details, available to the reviewer
-  .patch("/:commissionId/reviews", async (req, res) => {
-    Review.filterPatch(req.body)
-
-    const commission = await Commission.query().findById(
-      req.params.commissionId
-    )
-
-    assert(
-      req.user.id == commission.artistId || req.user.id == commission.buyerId,
-      401
-    )
-
-    await commission
-      .$relatedQuery("reviews")
-      .patch(req.body)
-      .where("reviewer_id", req.user.id)
-
-    res.status(204).send(review)
-  })
   // TODO: completed, cancelled
   .delete("/:commissionId", async (req, res) => {
     const commission = await req.user
       .$relatedQuery("commissionsAsBuyer")
       .findById(req.params.commissionId)
     await commission.$query().patch({ deleted: true })
-
-    res.sendStatus(204)
-  })
-  // delete a review written by the user
-  .delete("/:commissionId/reviews", async (req, res) => {
-    const commission = await Commission.query().findById(
-      req.params.commissionId
-    )
-
-    assert(
-      req.user.id == commission.artistId || req.user.id == commission.buyerId,
-      401
-    )
-
-    await commission
-      .$relatedQuery("reviews")
-      .delete()
-      .where("reviewer_id", req.user.id)
 
     res.sendStatus(204)
   })

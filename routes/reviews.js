@@ -1,51 +1,49 @@
 const { Router } = require("express")
 const { Review } = require("../models")
+const assert = require("http-assert")
+const middlewares = require("../lib/middlewares")
 
 module.exports = Router()
-  .post("/:userId", async (req, res) => {
-    Review.filterPost(req.body)
+  .get("/", async (req, res) => {
+    const relation =
+      req.query.as == "artist" ? "reviewsAsReviewee" : "reviewsAsReviewer"
 
-    const reviewee = await User.query().findById(req.params.userId)
+    const reviews = await req.user
+      .$relatedQuery(relation)
+      .paginate(req.query.after)
 
-    const review = await req.user
-      .$relatedQuery("reviewsAsReviewer")
-      .insert(req.body)
-
-    const reviewed = await reviewee
-      .$relatedQuery("reviewsAsReviewee")
-      .insert(req.body)
+    res.send(reviews)
+  })
+  .get("/:reviewId", async (req, res) => {
+    // reviews are public
+    const review = await Review.query().findById(req.params.reviewId)
 
     res.send(review)
   })
-  .patch("/:userId/:reviewId", async (req, res) => {
+  .use(middlewares.ensureSignedIn)
+  .patch("/:reviewId", async (req, res) => {
     Review.filterPatch(req.body)
 
-    const reviewee = await User.query().findById(req.params.userId)
+    let review = await Review.query().findById(req.user.id)
 
-    const review = await req.user
-      .$relatedQueryquery("reviewsAsReviewer")
-      .patch(req.body)
-      .where("id", req.params.reviewId)
+    assert(
+      req.user.id == review.revieweeId || req.user.id == review.reviewerId,
+      403
+    )
 
-    const reviewed = await reviewee
-      .$query("reviewsAsReviewee")
-      .patch(req.body)
-      .where("id", req.params.reviewId)
+    review = await review.patch(req.body)
 
     res.send(review)
   })
-  .delete("/:userId/:reviewId", async (req, res) => {
-    const reviewee = await User.query().findById(req.params.userId)
+  .delete("/:reviewId", async (req, res) => {
+    const review = await Review.query().findById(req.user.id)
 
-    const review = await req.user
-      .$relatedQuery("reviewsAsReviewer")
-      .delete()
-      .where("id", req.params.reviewId)
+    assert(
+      req.user.id == review.revieweeId || req.user.id == review.reviewerId,
+      403
+    )
 
-    const reviewed = await reviewee
-      .$relatedQuery("reviewsAsReviewee")
-      .delete()
-      .where("id", req.params.reviewId)
+    await review.$query().delete()
 
     res.sendStatus(204)
   })

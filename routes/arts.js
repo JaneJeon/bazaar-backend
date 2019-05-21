@@ -81,11 +81,10 @@ module.exports = Router()
 
     const art = await Art.query().findById(req.params.artId)
 
-    assert(req.user.id == art.artistId || req.user.id == art.buyerId, 401)
+    assert(req.user.id == art.artistId || req.user.id == art.buyerId, 403)
 
-    if (req.query.as == "buyer") {
-      req.body.revieweeId = art.artistId
-    } else [(req.body.revieweeId = art.buyerId)]
+    req.body.revieweeId =
+      req.user.id == art.artistId ? art.buyerId : art.artistId
     req.body.reviewerId = req.user.id
 
     const review = art.$relatedQuery("reviews").insert(req.body)
@@ -109,21 +108,6 @@ module.exports = Router()
 
     res.send(art)
   })
-  // change review details, available only to the reviewer
-  .patch("/:artId/reviews", async (req, res) => {
-    Review.filterPatch(req.body)
-
-    const art = await Art.query().findById(req.params.artId)
-
-    assert(req.user.id == art.artistId || req.user.id == art.buyerId, 401)
-
-    let review = await art
-      .$relatedQuery("reviews")
-      .patch(req.body)
-      .where("reviewer_id", req.user.id)
-
-    res.status(204).send(review)
-  })
   .delete("/:artId", async (req, res) => {
     const art = await req.user.$relatedQuery("arts").findById(req.params.artId)
     await art.$query().delete()
@@ -136,19 +120,6 @@ module.exports = Router()
       .$relatedQuery("favoriteUsers")
       .unrelate()
       .where("user_id", req.user.id)
-
-    res.sendStatus(204)
-  })
-  // delete a review written by the user
-  .delete("/:artId/reviews", async (req, res) => {
-    const art = await Art.query().findById(req.params.artId)
-
-    assert(req.user.id == art.artistId || req.user.id == art.buyerId, 401)
-
-    await art
-      .$relatedQuery("reviews")
-      .delete()
-      .where("reviewer_id", req.user.id)
 
     res.sendStatus(204)
   })
