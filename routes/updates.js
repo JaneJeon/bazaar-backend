@@ -3,6 +3,7 @@ const { Commission } = require("../models")
 const { transaction } = require("objection")
 const upload = require("../config/multer")
 const commissionPayoutJob = require("../jobs/commission-payout")
+const assert = require("http-assert")
 
 module.exports = Router({ mergeParams: true })
   .use(async (req, res, next) => {

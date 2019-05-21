@@ -7,26 +7,6 @@ class Update extends BaseModel {
     return ["commission_id", "update_num"]
   }
 
-  static get jsonSchema() {
-    return {
-      type: "object",
-      properties: {
-        updateNum: { type: "integer" },
-        delays: { type: "integer", default: 0 },
-        waived: { type: "boolean", default: false },
-        deadline: { type: "string", format: "date" },
-        pictures: {
-          type: "array",
-          items: { type: "string" },
-          minItems: 1,
-          maxItems: process.env.MAX_PICTURE_ATTACHMENTS
-        }
-      },
-      required: ["updateNum", "delays", "waived", "deadline"],
-      additionalProperties: false
-    }
-  }
-
   static get relationMappings() {
     return {
       commission: {

@@ -293,10 +293,6 @@ class Commission extends BaseModel {
 
     await this.$query(trx).patch({ status: "in progress" })
 
-    const negotiations = this.$relatedQuery("negotiations", trx)
-    const chats = negotiations.$relatedQuery("chats", trx)
-    this.$relatedQuery("chats", trx).insert(chats)
-
     await this.$relatedQuery("negotiations", trx).delete()
 
     const updateRows = []
@@ -304,9 +300,9 @@ class Commission extends BaseModel {
     const days = dayjs(this.deadline).diff(now, "day")
 
     // take application fees up front
-    this.price = dinero({ amount: this.price }).multiply(
-      1 - process.env.APPLICATION_FEE
-    )
+    this.price = dinero({ amount: this.price })
+      .multiply(1 - process.env.APPLICATION_FEE)
+      .getAmount()
 
     const prices = dinero({ amount: this.price })
       .multiply(1 - process.env.APPLICATION_FEE)

@@ -9,6 +9,9 @@ exports.up = knex =>
     table.integer("update_num").notNullable()
     table.primary(["commission_id", "update_num"])
 
+    table.decimal("price").notNullable()
+    table.text("priceUnit").notNullable()
+
     table.integer("delays").notNullable()
     table.boolean("waived").notNullable()
     table.date("deadline").notNullable()
