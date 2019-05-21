@@ -293,8 +293,6 @@ class Commission extends BaseModel {
 
     await this.$query(trx).patch({ status: "in progress" })
 
-    await this.$relatedQuery("negotiations", trx).delete()
-
     const updateRows = []
     const now = dayjs()
     const days = dayjs(this.deadline).diff(now, "day")
