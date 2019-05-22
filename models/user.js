@@ -255,10 +255,8 @@ class User extends visibility(password()(BaseModel)) {
     obj.stripeAccountId = this.stripeAccountId
     obj.stripeCustomerId = this.stripeCustomerId
 
-    return jwt.sign(obj, process.env.JWT_SECRET, {
-      expiresIn: this.verified ? "30d" : "1h",
-      jwtid: uid(24)
-    })
+    // no expiry since we're blacklisting
+    return jwt.sign(obj, process.env.JWT_SECRET, { jwtid: uid(24) })
   }
 
   get isAdmin() {

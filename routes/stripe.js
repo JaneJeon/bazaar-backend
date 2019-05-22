@@ -9,7 +9,7 @@ const {
 } = require("../lib/middlewares")
 const pick = require("lodash/pick")
 const debug = require("debug")("bazaar:stripe")
-const token = require("../lib/token")
+const { clearTokens } = require("../lib/token")
 
 module.exports = Router()
   .use(requireAuth, ensureIsVerified)
@@ -31,8 +31,7 @@ module.exports = Router()
       .$query()
       .patch({ stripeAccountId: data.stripe_user_id })
 
-    await token.blacklist(req.token)
-    res.status(201).send(req.user.JWT)
+    res.status(201).send(await clearTokens(req.user))
   })
   .post("/customers", async (req, res) => {
     // require a source because we don't really need to create a stripe customer
@@ -48,8 +47,7 @@ module.exports = Router()
 
     req.user = await req.user.$query().patch({ stripeCustomerId: customer.id })
 
-    await token.blacklist(req.token)
-    res.status(201).send(req.user.JWT)
+    res.status(201).send(await clearTokens(req.user))
   })
   .get("/sources", ensureHasPayment, async (req, res) => {
     const customer = await stripe.customers.retrieve(req.user.stripeCustomerId)

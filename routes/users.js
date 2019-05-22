@@ -3,7 +3,7 @@ const { User } = require("../models")
 const tempToken = require("../lib/temp-token")
 const upload = require("../config/multer")
 const { requireAuth } = require("../lib/middlewares")
-const token = require("../lib/token")
+const { addToken, clearTokens } = require("../lib/token")
 
 module.exports = Router()
   // user info
@@ -85,7 +85,7 @@ module.exports = Router()
     const user = await User.query().insert(req.body)
     const token = await tempToken.generate("verify", user.id, user.id)
 
-    req.login(user, () => res.status(201).send(req.user.JWT))
+    res.status(201).send(await addToken(user))
 
     // email verification
     await user.sendEmail("verify", {
@@ -109,8 +109,8 @@ module.exports = Router()
 
     user = await user.$query().patch({ verified: true })
 
-    // blacklist previous jwt
-    res.send(user.JWT)
+    // blacklist previous jwts
+    res.send(await clearTokens(user))
 
     await tempToken.consume("verify", id)
   })
@@ -120,8 +120,8 @@ module.exports = Router()
 
     user = await user.$query().patch({ password: req.body.password })
 
-    // TODO: blacklist previous jwt
-    res.send(user.JWT)
+    // blacklist previous jwts
+    res.send(await clearTokens(user))
 
     await tempToken.consume("reset", id)
   })
@@ -132,8 +132,7 @@ module.exports = Router()
 
     const user = await req.user.$query().patch(req.body)
 
-    await token.blacklist(req.token)
-    res.send(user.JWT)
+    res.send(await clearTokens(user))
 
     if (req.body.email) {
       const token = await tempToken.generate("verify", user.id, user.id)
@@ -147,11 +146,14 @@ module.exports = Router()
     assert(req.user.isAdmin, 401)
     const user = await User.query().findById(req.params.userId)
 
+    // TODO: this ain't right
     if (req.query.action == "revoke") {
       user = await user.$query().patch({ banned: false })
     } else {
       user = await user.$query().patch({ banned: true })
     }
+
+    await clearTokens(user, false)
 
     res.send(user)
   })
@@ -166,11 +168,13 @@ module.exports = Router()
       user = await user.$query().patch({ role: "admin" })
     }
 
+    await clearTokens(user, false)
+
     res.send(user)
   })
   .delete("/", async (req, res) => {
     await req.user.$query().patch({ deleted: true })
+    await clearTokens(req.user, false)
 
-    await token.blacklist(req.token)
     res.sendStatus(204)
   })
