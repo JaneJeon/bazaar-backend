@@ -1,10 +1,10 @@
 const { Router } = require("express")
 const { Transaction } = require("../models")
-const middlewares = require("../lib/middlewares")
+const { requireAuth, ensureIsVerified } = require("../lib/middlewares")
 const assert = require("http-assert")
 
 module.exports = Router()
-  .use(middlewares.ensureHasPayment)
+  .use(requireAuth, ensureIsVerified)
   .get("/", async (req, res) => {
     // list transactions for a user
     const relation =
@@ -26,7 +26,7 @@ module.exports = Router()
     assert(
       req.user.id == transaction.artistId ||
         req.user.id == transaction.buyerId ||
-        middlewares.isAdmin(req.user),
+        req.user.isAdmin,
       403
     )
 

@@ -1,7 +1,7 @@
 const { Router } = require("express")
 const { Review } = require("../models")
 const assert = require("http-assert")
-const middlewares = require("../lib/middlewares")
+const { requireAuth, ensureIsVerified } = require("../lib/middlewares")
 
 module.exports = Router()
   .get("/", async (req, res) => {
@@ -20,7 +20,7 @@ module.exports = Router()
 
     res.send(review)
   })
-  .use(middlewares.ensureSignedIn)
+  .use(requireAuth, ensureIsVerified)
   .patch("/:reviewId", async (req, res) => {
     Review.filterPatch(req.body)
 

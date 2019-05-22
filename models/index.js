@@ -5,8 +5,6 @@ types.setTypeParser(20, parseInt) // cast SELECT COUNT(*) to integer
 types.setTypeParser(1082, obj => dayjs(obj).format("YYYY-MM-DD"))
 
 const { Model } = require("objection")
-const knex = require("knex")
-const knexfile = require("../config/database")
 const User = require("./user")
 const Art = require("./art")
 const Commission = require("./commission")
@@ -18,7 +16,7 @@ const Update = require("./update")
 const Transaction = require("./transaction")
 const Report = require("./report")
 
-Model.knex(knex(knexfile)) // yo dawg
+Model.knex(require("knex")(require("../config/database")))
 
 module.exports = {
   User,

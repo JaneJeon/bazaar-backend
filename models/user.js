@@ -6,6 +6,8 @@ const normalize = require("normalize-email")
 const text = require("../lib/text")
 const image = require("../lib/image")
 const ses = require("../lib/ses")
+const jwt = require("jsonwebtoken")
+const { sync: uid } = require("uid-safe")
 
 class User extends visibility(password()(BaseModel)) {
   static get jsonSchema() {
@@ -223,7 +225,12 @@ class User extends visibility(password()(BaseModel)) {
   static get QueryBuilder() {
     return class extends super.QueryBuilder {
       findById(id, self) {
-        return self && self.id == id ? self : super.findById(id) // TODO: .where("deleted", false)
+        return self && self.id == id
+          ? self
+          : super
+              .findById(id)
+              .where("deleted", false)
+              .andWhere("banned", false)
       }
 
       findByEmail(email) {
@@ -243,12 +250,19 @@ class User extends visibility(password()(BaseModel)) {
       .promise()
   }
 
-  get stripeCopy() {
+  get JWT() {
     const obj = this.toJSON() // convert to POJO
     obj.stripeAccountId = this.stripeAccountId
     obj.stripeCustomerId = this.stripeCustomerId
 
-    return obj
+    return jwt.sign(obj, process.env.JWT_SECRET, {
+      expiresIn: this.verified ? "30d" : "1h",
+      jwtid: uid(24)
+    })
+  }
+
+  get isAdmin() {
+    return this.role == "admin" || this.role == "superuser"
   }
 }
 

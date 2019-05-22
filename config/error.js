@@ -11,7 +11,7 @@ const {
 const debug = require("debug")("bazaar:error")
 const log = require("../lib/logger")
 
-module.exports = (err, req, res) => {
+module.exports = (err, req, res, next) => {
   // errors can happen after the response is sent when sending email
   if (res.headersSent) {
     log.error(err)

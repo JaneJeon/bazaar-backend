@@ -6,36 +6,20 @@ const express = require("express")
 const app = express()
 require("express-ws")(app)
 
-const helmet = require("helmet")
-const cors = require("cors")
-const cookieSession = require("cookie-session")
-const passport = require("passport")
-const rateLimiter = require("./config/ratelimit")
-const router = require("./routes")
-const errorHandler = require("./config/error")
-require("debug")("bazaar:startup")("HELLO WORLD!")
-
 app
-  .use(helmet())
-  .use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
+  .use(require("helmet")())
+  .use(require("cors")())
+  .set("trust proxy", process.env.NODE_ENV == "production")
+  .use(require("./config/ratelimit"))
   .use(express.json())
-  .set("trust proxy", (process.env.NODE_ENV == "production") + 0)
-  .use(
-    cookieSession({
-      keys: [process.env.SESSION_SECRET],
-      sameSite: "lax",
-      cookie: { secure: process.env.NODE_ENV == "production", httpOnly: true }
-    })
-  )
-  .use(passport.initialize())
-  .use(passport.session())
-  .use(rateLimiter)
-  .use(router)
+  .use(require("passport").initialize())
+  .use(require("./routes"))
   .use((req, res) => res.sendStatus(404))
-  .use((err, req, res, next) => errorHandler(err, req, res))
+  .use(require("./config/error"))
 
 app.listen(process.env.PORT, err => {
   if (err) console.error(err)
+  require("debug")("bazaar:startup")("server started")
 })
 
 module.exports = app

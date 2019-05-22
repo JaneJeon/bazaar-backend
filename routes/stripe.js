@@ -2,11 +2,17 @@ const { Router } = require("express")
 const axios = require("axios").default
 const assert = require("http-assert")
 const stripe = require("../lib/stripe")
-const middlewares = require("../lib/middlewares")
+const {
+  requireAuth,
+  ensureIsVerified,
+  ensureHasPayment
+} = require("../lib/middlewares")
 const pick = require("lodash/pick")
 const debug = require("debug")("bazaar:stripe")
+const token = require("../lib/token")
 
 module.exports = Router()
+  .use(requireAuth, ensureIsVerified)
   // endpoint for artists to start getting paid
   .post("/accounts", async (req, res) => {
     // using axios instead of stripe since stripe SDK only creates custom accounts
@@ -21,9 +27,12 @@ module.exports = Router()
       }
     )
 
-    await req.user.$query().patch({ stripeAccountId: data.stripe_user_id })
+    req.user = await req.user
+      .$query()
+      .patch({ stripeAccountId: data.stripe_user_id })
 
-    res.status(201).send(req.user.stripeCopy)
+    await token.blacklist(req.token)
+    res.status(201).send(req.user.JWT)
   })
   .post("/customers", async (req, res) => {
     // require a source because we don't really need to create a stripe customer
@@ -37,11 +46,12 @@ module.exports = Router()
       source: req.body.stripeToken
     })
 
-    await req.user.$query().patch({ stripeCustomerId: customer.id })
+    req.user = await req.user.$query().patch({ stripeCustomerId: customer.id })
 
-    res.status(201).send(req.user.stripeCopy)
+    await token.blacklist(req.token)
+    res.status(201).send(req.user.JWT)
   })
-  .get("/sources", middlewares.ensureHasPayment, async (req, res) => {
+  .get("/sources", ensureHasPayment, async (req, res) => {
     const customer = await stripe.customers.retrieve(req.user.stripeCustomerId)
 
     debug("RETRIEVING CUSTOMER %o", customer)
