@@ -129,7 +129,7 @@ describe("art routes", () => {
 
     context("when the art does not belong to the user", () => {
       it("should return 404", async () => {
-        const res = await request.post("/sessions").send(users[1])
+        const res = await request.post("/tokens").send(users[1])
         const newToken = res.body
 
         await request
