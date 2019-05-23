@@ -5,6 +5,7 @@ const assert = require("assert")
 const tempToken = require("../../lib/temp-token")
 const { User } = require("../../models")
 const jwt = require("jsonwebtoken")
+const { users } = require("./tokens")
 
 describe("user routes", () => {
   let token
