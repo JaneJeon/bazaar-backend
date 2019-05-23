@@ -88,9 +88,7 @@ describe("user routes", () => {
         .send({ email: testUser.email })
         .expect(200)
 
-      const token = await tempToken.findOne("reset")
-
-      assert(token)
+      assert(await tempToken.findOne("reset"))
     })
   })
 
@@ -121,11 +119,13 @@ describe("user routes", () => {
 
   describe("PATCH /users", () => {
     it("should update user details when logged in", async () => {
-      await request
+      const res = await request
         .patch("/users")
         .set("Authorization", "Bearer " + token)
         .send({ bio: "Just some dude" })
         .expect(200)
+
+      token = res.body
     })
 
     it("should not allow users to update username", async () => {
