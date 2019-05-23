@@ -7,7 +7,7 @@ module.exports = Router()
     res.status(201).send(await addToken(req.user))
   })
   .delete("/", async (req, res) => {
-    await removeToken(req.token)
+    if (req.token) await removeToken(req.token)
 
     res.sendStatus(204)
   })
