@@ -1,10 +1,10 @@
-const queue = require("../lib/queue")
-const taskName = "commissionPayout"
-const { transaction } = require("objection")
-const { Update } = require("../models")
-const stripe = require("../lib/stripe")
-const dinero = require("dinero.js")
-const debug = require("debug")("bazaar:jobs:commissionPayout")
+var queue = require("../lib/queue")
+var taskName = "commissionPayout"
+var { transaction } = require("objection")
+var { Update } = require("../models")
+var stripe = require("../lib/stripe")
+var dinero = require("dinero.js")
+var debug = require("debug")("bazaar:jobs:commissionPayout")
 
 exports.add = async (data, opts) => {
   if (opts.jobId) opts.jobId = `${taskName}-${opts.jobId}`

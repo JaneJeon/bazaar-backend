@@ -334,8 +334,8 @@ class Commission extends BaseModel {
             late: 0
           },
           {
-            delay: dayjs(update.deadline).diff(now),
-            jobId: update.jobId
+            delay: dayjs(now).diff(update.deadline),
+            jobId: `${this.id}-${this.updateNum}`
           }
         )
       )

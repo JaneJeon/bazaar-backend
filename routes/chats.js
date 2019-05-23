@@ -33,6 +33,8 @@ module.exports = Router({ mergeParams: true })
     } else next(assert(false, 405))
   })
   // get previous chat records
+  .get("/chats")
+  .get("/negotiations/:artistId/chats")
   .get("/", async (req, res) => {
     if (req.commission.status == "open") {
       const chats = await req.negotiation

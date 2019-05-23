@@ -1,11 +1,11 @@
-const queue = require("../lib/queue")
-const taskName = "commissionCheckUpdate"
-const { transaction } = require("objection")
-const { Update } = require("../models")
-const commissionPayoutJob = require("./commission-payout")
-const commissionCancelJob = require("./commission-cancel")
-const dayjs = require("dayjs")
-const debug = require("debug")("bazaar:jobs:commissionCheckUpdate")
+var queue = require("../lib/queue")
+var taskName = "commissionCheckUpdate"
+var { transaction } = require("objection")
+var { Update } = require("../models")
+var commissionPayoutJob = require("./commission-payout")
+var commissionCancelJob = require("./commission-cancel")
+var dayjs = require("dayjs")
+var debug = require("debug")("bazaar:jobs:commissionCheckUpdate")
 
 exports.add = async (data, opts) => {
   if (opts.jobId) opts.jobId = `${taskName}-${opts.jobId}`
