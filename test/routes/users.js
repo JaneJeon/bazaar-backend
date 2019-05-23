@@ -22,7 +22,7 @@ describe("user routes", () => {
         .expect(201)
         .end((err, res) => {
           if (err) return done(err)
-          token = res.body.token
+          token = res.body
 
           const user = jwt.decode(token)
           assert(user.verified === false)
