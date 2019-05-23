@@ -1,5 +1,5 @@
 const request = require("supertest")(require("../../app"))
-const { users } = require("./sessions")
+const { users } = require("./tokens")
 const redis = require("../../lib/redis")
 const assert = require("assert")
 

@@ -1,5 +1,5 @@
 const request = require("supertest")(require("../../app"))
-const { users } = require("./sessions")
+const { users } = require("./tokens")
 
 describe.skip("commission routes", () => {
   before(async () => {
