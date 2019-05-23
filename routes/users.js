@@ -2,7 +2,7 @@ const { Router } = require("express")
 const { User } = require("../models")
 const tempToken = require("../lib/temp-token")
 const upload = require("../config/multer")
-const { requireAuth } = require("../lib/middlewares")
+const { requireAuth, ensureIsAdmin } = require("../lib/middlewares")
 const { addToken, clearTokens } = require("../lib/token")
 
 module.exports = Router()
@@ -141,34 +141,15 @@ module.exports = Router()
       })
     }
   })
-  // TODO: merge all under patch route?
-  .patch("/:userId/ban", async (req, res) => {
-    assert(req.user.isAdmin, 401)
-    const user = await User.query().findById(req.params.userId)
+  .patch("/:userId", ensureIsAdmin, async (req, res) => {
+    // only superusers can promote/demote users
+    assert(req.user.role == "superuser" || req.body.promote === undefined, 403)
 
-    // TODO: this ain't right
-    if (req.query.action == "revoke") {
-      user = await user.$query().patch({ banned: false })
-    } else {
-      user = await user.$query().patch({ banned: true })
-    }
+    let user = await User.query().findById(req.params.userId)
+    user = await user.$query().patch(req.body)
 
-    await clearTokens(user, false)
-
-    res.send(user)
-  })
-  .patch("/:userId/promote", async (req, res) => {
-    assert(req.user.role == "superuser", 401)
-
-    const user = await User.query().findById(req.params.userId)
-
-    if (req.query.action == "demote") {
-      user = await user.$query().patch({ role: "user" })
-    } else {
-      user = await user.$query().patch({ role: "admin" })
-    }
-
-    await clearTokens(user, false)
+    // expire tokens for this user
+    await clearTokens(user)
 
     res.send(user)
   })
