@@ -117,16 +117,16 @@ describe("user routes", () => {
   describe("PATCH /users", () => {
     it("should update user details when logged in", async () => {
       await request
-        .set("Authorization", "Bearer " + token)
         .patch("/users")
+        .set("Authorization", "Bearer " + token)
         .send({ bio: "Just some dude" })
         .expect(200)
     })
 
     it("should not allow users to update username", async () => {
       await request
-        .set("Authorization", "Bearer " + token)
         .patch("/users")
+        .set("Authorization", "Bearer " + token)
         .send({ username: "xXh4X0rzXx" })
         .expect(400)
     })
@@ -135,8 +135,8 @@ describe("user routes", () => {
   describe("DELETE /users", () => {
     it("should delete the user", async () => {
       await request
-        .set("Authorization", "Bearer " + token)
         .delete("/users")
+        .set("Authorization", "Bearer " + token)
         .expect(204)
 
       const user = await User.query().findById(testUser.username.toLowerCase())

@@ -62,8 +62,8 @@ describe("art routes", () => {
     context("when user is verified", () => {
       it("should create art", async () => {
         const res = await request
-          .set("Authorization", "Bearer " + token)
           .post("/arts")
+          .set("Authorization", "Bearer " + token)
           .field("title", "hello")
           .field("price", "42")
           .field("description", "blah blah #foo @bar")
@@ -79,8 +79,8 @@ describe("art routes", () => {
       context("when the art has missing pictures upload", () => {
         it("should reject", async () => {
           await request
-            .set("Authorization", "Bearer " + token)
             .post("/arts")
+            .set("Authorization", "Bearer " + token)
             .field("title", "hello")
             .expect(400)
         })
@@ -89,8 +89,8 @@ describe("art routes", () => {
       context("when the pictures are attached to the wrong field", () => {
         it("should reject", async () => {
           await request
-            .set("Authorization", "Bearer " + token)
             .post("/arts")
+            .set("Authorization", "Bearer " + token)
             .field("title", "hello")
             .attach("picture", pictures[0])
             .expect(400)
@@ -102,16 +102,16 @@ describe("art routes", () => {
   describe("PATCH /arts/:artId", () => {
     it("should update the art", async () => {
       await request
-        .set("Authorization", "Bearer " + token)
         .patch(`/arts/${arts[0].id}`)
+        .set("Authorization", "Bearer " + token)
         .send({ description: "changed!" })
         .expect(200)
     })
 
     it("should not allow users to re-upload photos", async () => {
       await request
-        .set("Authorization", "Bearer " + token)
         .patch(`/arts/${arts[0].id}`)
+        .set("Authorization", "Bearer " + token)
         .attach("pictures", pictures[3])
         .expect(400)
     })
@@ -121,8 +121,8 @@ describe("art routes", () => {
     context("when the art belongs to the user", () => {
       it("should delete the art", async () => {
         await request
-          .set("Authorization", "Bearer " + token)
           .delete(`/arts/${art.id}`)
+          .set("Authorization", "Bearer " + token)
           .expect(204)
       })
     })
@@ -133,8 +133,8 @@ describe("art routes", () => {
         const newToken = res.body
 
         await request
-          .set("Authorization", "Bearer " + newToken)
           .delete(`/arts/${arts[0].id}`)
+          .set("Authorization", "Bearer " + newToken)
           .expect(404)
       })
     })
