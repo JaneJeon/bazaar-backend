@@ -17,7 +17,7 @@ app
   .use((req, res) => res.sendStatus(404))
   .use(require("./config/error"))
 
-app.listen(process.env.PORT, err => {
+app.listen(process.env.PORT || 4000, err => {
   if (err) console.error(err)
   require("debug")("bazaar:startup")("server started")
 })

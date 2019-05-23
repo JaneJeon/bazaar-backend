@@ -4,6 +4,7 @@ const { NotFoundError } = require("objection")
 const { Strategy: LocalStrategy } = require("passport-local")
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt")
 const { checkToken } = require("../lib/token")
+const debug = require("debug")("bazaar:passport")
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
@@ -27,14 +28,15 @@ passport.use(
     },
     async (req, payload, done) => {
       req.token = payload
+      debug(payload)
 
       // check blacklist
       try {
         if (await checkToken(payload)) {
           // strip payload off token-only information
-          delete payload.exp
-          delete payload.iat
-          delete payload.jwtid
+          // delete payload.exp
+          // delete payload.iat
+          // delete payload.jwtid
           done(null, User.fromJson(payload, { skipValidation: true }))
         } else done(null, false)
       } catch (err) {

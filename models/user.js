@@ -6,7 +6,6 @@ const normalize = require("normalize-email")
 const text = require("../lib/text")
 const image = require("../lib/image")
 const ses = require("../lib/ses")
-const jwt = require("jsonwebtoken")
 const { sync: uid } = require("uid-safe")
 
 class User extends visibility(password()(BaseModel)) {
@@ -254,9 +253,9 @@ class User extends visibility(password()(BaseModel)) {
     const obj = this.toJSON() // convert to POJO
     obj.stripeAccountId = this.stripeAccountId
     obj.stripeCustomerId = this.stripeCustomerId
+    obj.jwtid = uid(24)
 
-    // no expiry since we're blacklisting
-    return jwt.sign(obj, process.env.JWT_SECRET, { jwtid: uid(24) })
+    return obj
   }
 
   get isAdmin() {

@@ -85,7 +85,7 @@ module.exports = Router()
     const user = await User.query().insert(req.body)
     const token = await tempToken.generate("verify", user.id, user.id)
 
-    res.status(201).send(await addToken(user))
+    res.status(201).json(await addToken(user))
 
     // email verification
     await user.sendEmail("verify", {
@@ -110,7 +110,7 @@ module.exports = Router()
     user = await user.$query().patch({ verified: true })
 
     // blacklist previous jwts
-    res.send(await clearTokens(user))
+    res.json(await clearTokens(user))
 
     await tempToken.consume("verify", id)
   })
@@ -121,7 +121,7 @@ module.exports = Router()
     user = await user.$query().patch({ password: req.body.password })
 
     // blacklist previous jwts
-    res.send(await clearTokens(user))
+    res.json(await clearTokens(user))
 
     await tempToken.consume("reset", id)
   })
@@ -132,7 +132,7 @@ module.exports = Router()
 
     const user = await req.user.$query().patch(req.body)
 
-    res.send(await clearTokens(user))
+    res.json(await clearTokens(user))
 
     if (req.body.email) {
       const token = await tempToken.generate("verify", user.id, user.id)
