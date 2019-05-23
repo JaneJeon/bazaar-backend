@@ -19,7 +19,7 @@ app
   .use(helmet())
   .use(cors({ origin: process.env.FRONTEND_URL, credentials: true }))
   .use(express.json())
-  .set("trust proxy", (process.env.NODE_ENV == "production") + 0)
+  // .set("trust proxy", (process.env.NODE_ENV == "production") + 0)
   .use(
     cookieSession({
       keys: [process.env.SESSION_SECRET],
