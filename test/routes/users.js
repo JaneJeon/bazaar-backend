@@ -93,7 +93,7 @@ describe("user routes", () => {
     let tmpToken
 
     before(async () => {
-      token = await tempToken.findOne("reset")
+      tmpToken = await tempToken.findOne("reset")
     })
 
     it("should reset password given the right token", async () => {
