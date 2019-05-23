@@ -2,7 +2,8 @@ const { Router } = require("express")
 const { User } = require("../models")
 const tempToken = require("../lib/temp-token")
 const upload = require("../config/multer")
-const middlewares = require("../lib/middlewares")
+const { requireAuth } = require("../lib/middlewares")
+const { addToken, clearTokens } = require("../lib/token")
 
 module.exports = Router()
   // user info
@@ -84,7 +85,7 @@ module.exports = Router()
     const user = await User.query().insert(req.body)
     const token = await tempToken.generate("verify", user.id, user.id)
 
-    req.login(user, () => res.status(201).send(req.user.stripeCopy))
+    res.status(201).json(await addToken(user))
 
     // email verification
     await user.sendEmail("verify", {
@@ -108,7 +109,8 @@ module.exports = Router()
 
     user = await user.$query().patch({ verified: true })
 
-    res.send(user)
+    // blacklist previous jwts
+    res.json(await clearTokens(user))
 
     await tempToken.consume("verify", id)
   })
@@ -118,19 +120,19 @@ module.exports = Router()
 
     user = await user.$query().patch({ password: req.body.password })
 
-    res.send(user)
+    // blacklist previous jwts
+    res.json(await clearTokens(user))
 
     await tempToken.consume("reset", id)
   })
-  .use(middlewares.ensureSignedIn)
+  .use(requireAuth)
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req.body)
-    console.log("HERE", req.body)
     if (req.file) req.body.avatar = req.file
 
     const user = await req.user.$query().patch(req.body)
 
-    res.send(user)
+    res.json(await clearTokens(user))
 
     if (req.body.email) {
       const token = await tempToken.generate("verify", user.id, user.id)
@@ -139,15 +141,19 @@ module.exports = Router()
       })
     }
   })
+  // TODO: merge all under patch route?
   .patch("/:userId/ban", async (req, res) => {
-    assert(req.user.role == "superuser" || req.user.role == "admin", 401)
+    assert(req.user.isAdmin, 401)
     const user = await User.query().findById(req.params.userId)
 
+    // TODO: this ain't right
     if (req.query.action == "revoke") {
       user = await user.$query().patch({ banned: false })
     } else {
       user = await user.$query().patch({ banned: true })
     }
+
+    await clearTokens(user, false)
 
     res.send(user)
   })
@@ -161,11 +167,14 @@ module.exports = Router()
     } else {
       user = await user.$query().patch({ role: "admin" })
     }
+
+    await clearTokens(user, false)
+
     res.send(user)
   })
   .delete("/", async (req, res) => {
     await req.user.$query().patch({ deleted: true })
+    await clearTokens(req.user, false)
 
-    req.session = null
     res.sendStatus(204)
   })

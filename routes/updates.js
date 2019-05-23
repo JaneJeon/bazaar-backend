@@ -4,8 +4,14 @@ const { transaction } = require("objection")
 const upload = require("../config/multer")
 const commissionPayoutJob = require("../jobs/commission-payout")
 const assert = require("http-assert")
+const {
+  requireAuth,
+  ensureIsVerified,
+  ensureHasPayment
+} = require("../lib/middlewares")
 
 module.exports = Router({ mergeParams: true })
+  .use(requireAuth, ensureIsVerified)
   .use(async (req, res, next) => {
     req.commission = await Commission.query().findById(req.params.commissionId)
 
@@ -44,7 +50,7 @@ module.exports = Router({ mergeParams: true })
     res.send(transactions)
   })
   // endpoint for buyer to actually start the commission
-  .post("/", async (req, res) => {
+  .post("/", ensureHasPayment, async (req, res) => {
     assert(req.isArtist === false, 403)
 
     const updates = await transaction(Commission.knex(), async trx =>

@@ -2,7 +2,11 @@ const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art, Review } = require("../models")
 const { transaction } = require("objection")
-const middlewares = require("../lib/middlewares")
+const {
+  requireAuth,
+  ensureIsVerified,
+  ensureHasPayment
+} = require("../lib/middlewares")
 const assert = require("http-assert")
 
 module.exports = Router()
@@ -33,7 +37,8 @@ module.exports = Router()
 
     res.send(favorites)
   })
-  .get("/:artId/transactions", middlewares.ensureSignedIn, async (req, res) => {
+  .use(requireAuth, ensureIsVerified)
+  .get("/:artId/transactions", async (req, res) => {
     const art = await Art.query().findById(req.params.artId)
 
     // check that you're either the artist or the buyer
@@ -53,7 +58,6 @@ module.exports = Router()
 
     res.send(transactions)
   })
-  .use(middlewares.ensureVerified)
   .post(
     "/",
     upload.array("pictures", process.env.MAX_PICTURE_ATTACHMENTS),
@@ -81,7 +85,15 @@ module.exports = Router()
 
     const art = await Art.query().findById(req.params.artId)
 
-    assert(req.user.id == art.artistId || req.user.id == art.buyerId, 403)
+    // check that you're either the artist or the buyer
+    assert(
+      req.user.id == art.id ||
+        (await art
+          .$relatedQuery("transactions")
+          .where("buyer_id", req.user.id)
+          .count()),
+      403
+    )
 
     req.body.revieweeId =
       req.user.id == art.artistId ? art.buyerId : art.artistId
@@ -99,7 +111,7 @@ module.exports = Router()
 
     res.send(art)
   })
-  .patch("/:artId/purchase", middlewares.ensureHasPayment, async (req, res) => {
+  .patch("/:artId/purchase", ensureHasPayment, async (req, res) => {
     let art = await Art.query().findById(req.params.artId)
 
     art = await transaction(Art.knex(), async trx =>

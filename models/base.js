@@ -130,6 +130,15 @@ class BaseModel extends tableName(DbErrors(Model)) {
     if (this.constructor.searchEnabled)
       await this.constructor.index.deleteObject(this.algoliaId)
   }
+
+  ensureIsArtistOrBuyer(user) {
+    assert(user && user.id, 401)
+    assert(
+      (this.artistId && this.artistId == user.id) ||
+        (this.buyerId && this.buyerId == user.id),
+      403
+    )
+  }
 }
 
 module.exports = BaseModel

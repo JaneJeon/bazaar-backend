@@ -1,11 +1,7 @@
-const session = require("supertest-session")
-const app = require("../../app")
-const request = session(app)
-const { users } = require("./sessions")
-const redis = require("../../lib/redis")
-const assert = require("assert")
+const request = require("supertest")(require("../../app"))
+const { users } = require("./tokens")
 
-describe("art routes", () => {
+describe.skip("reviews routes", () => {
   let arts, art, commissions
 
   before(async () => {

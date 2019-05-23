@@ -1,28 +1,39 @@
 require("../lib/text")
 
-const session = require("supertest-session")
-const app = require("../../app")
-const request = session(app)
+const request = require("supertest")(require("../../app"))
 const assert = require("assert")
 const tempToken = require("../../lib/temp-token")
 const { User } = require("../../models")
+const jwt = require("jsonwebtoken")
+const { users } = require("./tokens")
 
 describe("user routes", () => {
+  let token
   const testUser = {
     username: "Ricky_Cranium",
     password: "123456789",
     email: "success@simulator.amazonses.com"
   }
 
+  before(async () => {
+    const res = await request.post("/tokens").send(users[0])
+    token = res.body
+  })
+
   describe("POST /users", () => {
-    it("should sign up", async () => {
-      const res = await request
+    it("should sign up", done => {
+      request
         .post("/users")
         .send(testUser)
         .expect(201)
+        .end((err, res) => {
+          if (err) return done(err)
 
-      assert(res.body.verified === false)
-      assert(res.body.avatar !== null)
+          const user = jwt.decode(res.body)
+          assert(user.verified === false)
+          assert(user.avatar !== null)
+          done()
+        })
     })
 
     it("should 400 when parameters are wrong", async () => {
@@ -49,22 +60,22 @@ describe("user routes", () => {
   })
 
   describe("PATCH /users/verify", () => {
-    let token
+    let tmpToken
 
     before(async () => {
-      token = await tempToken.findOne("verify")
+      tmpToken = await tempToken.findOne("verify")
     })
 
     it("should verify user given the right token", async () => {
-      await request.patch(`/users/verify?token=${token}`).expect(200)
+      await request.patch(`/users/verify?token=${tmpToken}`).expect(200)
     })
 
     it("should reject token doesn't match any user", async () => {
-      await request.patch(`/users/verify?token=${token}1`).expect(404)
+      await request.patch(`/users/verify?token=${tmpToken}1`).expect(404)
     })
 
     it("should not allow a token to be used twice", async () => {
-      const result = await tempToken.fetch("verify", token)
+      const result = await tempToken.fetch("verify", tmpToken)
 
       assert(result === null)
     })
@@ -77,32 +88,30 @@ describe("user routes", () => {
         .send({ email: testUser.email })
         .expect(200)
 
-      const token = await tempToken.findOne("reset")
-
-      assert(token)
+      assert(await tempToken.findOne("reset"))
     })
   })
 
   describe("PATCH /users/reset", () => {
-    let token
+    let tmpToken
 
     before(async () => {
-      token = await tempToken.findOne("reset")
+      tmpToken = await tempToken.findOne("reset")
     })
 
     it("should reset password given the right token", async () => {
       await request
-        .patch(`/users/reset?token=${token}`)
+        .patch(`/users/reset?token=${tmpToken}`)
         .send({ password: "987654321" })
         .expect(200)
     })
 
     it("should reject token doesn't match any user", async () => {
-      await request.patch(`/users/reset?token=${token}1`).expect(404)
+      await request.patch(`/users/reset?token=${tmpToken}1`).expect(404)
     })
 
     it("should not allow a token to be used twice", async () => {
-      const result = await tempToken.fetch("reset", token)
+      const result = await tempToken.fetch("reset", tmpToken)
 
       assert(result === null)
     })
@@ -110,23 +119,30 @@ describe("user routes", () => {
 
   describe("PATCH /users", () => {
     it("should update user details when logged in", async () => {
-      await request
+      const res = await request
         .patch("/users")
+        .set("Authorization", "Bearer " + token)
         .send({ bio: "Just some dude" })
         .expect(200)
+
+      token = res.body
     })
 
     it("should not allow users to update username", async () => {
       await request
         .patch("/users")
+        .set("Authorization", "Bearer " + token)
         .send({ username: "xXh4X0rzXx" })
         .expect(400)
     })
   })
 
   describe("DELETE /users", () => {
-    it("should delete the user", async () => {
-      await request.delete("/users").expect(204)
+    it.skip("should delete the user", async () => {
+      await request
+        .delete("/users")
+        .set("Authorization", "Bearer " + token)
+        .expect(204)
 
       const user = await User.query().findById(testUser.username.toLowerCase())
       assert(user.deleted === true)

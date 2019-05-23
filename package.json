@@ -2,13 +2,12 @@
   "private": true,
   "scripts": {
     "start": "node app",
-    "watch": "DEBUG=bazaar:* nodemon app 2>&1 | pino-pretty -ct",
+    "watch": "DEBUG=bazaar:* nodemon app | pino-pretty -ct",
     "test": "NODE_ENV=test mocha --bail --exit --recursive --slow 500",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
     "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex knex migrate:rollback --knexfile ./config/database.js",
     "seed": "DEBUG=knex knex seed:run --knexfile ./config/database.js",
-    "migrate-email": "node scripts/email-templates",
     "clean": "rm -f *.log; rm -rf node_modules"
   },
   "dependencies": {
@@ -17,7 +16,6 @@
     "aws-sdk": "^2.431.0",
     "axios": "^0.18.0",
     "bull": "^3.7.0",
-    "cookie-session": "^2.0.0-beta.3",
     "cors": "^2.8.5",
     "dayjs": "^1.8.12",
     "db-errors": "^0.1.1",
@@ -31,6 +29,7 @@
     "helmet": "^3.16.0",
     "http-assert": "^1.4.0",
     "ioredis": "^4.9.0",
+    "jsonwebtoken": "^8.5.1",
     "knex": "^0.16.3",
     "lodash": "^4.17.11",
     "multer": "^1.4.1",
@@ -40,6 +39,7 @@
     "objection-password": "^2.0.0",
     "objection-visibility": "^0.4.0",
     "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^7.9.0",
     "pino": "^5.12.3",
@@ -62,8 +62,7 @@
     "nodemon": "^1.18.10",
     "pino-pretty": "^3.0.0",
     "prettier": "^1.16.3",
-    "supertest": "^4.0.2",
-    "supertest-session": "^4.0.0"
+    "supertest": "^4.0.2"
   },
   "prettier": {
     "semi": false
