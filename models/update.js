@@ -7,6 +7,22 @@ class Update extends BaseModel {
     return ["commission_id", "update_num"]
   }
 
+  static get jsonSchema() {
+    return {
+      type: "object",
+      properties: {
+        pictures: {
+          type: "array",
+          items: { type: "string" },
+          minItems: 1,
+          maxItems: process.env.MAX_PICTURE_ATTACHMENTS
+        },
+        delays: { type: "integer", default: 0 },
+        waived: { type: "boolean", default: false }
+      }
+    }
+  }
+
   static get relationMappings() {
     return {
       commission: {

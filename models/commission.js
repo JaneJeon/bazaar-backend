@@ -312,8 +312,9 @@ class Commission extends BaseModel {
         price: prices[i].getAmount(),
         priceUnit: this.priceUnit,
         deadline: dayjs()
-          .add(Math.ceil((i * days) / this.numUpdates), "day")
-          .format("YYYY-MM-DD")
+          .add(Math.ceil((i * days) / (this.numUpdates + 1)), "day")
+          .format("YYYY-MM-DD"),
+        delays: 0
       }
 
       // first hit is free!
