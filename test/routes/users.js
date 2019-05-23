@@ -55,22 +55,22 @@ describe("user routes", () => {
   })
 
   describe("PATCH /users/verify", () => {
-    let token
+    let tmpToken
 
     before(async () => {
-      token = await tempToken.findOne("verify")
+      tmpToken = await tempToken.findOne("verify")
     })
 
     it("should verify user given the right token", async () => {
-      await request.patch(`/users/verify?token=${token}`).expect(200)
+      await request.patch(`/users/verify?token=${tmpToken}`).expect(200)
     })
 
     it("should reject token doesn't match any user", async () => {
-      await request.patch(`/users/verify?token=${token}1`).expect(404)
+      await request.patch(`/users/verify?token=${tmpToken}1`).expect(404)
     })
 
     it("should not allow a token to be used twice", async () => {
-      const result = await tempToken.fetch("verify", token)
+      const result = await tempToken.fetch("verify", tmpToken)
 
       assert(result === null)
     })
