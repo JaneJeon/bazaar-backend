@@ -14,6 +14,11 @@ describe("user routes", () => {
     email: "success@simulator.amazonses.com"
   }
 
+  before(async () => {
+    const res = await request.post("/tokens").send(users[0])
+    token = res.body
+  })
+
   describe("POST /users", () => {
     it("should sign up", done => {
       request
@@ -22,9 +27,8 @@ describe("user routes", () => {
         .expect(201)
         .end((err, res) => {
           if (err) return done(err)
-          token = res.body
 
-          const user = jwt.decode(token)
+          const user = jwt.decode(res.body)
           assert(user.verified === false)
           assert(user.avatar !== null)
           done()
