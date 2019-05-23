@@ -3,16 +3,15 @@ const { User } = require("../models")
 const { NotFoundError } = require("objection")
 const { Strategy: LocalStrategy } = require("passport-local")
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt")
-const { addToken, checkToken } = require("../lib/token")
+const { checkToken } = require("../lib/token")
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
       const user = await User.query().findById(username.toLowerCase())
-      if (await user.verifyPassword(password)) {
-        req.token = await addToken(user)
-        done(null, user)
-      } else done(null, false)
+      ;(await user.verifyPassword(password))
+        ? done(null, user)
+        : done(null, false)
     } catch (err) {
       err instanceof NotFoundError ? done(null, false) : done(err)
     }
