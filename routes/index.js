@@ -7,7 +7,7 @@ module.exports = Router()
   .use("/arts", require("./arts"))
   .use("/commissions", require("./commissions"))
   .use("/commissions/:commissionId/negotiations", require("./negotiations"))
-  .use("/commissions/:commissionId/", require("./chats"))
+  .use("/commissions/:commissionId/chats", require("./chats"))
   // TODO: put all this in negotiations
   .get("/negotiations", async (req, res) => {
     const negotiations = await Negotiation.query()

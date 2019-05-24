@@ -3,69 +3,52 @@ const { Commission } = require("../models")
 const assert = require("http-assert")
 const { pub, sub } = require("../lib/redis")
 const { requireAuth, ensureIsVerified } = require("../lib/middlewares")
+const log = require("../lib/logger")
+const ongoingStatuses = ["open", "accepted", "in progress"]
 
 module.exports = Router({ mergeParams: true })
   .use(requireAuth, ensureIsVerified)
   .use(async (req, res, next) => {
     req.commission = await Commission.query().findById(req.params.commissionId)
+    req.artistId = req.query.artistId || req.commission.artistId
 
-    if (req.commission.status == "open") {
-      req.negotiation = await req.commission
-        .$relatedQuery("negotiations")
-        .where("artist_id", req.params.artistId)
-        .where("is_artist", true)
-        .first()
-
-      // only the artist and the buyer can access
-      next(
-        assert(
-          req.user.id == req.commission.buyerId ||
-            req.user.id == req.negotiation.artistId,
-          403
-        )
-      )
-    } else if (
-      req.commission.status != "completed" &&
-      req.commission.status != "cancelled"
-    ) {
-      next(req.commission.ensureIsArtistOrBuyer(req.user))
-      // disallow chat after it's done
-    } else next(assert(false, 405))
+    // a chat only works with 2 people
+    assert(req.artistId, 400)
+    // limit chat to only the buyer and the artist
+    assert(
+      req.user.id == req.commission.buyerId || req.user.id == req.artistId,
+      403
+    )
+    // and only allow chat when either the negotiation or the commission is ongoing
+    next(assert(ongoingStatuses.includes(req.commission.status), 405))
   })
   // get previous chat records
-  .get("/chats")
-  .get("/negotiations/:artistId/chats")
   .get("/", async (req, res) => {
-    if (req.commission.status == "open") {
-      const chats = await req.negotiation
-        .$relatedQuery("chats")
-        .paginate(req.query.after)
+    const negotiation = await req.commission
+      .$relatedQuery("negotiations")
+      .where("artist_id", req.artistId)
+      .where("is_artist", true)
+      .first()
+      .throwIfNotFound()
 
-      res.send(chats)
-    } else {
-      const chats = await req.commission
-        .$relatedQuery("chats")
-        .paginate(req.query.after)
+    const chats = await negotiation
+      .$relatedQuery("chats")
+      .paginate(req.query.after)
 
-      res.send(chats)
-    }
+    res.send(chats)
   })
   .ws("/", (ws, req) => {
-    const room = `${req.params.commissionId}:${req.params.artistId}`
+    const room = `${req.commission.id}:${req.artistId}`
 
     // messages sent by the user
     ws.on("message", async message => {
       try {
         const obj = { userId: req.user.id, message }
-        if (req.commission.status == "open") {
-          const chat = await req.negotiation.$relatedQuery("chats").insert(obj)
-        } else {
-          const chat = await req.commission.$relatedQuery("chats").insert(obj)
-        }
+        const chat = await req.commission.$relatedQuery("chats").insert(obj)
 
         await pub.publish("chat", `${room}:${JSON.stringify(chat)}`)
       } catch (err) {
-        console.error(err)
+        log.error(err)
       }
     })
 
@@ -76,7 +59,7 @@ module.exports = Router({ mergeParams: true })
         try {
           ws.send(message.substr(room.length + 1))
         } catch (err) {
-          console.error(err)
+          log.error(err)
         }
       }
     })

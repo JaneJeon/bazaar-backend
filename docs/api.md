@@ -100,7 +100,7 @@ A commission can have multiple ongoing negotiations with different artists. When
 
 ### Chat
 
-Each negotiation has a chat room in which the buyer and the artist can discuss the details of the negotiation.
+Each commission has chat rooms, one per `artistId`. When the negotiation is ongoing, you can simply query GET/ws `/commissions/:commissionId/chats?artistId=X`, and when the commission is ongoing (i.e. the buyer chose an artist and now all other negotiations are closed), you can drop the `?artistId=X` bit, as it's obvious who the commissioner is talking to (that one chosen artist).
 
 ### Stripe
 
@@ -149,8 +149,8 @@ And for a stripe customer, they can list their sources (saved payment informatio
 - [GET `/commissions/:commissionId/negotiations/:artistId`](#getccna)
 - [PATCH `/commissions/:commissionId/negotiations/:artistId`](#patchccna)
 
-- [GET `/commissions/:commissionId/negotiations/:artistId/chats`](#getccnac)
-- [ws `/commissions/:commissionId/negotiations/:artistId/chats`](#wsccnac)
+- [GET `/commissions/:commissionId/chats`](#getccnac)
+- [ws `/commissions/:commissionId/chats`](#wsccnac)
 
 - [GET `/commissions/:commissionId/updates/:updateNum`](#getccuu)
 - [POST `/commissions/:commissionId/updates`](#postcu)
@@ -271,11 +271,11 @@ This is the endpoint for _artists_ to make a commission offer and begin the proc
 
 The buyer/artist can make edits _to their own forms_ (i.e. send an object, not an array).
 
-### <a name="getccnac"></a>GET `/commissions/:commissionId/negotiations/:artistId/chats`
+### <a name="getccnac"></a>GET `/commissions/:commissionId/chats`
 
 This endpoint is used to load previous chats.
 
-### <a name="wsccnac"></a> ws `/commissions/:commissionId/negotiations/:artistId/chats`
+### <a name="wsccnac"></a> ws `/commissions/:commissionId/chats`
 
 This _websocket_ endpoint is used to communicate live with the other party - creating chat messages and receiving _live_ updates should be done through this socket.
 
