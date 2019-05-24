@@ -142,16 +142,15 @@ module.exports = Router()
     }
   })
   .patch("/:userId", ensureIsAdmin, async (req, res) => {
-    // only superusers can promote/demote users
-    assert(req.user.role == "superuser" || req.body.promote === undefined, 403)
+    // only superusers can promote/demote users, except for admins recusing themselves
+    if (req.user.role == "admin" && req.body.status)
+      assert(req.params.userId == req.user.id && req.user.role == "user", 403)
 
     let user = await User.query().findById(req.params.userId)
     user = await user.$query().patch(req.body)
 
     // expire tokens for this user
-    await clearTokens(user)
-
-    res.send(user)
+    res.send(await clearTokens(user))
   })
   .delete("/", async (req, res) => {
     await req.user.$query().patch({ deleted: true })

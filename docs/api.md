@@ -18,7 +18,9 @@ In general, any `GET` request that returns a list will support paginating via sp
 
 `DELETE` methods _delete_ resources. To do so, you would need to specify the resource to be deleted via the endpoint (e.g. `DELETE /arts/1`).
 
-Some endpoints will require that a user be logged in. In that case, you must send over a valid cookie (which are generated for you after you log in or sign up) for the request to be valid.
+Some endpoints will require that a user be logged in. In that case, you must send over a valid JWT (which are generated as a response to login/signup/any action that modifies the user object) for the request to be valid. Note, however, that signing out or changing the user object (any PATCH routes or stripe routes) invalidates ALL tokens except for the token that is freshly generated (and returned).
+
+In addition, JWTs can be decoded (WITHOUT needing the key that was used to sign it!) from the frontend to reveal the user object. And they must be sent as _bearer tokens_ - please google it!
 
 And finally, each resource has some degree of access control - while some resources may allow them to be read publicly, some only allow a few people to even access the resource. In general, only the creator has read/write access.
 
@@ -112,8 +114,8 @@ And for a stripe customer, they can list their sources (saved payment informatio
 
 ## Routes
 
-- [POST `/sessions`](#posts)
-- [DELETE `/sessions`](#dels)
+- [POST `/tokens`](#posts)
+- [DELETE `/tokens`](#dels)
 
 - [POST `/users`](#postu)
 - [PATCH `/users/verify`](#patchuvt)
@@ -121,10 +123,11 @@ And for a stripe customer, they can list their sources (saved payment informatio
 - [POST `/users/reset`](#postur)
 - [PATCH `/users/reset`](#patchurt)
 - [PATCH `/users`](#patchu)
+- [PATCH `/users/:userId`](#patchuu)
 - [DELETE `/users`](#delu)
 
 - [POST `/arts`](#posta)
-- [POST `/arts/:ArtId/favorites`](#postaf)
+- [POST `/arts/:artId/favorites`](#postaf)
 - [GET `/arts`](#geta)
 - [GET `/arts/:artId`](#getaa)
 - [GET `/arts/:artId/favorites`](#getuuaf)
@@ -132,7 +135,7 @@ And for a stripe customer, they can list their sources (saved payment informatio
 - [GET `/users/:userId/favorites`](#getuuf)
 - [PATCH `/arts/:artId`](#patchaa)
 - [PATCH `/arts/:artId/purchase`](#patchaap)
-- [DELETE `/arts/:ArtId/favorites`](#delaf)
+- [DELETE `/arts/:artId/favorites`](#delaf)
 - [DELETE `/arts/:artId`](#delaa)
 
 - [POST `/commissions`](#postc)
@@ -161,13 +164,13 @@ And for a stripe customer, they can list their sources (saved payment informatio
 - [POST `/stripe/customers`](#postscust)
 - [GET `/stripe/sources`](#getsc)
 
-### <a name="posts"></a>POST `/sessions`
+### <a name="posts"></a>POST `/tokens`
 
-This endpoint is used to login existing users. Fields `username` and `password` are expected. Returns an instance of the user object.
+This endpoint is used to login existing users. Fields `username` and `password` are expected. Returns a JWT user object.
 
-### <a name="dels"></a>DELETE `/sessions`
+### <a name="dels"></a>DELETE `/tokens`
 
-This endpoint is used to logout users who are already logged in.
+This endpoint is used to logout users who are already logged in. Pass in the JWT to invalidate it and truly sign out the user!
 
 ### <a name="postu"></a>POST `/users`
 
@@ -190,6 +193,12 @@ On success, sends out an email with the password reset link of form `/users/rese
 When a user accesses a page of form `/users/reset?token=YOUR_TOKEN_HERE`, a PATCH request should be sent to this endpoint (containing the exact same `YOUR_TOKEN_HERE` querystring value) to reset the user's password. Field `password` is expected (the new password).
 
 ### <a name="patchu"></a>PATCH `/users`
+
+### <a name="patchuu"></a>PATCH `/users/:userId`
+
+This route is used for admins/superusers to change a user's details (minus the avatar). ALL changes are allowed (including `banned`). Only superusers can promote/demote users, except for admins recusing themselves (i.e. changing their own `status` from "admin" to "user").
+
+On change, returns the user's new token and invalidates their previous tokens.
 
 ### <a name="delu"></a>DELETE `/users`
 
