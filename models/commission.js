@@ -250,7 +250,10 @@ class Commission extends BaseModel {
         negotiations[1].$query(trx).patch({ finalized: true }),
         this.$query(trx).patch(
           Object.assign({ artistId, status: "accepted" }, forms[0])
-        )
+        ),
+        this.$relatedQuery("negotiations")
+          .whereNot("artist_id", artistId)
+          .delete()
       ])
 
       negotiations = updates.slice(0, 2)

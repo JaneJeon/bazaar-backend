@@ -14,6 +14,7 @@ exports.up = knex =>
       .foreign(["commission_id", "artist_id", "dummy_field"])
       .references(["commission_id", "artist_id", "is_artist"])
       .on("negotiations")
+      .onDelete("cascade")
 
     table
       .text("user_id")
