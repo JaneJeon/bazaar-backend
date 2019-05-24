@@ -44,6 +44,8 @@ queue.process(taskName, async (job, data) => {
     if (update.pictures || update.waived) {
       debug("payout now")
 
+      await update.$query(trx).patch({ completed: true })
+
       // immediately pay out if late
       const now = dayjs()
       const deadline = dayjs(update.deadline)

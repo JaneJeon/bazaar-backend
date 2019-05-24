@@ -18,7 +18,8 @@ class Update extends BaseModel {
           maxItems: process.env.MAX_PICTURE_ATTACHMENTS
         },
         delays: { type: "integer", default: 0 },
-        waived: { type: "boolean", default: false }
+        waived: { type: "boolean", default: false },
+        completed: { type: "boolean", default: false }
       }
     }
   }

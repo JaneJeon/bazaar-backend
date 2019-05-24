@@ -16,6 +16,8 @@ exports.up = knex =>
     table.boolean("waived").notNullable()
     table.date("deadline").notNullable()
     table.jsonb("pictures")
+
+    table.boolean("completed").notNullable()
   })
 
 exports.down = knex => knex.schema.dropTable(tableName)

@@ -178,7 +178,11 @@ class Commission extends BaseModel {
             .as("artistAvatar"),
           Commission.relatedQuery("buyer")
             .column("avatar")
-            .as("buyerAvatar")
+            .as("buyerAvatar"),
+          Commission.relatedQuery("updates")
+            .count()
+            .where("completed", true)
+            .as("updateNum")
         )
       }
     }
