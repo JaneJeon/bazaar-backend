@@ -2,30 +2,25 @@
 
 [![CircleCI](https://circleci.com/gh/dartmouth-cs98/19w-bazaar-backend.svg?style=shield&circle-token=da3f2720e545f2b6c92aceccc91852ffca18ea15)](https://circleci.com/gh/dartmouth-cs98/19w-bazaar-backend)
 
-This is a REST API that will support the Bazaar client. Please refer to the frontent repo @ https://github.com/dartmouth-cs98/19w-bazaar-frontend. There's no screenshots since this is a pure API (no server-side view 
-rendering).
+This is a REST API that will support the Bazaar React client. Please refer to the frontent repo @ https://github.com/dartmouth-cs98/19w-bazaar-frontend.
 
 ## Architecture
 
-The frontend will interact with the backend via a REST API. This API is created by `express`, with user session management done by `cookie-session` + `passport` + `passport-local`. The rate limiter uses `express-rate-limit` and `rate-limit-redis`. The models are managed by the `Objection` ORM and I use `Knex` to migrate our `Postgres` database. I'm using `argon2` for password hashing, `Amazon SES` for sending emails, and `ioredis` for storing reset/verify tokens in `Redis`. Pictures are resized by `sharp` and are stored in `S3` (via `aws-sdk`). For the websocket endpoint, I'm using `express-ws`. For tests, I'm using just plain `mocha` and for continuous integration/agile development, I'm using `CircleCI`.
+The backend serves as a REST API for the React frontend to interact with. The API server is based on `express`, and uses sessionless Json Web Tokens for authentication. The tokens are given a long life thanks to token blacklisting with the help of `Redis`.
 
-## Setup (this is to be run every time the application updates)
+The API server has uses a basic rate limiter based on `express-rate-limit`, since there is no way to configure Heroku's reverse proxy. We're using `PostgreSQL` database, and we use `Objection` ORM to manage data models and `Knex` for queries/migrations/seeds.
 
-1. Install postgres if it isn't installed
-2. Create a postgres database (`createdb bazaar`) if it doesn't already exist
-3. Install redis if it isn't installed
-4. Create `.env` if it doesn't exist, and fill it with environment variables from `.env.defaults` that you'd like to change, or variables that are left empty (such as `AWS_ACCESS_KEY_ID`)
-5. `yarn` to install dependencies for development, `yarn install --production` for production
-6. (optional) Run `dropdb bazaar` then `createdb bazaar` if the next 2 steps fail
-7. `yarn rollback`
-8. `yarn migrate`
-9. (optional) `yarn seed` if you want to populate the database with sample entries
-10. `yarn watch` to run the server for development, `yarn start` for production
+While we used to use `argon2` for password hashing, the build kept failing on Heroku's node.js buildpack, so now we're using `bcrypt`.
 
-## Deployment
+We resize the pictures server-side using `sharp` and store them in Amazon `S3`. We also use Amazon `SES` for sending emails, though we're planning on using `nodemailer` on top of raw `SES` to support more flexible templating.
 
-The deployment process should involve pulling the repo from the server, installing *only* production dependencies (`yarn --production`), configuring the `.env` file, setting up nginx reverse proxy, and running `yarn start` (optionally 
-managing the process with `pm2`).
+The API also has websocket endpoints, and for that, we're using `express-ws`, backed by `Redis` pub/sub.
+
+For tests, we're using plain `mocha`, and for CI/CD, we're using `CircleCI`.
+
+## Setup/Deployment
+
+See `docs/installation.md`.
 
 ## Authors
 
