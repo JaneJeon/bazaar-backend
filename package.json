@@ -69,6 +69,7 @@
   },
   "husky": {
     "hooks": {
+      "post-merge": "yarn",
       "pre-commit": "prettier --write '**/*.js'",
       "pre-push": "yarn test"
     }
