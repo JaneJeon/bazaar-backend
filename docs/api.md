@@ -144,6 +144,7 @@ And for a stripe customer, they can list their sources (saved payment informatio
 - [GET `/users/:userId/commissions`](#getuuc)
 - [PATCH `/commissions/:commissionId`](#patchcc)
 - [PATCH `/commissions/:commissionId/reject`](#patchccr)
+- [PATCH `/commissions/:commissionId/cancel`](#patchccc)
 - [DELETE `/commissions/:commissionId`](#delcc)
 
 - [GET `/negotiations`](#gn)
@@ -261,6 +262,10 @@ This is the endpoint for _buyers_ to update commission details.
 ### <a name="patchccr"></a>PATCH `/commissions/:commissionId/reject`
 
 This is the endpoint for _artists_ to reject a commission. No fields are expected.
+
+### <a name="patchccc"></a>PATCH `/commissions/:commissionId/cancel`
+
+This is the endpoint for any involved party to cancel a commission. No fields are expected.
 
 ### <a name="delcc"></a>DELETE `/commissions/:commissionId`
 
