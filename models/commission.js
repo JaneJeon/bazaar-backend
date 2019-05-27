@@ -180,8 +180,8 @@ class Commission extends BaseModel {
             .column("avatar")
             .as("buyerAvatar"),
           Commission.relatedQuery("updates")
-            .count()
             .where("completed", true)
+            .count()
             .as("updateNum")
         )
       }
