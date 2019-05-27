@@ -34,7 +34,7 @@ module.exports = Router()
 
     // check that you're either the artist or the buyer
     // (and, of course, the artist field could be empty)
-    req.commission.ensureIsArtistOrBuyer(req.user)
+    commission.ensureIsArtistOrBuyer(req.user)
 
     const transactions = await commission
       .$relatedQuery("transactions")
@@ -42,15 +42,6 @@ module.exports = Router()
       .paginate(req.query.after)
 
     res.send(transactions)
-  })
-  // change commission status, only available to the artist
-  .patch("/:commissionId/reject", async (req, res) => {
-    let commission = await req.user
-      .$relatedQuery("commissionsAsArtist")
-      .findById(req.params.commissionId)
-    commission = await commission.$query().patch({ status: "reject" })
-
-    res.send(commission)
   })
   .post("/", ensureHasPayment, async (req, res) => {
     Commission.filterPost(req.body)
@@ -69,10 +60,7 @@ module.exports = Router()
       req.params.commissionId
     )
 
-    assert(
-      req.user.id == commission.artistId || req.user.id == commission.buyerId,
-      403
-    )
+    commission.ensureIsArtistOrBuyer(req.user)
     assert(
       commission.status == "completed" || commission.status == "cancelled",
       405
@@ -105,11 +93,26 @@ module.exports = Router()
     let commission = await req.user
       .$relatedQuery("commissionsAsArtist")
       .findById(req.params.commissionId)
+
+    assert(commission.status == "open", 405)
+
     commission = await commission.$query().patch({ status: "reject" })
 
     res.send(commission)
   })
-  // TODO: completed, cancelled
+  .patch("/:commissionId/cancel", async (req, res) => {
+    let commission = await Commission.query().findById(req.params.commissionId)
+
+    commission.ensureIsArtistOrBuyer(req.user)
+    assert(
+      commission.status == "accepted" || commission.status == "in progress",
+      405
+    )
+
+    commission = await commission.$query().patch({ status: "cancelled" })
+
+    res.send(commission)
+  })
   .delete("/:commissionId", async (req, res) => {
     const commission = await req.user
       .$relatedQuery("commissionsAsBuyer")

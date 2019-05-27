@@ -8,6 +8,7 @@ const dayjs = require("dayjs")
 const stripe = require("../lib/stripe")
 const commissionCheckPaymentJob = require("../jobs/commission-check-payment")
 const commissionCheckUpdateJob = require("../jobs/commission-check-update")
+const commissionCancelJob = require("../jobs/commission-cancel")
 const dinero = require("dinero.js")
 
 class Commission extends BaseModel {
@@ -150,22 +151,24 @@ class Commission extends BaseModel {
     return true
   }
 
-  processInput() {
+  async processInput(old) {
     if (this.artistId) this.isPrivate = true
     if (this.description) {
       this.description = text.clean(this.description, false)
       this.tags = text.extractTags(this.description)
     }
+    if (this.status == "cancelled")
+      await commissionCancelJob.add({ commissionId: old.id })
   }
 
-  $beforeInsert(queryContext) {
-    super.$beforeInsert(queryContext)
-    this.processInput()
+  async $beforeInsert(queryContext) {
+    await super.$beforeInsert(queryContext)
+    await this.processInput()
   }
 
-  $beforeUpdate(opt, queryContext) {
-    super.$beforeUpdate(opt, queryContext)
-    this.processInput()
+  async $beforeUpdate(opt, queryContext) {
+    await super.$beforeUpdate(opt, queryContext)
+    await this.processInput(opt.old)
   }
 
   static get QueryBuilder() {

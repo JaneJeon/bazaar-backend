@@ -23,10 +23,11 @@ queue.process(taskName, async (job, data) => {
     debug("job data: %o", job.data)
 
     // the update from which to refund all
-    const update = await Update.query(trx)
-      .findById([data.commissionId, data.updateNum])
-      .eager({ commission: true })
-    const commission = update.commission
+    const commission = await Commission.query(trx).findById(data.commissionId)
+    const update = await commission
+      .$relatedQuery("updates")
+      .where("completed", false)
+      .first()
 
     // force cancel ALL commission jobs!
     // so, so, so fucking disgusting
