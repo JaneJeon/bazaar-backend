@@ -29,8 +29,7 @@ describe("favorites routes", () => {
 
   describe("GET /arts/:artId/favorites", () => {
     it("should list favorites by an art", async () =>
-      await request.get(`/arts/${arts[0].id}/favorites`).expect(200)
-    )
+      await request.get(`/arts/${arts[0].id}/favorites`).expect(200))
   })
 
   describe("POST /arts/:artId/favorites", () => {
