@@ -111,11 +111,18 @@ module.exports = Router()
 
     res.send(art)
   })
-  .patch("/:artId/purchase", ensureHasPayment, async (req, res) => {
+  .patch("/:artId/purchase", middlewares.ensureHasPayment, async (req, res) => {
     let art = await Art.query().findById(req.params.artId)
 
+    const artist = await art.$relatedQuery("artist")
+
     art = await transaction(Art.knex(), async trx =>
-      art.purchase(req.user.id, req.user.stripeCustomerId, trx)
+      art.purchase(
+        req.user.id,
+        req.user.stripeCustomerId,
+        artist.stripeAccountId,
+        trx
+      )
     )
 
     res.send(art)
