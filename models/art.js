@@ -144,11 +144,14 @@ class Art extends BaseModel {
     await this.processInput()
   }
 
-  async purchase(buyerId, stripeCustomerId, trx) {
+  async purchase(buyerId, stripeCustomerId, stripeAccountId, trx) {
     const charge = await stripe.charges.create({
       amount: this.price,
       currency: this.priceUnit,
       customer: stripeCustomerId,
+      transfer_data: {
+        destination: stripeAccountId
+      },
       application_fee_amount: dinero({ amount: this.price })
         .multiply(process.env.APPLICATION_FEE)
         .getAmount()
