@@ -54,6 +54,8 @@ module.exports = Router()
   })
   .post("/", ensureHasPayment, async (req, res) => {
     Commission.filterPost(req.body)
+  
+    assert(req.body.price > 25, 400)
 
     const commission = await req.user
       .$relatedQuery("commissionsAsBuyer")
