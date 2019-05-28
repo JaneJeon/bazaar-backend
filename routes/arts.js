@@ -114,8 +114,10 @@ module.exports = Router()
   .patch("/:artId/purchase", ensureHasPayment, async (req, res) => {
     let art = await Art.query().findById(req.params.artId)
 
+    assert(art.status == "for sale", 405)
+
     art = await transaction(Art.knex(), async trx =>
-      art.purchase(req.user.id, req.user.stripeCustomerId, trx)
+      art.purchase(req.user.id, req.user.stripeCustomerId, req.body.source, trx)
     )
 
     res.send(art)
