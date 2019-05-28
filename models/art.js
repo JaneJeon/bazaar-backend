@@ -28,7 +28,7 @@ class Art extends BaseModel {
         status: {
           type: "string",
           enum: ["sold", "for sale", "not for sale"],
-          default: "not for sale"
+          default: "for sale"
         },
         price: { type: "string", pattern: "^\\d+$" },
         priceUnit: { type: "string", enum: ["USD"], default: "USD" },
