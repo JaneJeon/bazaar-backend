@@ -69,7 +69,7 @@ module.exports = Router({ mergeParams: true })
     async (req, res) => {
       assert(req.isArtist, 403)
 
-      let update = await req.update
+      let update = await req.commission
         .$relatedQuery("updates")
         .findOne({ updateNum: req.params.updateNum })
 
