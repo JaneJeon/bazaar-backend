@@ -132,7 +132,7 @@ module.exports = Router()
       .findById(req.params.artId)
       .eager({ artist: true })
 
-    assert(art.artist.stripeAccountId, 405)
+    assert(art.status == "for sale" && art.artist.stripeAccountId, 405)
 
     art = await transaction(Art.knex(), async trx =>
       art.purchase(
