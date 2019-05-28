@@ -111,7 +111,7 @@ module.exports = Router()
 
     res.send(art)
   })
-  .patch("/:artId/purchase", middlewares.ensureHasPayment, async (req, res) => {
+  .patch("/:artId/purchase", ensureHasPayment, async (req, res) => {
     let art = await Art.query()
       .findById(req.params.artId)
       .eager({ artist: true })
