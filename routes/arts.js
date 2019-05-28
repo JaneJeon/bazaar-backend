@@ -111,6 +111,22 @@ module.exports = Router()
 
     res.send(art)
   })
+  .post("/:artId/list", async (req, res) => {
+    let art = await req.user.$relatedQuery("arts").findById(req.params.artId)
+    assert(art.status == "not for sale", 405)
+
+    art = await art.$query().patch({ status: "for sale" })
+
+    res.send(art)
+  })
+  .delete("/:artId/list", async (req, res) => {
+    let art = await req.user.$relatedQuery("arts").findById(req.params.artId)
+    assert(art.status == "for sale", 405)
+
+    art = await art.$query().patch({ status: "not for sale" })
+
+    res.send(art)
+  })
   .patch("/:artId/purchase", ensureHasPayment, async (req, res) => {
     let art = await Art.query()
       .findById(req.params.artId)

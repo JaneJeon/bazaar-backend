@@ -134,6 +134,8 @@ And for a stripe customer, they can list their sources (saved payment informatio
 - [GET `/users/:userId/arts`](#getuua)
 - [GET `/users/:userId/favorites`](#getuuf)
 - [PATCH `/arts/:artId`](#patchaa)
+- [POST `/arts/:artId/list`](#postaal)
+- [DELETE `/arts/:artId/list`](#delaal)
 - [PATCH `/arts/:artId/purchase`](#patchaap)
 - [DELETE `/arts/:artId/favorites`](#delaf)
 - [DELETE `/arts/:artId`](#delaa)
@@ -230,6 +232,14 @@ Returns all of the art created by a user. Art can be queried by the status of th
 Returns all of the arts favorited by a user.
 
 ### <a name="patchaa"></a>PATCH `/arts/:artId`
+
+### <a name="postaal"></a>POST `/arts/:artId/list`
+
+This endpoint is used to list a user's art piece for sale (from "not for sale" - the default - to "for sale").
+
+### <a name="delaal"></a>DELETE `/arts/:artId/list`
+
+This endpoint is used to unlist a user's art piece for sale (from "for sale" to "not for sale").
 
 ### <a name="patchaap"></a>PATCH `/arts/:artId/purchase`
 
