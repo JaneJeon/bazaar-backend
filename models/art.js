@@ -146,7 +146,7 @@ class Art extends BaseModel {
 
   async purchase(buyerId, customer, source, destination, trx) {
     const charge = await stripe.charges.create({
-      amount: this.price,
+      amount: this.price*100,
       currency: this.priceUnit,
       customer,
       ...(source && { source }),
