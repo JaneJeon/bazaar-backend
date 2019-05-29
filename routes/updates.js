@@ -20,7 +20,8 @@ module.exports = Router({ mergeParams: true })
   .get("/:updateNum", async (req, res) => {
     const update = await req.commission
       .$relatedQuery("updates")
-      .findOne({ updateNum: req.params.updateNum })
+      .where("update_num", req.params.updateNum)
+      .first()
 
     if (
       !req.isArtist &&
@@ -37,7 +38,9 @@ module.exports = Router({ mergeParams: true })
   .get("/:updateNum/transactions", async (req, res) => {
     const update = await req.commission
       .$relatedQuery("updates")
-      .findOne({ updateNum: req.params.updateNum })
+      .where("update_num", req.params.updateNum)
+      .first()
+
     const transactions = await update
       .$relatedQuery("transactions")
       .selectWithAvatars()
@@ -67,7 +70,8 @@ module.exports = Router({ mergeParams: true })
 
       let update = await req.commission
         .$relatedQuery("updates")
-        .findOne({ updateNum: req.params.updateNum })
+        .where("update_num", req.params.updateNum)
+        .first()
 
       update = await update
         .$query()
@@ -81,7 +85,8 @@ module.exports = Router({ mergeParams: true })
 
     let update = await req.update
       .$relatedQuery("updates")
-      .findOne({ updateNum: req.params.updateNum })
+      .where("update_num", req.params.updateNum)
+      .first()
 
     await update.$query().patch({ waived: true })
 
