@@ -122,7 +122,7 @@ class Commission extends BaseModel {
       },
       chats: {
         relation: BaseModel.HasManyRelation,
-        modelClass: "chats",
+        modelClass: "chat",
         join: {
           from: "commissions.id",
           to: "chats.commission_id"
