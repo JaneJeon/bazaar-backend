@@ -15,6 +15,7 @@ exports.tryAuth = jwt({
 })
 
 exports.parseUser = (req, res, next) => {
-  if (req.user) req.user = User.fromJson(req.user, { skipValidation: true })
+  req.token = req.user
+  if (req.token) req.user = User.fromJson(req.token, { skipValidation: true })
   next()
 }
