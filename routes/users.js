@@ -89,7 +89,7 @@ module.exports = Router()
 
     // email verification
     await user.sendEmail("verify", {
-      url: `${process.env.FRONTEND_URL}/users/verify?token=${token}`
+      url: `${process.env.FRONTEND_URL}/users/verify?tempToken=${token}`
     })
   })
   // password reset when user forgets their password while logging in
@@ -100,7 +100,7 @@ module.exports = Router()
     res.end()
 
     await user.sendEmail("reset", {
-      url: `${process.env.FRONTEND_URL}/users/reset?token=${token}`
+      url: `${process.env.FRONTEND_URL}/users/reset?tempToken=${token}`
     })
   })
   .patch("/verify", async (req, res) => {
