@@ -10,6 +10,7 @@ const commissionCheckPaymentJob = require("../jobs/commission-check-payment")
 const commissionCheckUpdateJob = require("../jobs/commission-check-update")
 const commissionCancelJob = require("../jobs/commission-cancel")
 const dinero = require("dinero.js")
+const currency = require("../lib/currency")
 
 class Commission extends BaseModel {
   static get jsonSchema() {
@@ -289,6 +290,10 @@ class Commission extends BaseModel {
 
   // pays for the commission, adds update rows, and kickstarts update jobs
   async beginCommission(customer, source, trx) {
+    this.price = dinero({ amount: this.price }).multiply(
+      currency.zeroDecimalFactors[this.priceUnit]
+    )
+
     const charge = await stripe.charges.create({
       amount: this.price,
       currency: this.priceUnit,

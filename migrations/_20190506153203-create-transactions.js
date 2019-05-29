@@ -5,7 +5,7 @@ exports.up = knex =>
     // from stripe object
     table.text("id").primary()
     table.text("object").notNullable()
-    table.decimal("amount").notNullable()
+    table.integer("amount").notNullable()
     table.text("currency").notNullable()
     table.timestamp("created").notNullable()
 
