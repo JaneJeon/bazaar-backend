@@ -2,10 +2,10 @@ const { Router } = require("express")
 const { Commission, Negotiation } = require("../models")
 const assert = require("http-assert")
 const { transaction } = require("objection")
-const { requireAuth, ensureIsVerified } = require("../lib/middlewares")
+const { ensureIsVerified } = require("../lib/middlewares")
 
 module.exports = Router({ mergeParams: true })
-  .use(requireAuth, ensureIsVerified)
+  .use(ensureIsVerified)
   .use(async (req, res, next) => {
     req.commission = await Commission.query().findById(req.params.commissionId)
 

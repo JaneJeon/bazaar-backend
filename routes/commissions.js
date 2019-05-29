@@ -1,11 +1,7 @@
 const { Router } = require("express")
 const { Commission, Review } = require("../models")
 const assert = require("http-assert")
-const {
-  requireAuth,
-  ensureIsVerified,
-  ensureHasPayment
-} = require("../lib/middlewares")
+const { ensureIsVerified, ensureHasPayment } = require("../lib/middlewares")
 
 module.exports = Router()
   // commission board
@@ -26,7 +22,7 @@ module.exports = Router()
 
     res.send(commission)
   })
-  .use(requireAuth, ensureIsVerified)
+  .use(ensureIsVerified)
   .get("/:commissionId/transactions", async (req, res) => {
     const commission = await Commission.query().findById(
       req.params.commissionId

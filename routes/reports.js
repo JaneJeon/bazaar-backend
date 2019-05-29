@@ -1,9 +1,9 @@
 const { Router } = require("express")
 const { Report } = require("../models")
-const { requireAuth, ensureIsAdmin } = require("../lib/middlewares")
+const { ensureIsAdmin } = require("../lib/middlewares")
 
 module.exports = Router()
-  .use(requireAuth, ensureIsAdmin)
+  .use(ensureIsAdmin)
   .get("/", async (req, res) => {
     const reports = await Report.query().paginate(req.query.after)
 

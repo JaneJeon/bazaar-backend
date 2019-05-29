@@ -2,11 +2,7 @@ const { Router } = require("express")
 const upload = require("../config/multer")
 const { Art, Review } = require("../models")
 const { transaction } = require("objection")
-const {
-  requireAuth,
-  ensureIsVerified,
-  ensureHasPayment
-} = require("../lib/middlewares")
+const { ensureIsVerified, ensureHasPayment } = require("../lib/middlewares")
 const assert = require("http-assert")
 
 module.exports = Router()
@@ -37,7 +33,7 @@ module.exports = Router()
 
     res.send(favorites)
   })
-  .use(requireAuth, ensureIsVerified)
+  .use(ensureIsVerified)
   .get("/:artId/transactions", async (req, res) => {
     const art = await Art.query().findById(req.params.artId)
 

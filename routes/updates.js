@@ -4,14 +4,10 @@ const { transaction } = require("objection")
 const upload = require("../config/multer")
 const commissionPayoutJob = require("../jobs/commission-payout")
 const assert = require("http-assert")
-const {
-  requireAuth,
-  ensureIsVerified,
-  ensureHasPayment
-} = require("../lib/middlewares")
+const { ensureIsVerified, ensureHasPayment } = require("../lib/middlewares")
 
 module.exports = Router({ mergeParams: true })
-  .use(requireAuth, ensureIsVerified)
+  .use(ensureIsVerified)
   .use(async (req, res, next) => {
     req.commission = await Commission.query().findById(req.params.commissionId)
 

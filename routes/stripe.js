@@ -2,17 +2,13 @@ const { Router } = require("express")
 const axios = require("axios").default
 const assert = require("http-assert")
 const stripe = require("../lib/stripe")
-const {
-  requireAuth,
-  ensureIsVerified,
-  ensureHasPayment
-} = require("../lib/middlewares")
+const { ensureIsVerified, ensureHasPayment } = require("../lib/middlewares")
 const pick = require("lodash/pick")
 const debug = require("debug")("bazaar:stripe")
 const { clearTokens } = require("../lib/token")
 
 module.exports = Router()
-  .use(requireAuth, ensureIsVerified)
+  .use(ensureIsVerified)
   // endpoint for artists to start getting paid
   .post("/accounts", async (req, res) => {
     // using axios instead of stripe since stripe SDK only creates custom accounts

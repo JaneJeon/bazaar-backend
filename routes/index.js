@@ -1,6 +1,6 @@
 const { Router } = require("express")
 const { Negotiation } = require("../models")
-const { requireAuth } = require("../lib/middlewares")
+const { ensureIsVerified } = require("../lib/middlewares")
 
 module.exports = Router()
   .use("/tokens", require("./tokens"))
@@ -10,7 +10,7 @@ module.exports = Router()
   .use("/commissions/:commissionId/negotiations", require("./negotiations"))
   .use("/commissions/:commissionId/chats", require("./chats"))
   // TODO: put all this in negotiations
-  .get("/negotiations", requireAuth, async (req, res) => {
+  .get("/negotiations", ensureIsVerified, async (req, res) => {
     const negotiations = await Negotiation.query()
       .selectWithAvatars()
       .where("artist_id", req.user.id)

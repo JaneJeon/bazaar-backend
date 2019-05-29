@@ -2,12 +2,12 @@ const { Router } = require("express")
 const { Commission } = require("../models")
 const assert = require("http-assert")
 const { pub, sub } = require("../lib/redis")
-const { requireAuth, ensureIsVerified } = require("../lib/middlewares")
+const { ensureIsVerified } = require("../lib/middlewares")
 const log = require("../lib/logger")
 const ongoingStatuses = ["open", "accepted", "in progress"]
 
 module.exports = Router({ mergeParams: true })
-  .use(requireAuth, ensureIsVerified)
+  .use(ensureIsVerified)
   .use(async (req, res, next) => {
     req.commission = await Commission.query().findById(req.params.commissionId)
     req.artistId = req.query.artistId || req.commission.artistId

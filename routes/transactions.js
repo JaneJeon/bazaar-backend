@@ -1,10 +1,10 @@
 const { Router } = require("express")
 const { Transaction } = require("../models")
-const { requireAuth, ensureIsVerified } = require("../lib/middlewares")
+const { ensureIsVerified } = require("../lib/middlewares")
 const assert = require("http-assert")
 
 module.exports = Router()
-  .use(requireAuth, ensureIsVerified)
+  .use(ensureIsVerified)
   .get("/", async (req, res) => {
     // list transactions for a user
     const relation =
