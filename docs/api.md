@@ -301,7 +301,7 @@ This endpoint is used to load previous chats.
 
 ### <a name="wsccnac"></a> ws `/commissions/:commissionId/chats`
 
-This _websocket_ endpoint is used to communicate live with the other party - creating chat messages and receiving _live_ updates should be done through this socket.
+This _websocket_ endpoint is used to communicate live with the other party - creating chat messages and receiving _live_ updates should be done through this socket. The websocket should send over the JWT as a querystring.
 
 ### <a name="getccuu"></a> GET `/commissions/:commissionId/updates/:updateNum`
 
