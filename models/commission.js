@@ -126,7 +126,8 @@ class Commission extends BaseModel {
         join: {
           from: "commissions.id",
           to: "chats.commission_id"
-        }
+        },
+        filter: { dummy_field: true }
       }
     }
   }

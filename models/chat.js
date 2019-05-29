@@ -9,11 +9,8 @@ class Chat extends BaseModel {
     return {
       type: "object",
       properties: {
-        userId: { type: "string" },
         message: { type: "string", maxLength: process.env.MAX_CHAT_LENGTH }
-      },
-      required: ["userId", "message"],
-      additionalProperties: false
+      }
     }
   }
 

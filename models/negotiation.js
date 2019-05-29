@@ -39,18 +39,6 @@ class Negotiation extends BaseModel {
 
   static get relationMappings() {
     return {
-      chats: {
-        relation: BaseModel.HasManyRelation,
-        modelClass: "chat",
-        join: {
-          from: [
-            "negotiations.commission_id",
-            "negotiations.artist_id",
-            "negotiations.is_artist"
-          ],
-          to: ["chats.commission_id", "chats.artist_id", "chats.dummy_field"]
-        }
-      },
       artist: {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: "user",
