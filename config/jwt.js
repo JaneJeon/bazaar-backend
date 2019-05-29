@@ -10,8 +10,8 @@ module.exports = jwt({
       req.token = payload
       if (await checkToken(payload)) {
         req.user = User.fromJson(payload, { skipValidation: true })
-        done(null, true)
-      } else done(null, false)
+        done(null, false)
+      } else done(null, true)
     } catch (err) {
       done(err)
     }
