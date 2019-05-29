@@ -104,7 +104,7 @@ module.exports = Router()
     })
   })
   .patch("/verify", async (req, res) => {
-    const id = await tempToken.fetch("verify", req.query.token)
+    const id = await tempToken.fetch("verify", req.query.tempToken)
     let user = await User.query().findById(id)
 
     user = await user.$query().patch({ verified: true })
@@ -115,7 +115,7 @@ module.exports = Router()
     await tempToken.consume("verify", id)
   })
   .patch("/reset", async (req, res) => {
-    const id = await tempToken.fetch("reset", req.query.token)
+    const id = await tempToken.fetch("reset", req.query.tempToken)
     let user = await User.query().findById(id)
 
     user = await user.$query().patch({ password: req.body.password })

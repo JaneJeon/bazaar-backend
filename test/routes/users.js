@@ -67,11 +67,11 @@ describe("user routes", () => {
     })
 
     it("should verify user given the right token", async () => {
-      await request.patch(`/users/verify?token=${tmpToken}`).expect(200)
+      await request.patch(`/users/verify?tempToken=${tmpToken}`).expect(200)
     })
 
     it("should reject token doesn't match any user", async () => {
-      await request.patch(`/users/verify?token=${tmpToken}1`).expect(404)
+      await request.patch(`/users/verify?tempToken=${tmpToken}1`).expect(404)
     })
 
     it("should not allow a token to be used twice", async () => {
@@ -101,13 +101,13 @@ describe("user routes", () => {
 
     it("should reset password given the right token", async () => {
       await request
-        .patch(`/users/reset?token=${tmpToken}`)
+        .patch(`/users/reset?tempToken=${tmpToken}`)
         .send({ password: "987654321" })
         .expect(200)
     })
 
     it("should reject token doesn't match any user", async () => {
-      await request.patch(`/users/reset?token=${tmpToken}1`).expect(404)
+      await request.patch(`/users/reset?tempToken=${tmpToken}1`).expect(404)
     })
 
     it("should not allow a token to be used twice", async () => {
