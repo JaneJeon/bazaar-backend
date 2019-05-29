@@ -2,20 +2,18 @@ const jwt = require("express-jwt")
 const { User } = require("../models")
 const { checkToken } = require("../lib/token")
 
-exports.tryAuth = jwt({
+module.exports = jwt({
   secret: process.env.JWT_SECRET,
   credentialsRequired: false,
   isRevoked: async (req, payload, done) => {
     try {
-      done(null, await checkToken(payload))
+      req.token = payload
+      if (await checkToken(payload)) {
+        req.user = User.fromJson(payload, { skipValidation: true })
+        done(null, true)
+      } else done(null, false)
     } catch (err) {
       done(err)
     }
   }
 })
-
-exports.parseUser = (req, res, next) => {
-  req.token = req.user
-  if (req.token) req.user = User.fromJson(req.token, { skipValidation: true })
-  next()
-}

@@ -3,7 +3,7 @@
   "scripts": {
     "start": "pm2 start app.js -i max",
     "watch": "DEBUG=bazaar:* nodemon app | pino-pretty -ct",
-    "test": "NODE_ENV=test mocha --bail --exit --recursive --slow 500",
+    "test": "NODE_ENV=test mocha --bail --exit --recursive --slow 500 | pino-pretty -ct",
     "secret": "node -p \"require('uid-safe').sync(24)\"",
     "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex knex migrate:rollback --knexfile ./config/database.js",

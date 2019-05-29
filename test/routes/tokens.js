@@ -14,7 +14,7 @@ describe("token routes", () => {
         .expect(201)
         .end((err, res) => {
           if (err) return done(err)
-          token = res.body.token
+          token = res.body
           done()
         })
     })
