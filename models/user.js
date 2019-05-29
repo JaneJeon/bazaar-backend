@@ -91,19 +91,15 @@ class User extends visibility(password()(BaseModel)) {
         }
       },
       artsBought: {
-        relation: BaseModel.HasManyRelation,
+        relation: BaseModel.ManyToManyRelation,
         modelClass: "art",
         join: {
           from: "users.id",
-          to: "arts.artist_id"
-        }
-      },
-      artsSold: {
-        relation: BaseModel.HasManyRelation,
-        modelClass: "art",
-        join: {
-          from: "users.id",
-          to: "arts.artist_id"
+          through: {
+            from: "transactions.buyer_id",
+            to: "transactions.art_id"
+          },
+          to: "arts.id"
         }
       },
       commissionsAsBuyer: {
@@ -172,18 +168,6 @@ class User extends visibility(password()(BaseModel)) {
         join: {
           from: "users.id",
           to: "transactions.artist_id"
-        }
-      },
-      artsBought: {
-        relation: BaseModel.ManyToManyRelation,
-        modelClass: "art",
-        join: {
-          from: "users.id",
-          through: {
-            from: "transactions.buyer_id",
-            to: "transactions.art_id"
-          },
-          to: "arts.id"
         }
       }
     }
