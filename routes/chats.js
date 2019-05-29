@@ -36,14 +36,16 @@ module.exports = Router({ mergeParams: true })
       const chats = await negotiation
         .$relatedQuery("chats")
         .paginate(req.query.after)
+      
+      res.send(chats)
     }
     else {
       const chats = await req.commission
         .$relatedQuery("chats")
         .paginate(req.query.after)
+      
+      res.send(chats)
     }
-
-    res.send(chats)
   })
   .ws("/", (ws, req) => {
     const room = `${req.commission.id}:${req.artistId}`
