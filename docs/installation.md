@@ -16,10 +16,6 @@ If you're not running a local instance, or if your database name is different, m
 
 The server relies on a running Redis instance to store all of the "temporary" data. Again, if you're not running a local instance, make sure to update `REDIS_URL` in `.env`!
 
-### .env
-
-If there are any empty environment variables in `.env.defaults` (e.g. `AWS_ACCESS_KEY_ID`) or if you want to stray from the defaults, rather than updating `.env.defaults` directly, you should list them in `.env` (create the file if it doesn't already exist).
-
 ### Dependencies
 
 Packages may be added/removed between updates, and package versions may change as well. So if you're running this locally, run `yarn` to install all dependencies, whereas for production uses, run `yarn install --production`.
@@ -39,6 +35,8 @@ If the migration fails for some reason, try `yarn rollback` before migrating. If
 Only the CI server should be able to push to production when all tests pass. Some sort of reverse proxy (e.g. nginx) should be used to terminate SSL connections and proxy them to our node.js server. In addition, for safety, the server should be run with a process manager in clustered mode (using something like `pm2`), and logs and metrics should be monitored for unexpected failures.
 
 ## .env
+
+If there are any empty environment variables in `.env.defaults` (e.g. `AWS_ACCESS_KEY_ID`) or if you want to stray from the defaults, rather than updating `.env.defaults` directly, you should list them in `.env` (create the file if it doesn't already exist).
 
 ```c
 # server configuration
@@ -91,5 +89,5 @@ MIN_PRICE=5
 MAX_REPORT_LENGTH=5000
 
 APPLICATION_FEE=0.25
-`
+```
 
