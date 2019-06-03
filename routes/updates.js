@@ -77,7 +77,7 @@ module.exports = Router({ mergeParams: true })
         .$query()
         .patch({ pictures: Array.from(req.files).map(file => file.path), completed: true })
 
-      if (req.params.updateNum == req.commission.numUpdates) {
+      if (req.params.updateNum === req.commission.numUpdates) {
         let commission = req.commission
         commission = await commission.$query().patch({status: "completed"})
       }
