@@ -128,7 +128,7 @@ module.exports = Router()
   .use(requireAuth)
   .patch("/", upload.single("avatar"), async (req, res) => {
     User.filterPatch(req.body)
-    if (req.file) req.body.avatar = req.file
+    if (req.file) req.body.avatar = req.file.path
 
     const user = await req.user.$query().patch(req.body)
 
