@@ -292,7 +292,7 @@ class Commission extends BaseModel {
   async beginCommission(customer, source, trx) {
     this.price = dinero({ amount: this.price }).multiply(
       currency.zeroDecimalFactors[this.priceUnit]
-    )
+    ).getAmount()
 
     const charge = await stripe.charges.create({
       amount: this.price,
