@@ -37,3 +37,59 @@ If the migration fails for some reason, try `yarn rollback` before migrating. If
 ## Deployment notes
 
 Only the CI server should be able to push to production when all tests pass. Some sort of reverse proxy (e.g. nginx) should be used to terminate SSL connections and proxy them to our node.js server. In addition, for safety, the server should be run with a process manager in clustered mode (using something like `pm2`), and logs and metrics should be monitored for unexpected failures.
+
+## .env
+
+```c
+# server configuration
+NODE_ENV=development
+
+FRONTEND_URL=http://localhost:3000
+
+# yarn secret
+JWT_SECRET=shhhhhhhhhh
+DATABASE_URL=postgres://localhost/bazaar
+REDIS_URL=redis://localhost
+
+# AWS configuration
+AWS_ACCESS_KEY_ID=AKIAI7BFZ2OKRUFRHMDA
+AWS_SECRET_ACCESS_KEY=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
+AWS_DEFAULT_REGION=us-east-1
+
+SENDER_ADDRESS=sungil.ahn.19@dartmouth.edu
+PICTURE_BUCKET=19w-bazaar
+
+# stripe configuration
+STRIPE_PUBLIC_KEY=pk_test_LMFYJ1ERcTyoa8dmVAf19k5A002bFXKGIa
+STRIPE_PRIVATE_KEY=sk_test_mA9OXwPPqAvbkIt6K2jYL5Jr000P0fSvee
+STRIPE_CLIENT_ID=ca_Eo8m0oC0yHVND3SoLjaJPMfBCAKBZEXH
+
+# algolia configuration
+ALGOLIASEARCH_API_KEY=cea126703ca9e20dd46c7e7053421fac
+ALGOLIASEARCH_APPLICATION_ID=G6R9SY790V
+
+# application configuration
+MIN_USERNAME_LENGTH=2
+MAX_USERNAME_LENGTH=15
+MIN_PASSWORD_LENGTH=9
+MAX_NAME_LENGTH=30
+MAX_LOCATION_LENGTH=50
+MAX_BIO_LENGTH=140
+AVATAR_MAX_FILESIZE=15000000
+AVATAR_MAX_WIDTH=500
+AVATAR_MAX_HEIGHT=500
+
+MAX_TITLE_LENGTH=140
+MAX_DESCRIPTION_LENGTH=500
+MAX_CHAT_LENGTH=1000
+PAGE_SIZE=15
+PICTURE_MAX_FILESIZE=100000000
+PICTURE_MAX_WIDTH=4000
+PICTURE_MAX_HEIGHT=4000
+MAX_PICTURE_ATTACHMENTS=4
+MIN_PRICE=5
+MAX_REPORT_LENGTH=5000
+
+APPLICATION_FEE=0.25
+`
+
