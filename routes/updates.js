@@ -87,6 +87,7 @@ module.exports = Router({ mergeParams: true })
   )
   .patch("/:updateNum/waive", async (req, res) => {
     assert(req.isArtist === false, 403)
+    assert(req.params.updateNum !== req.commission.numUpdates, 400)
 
     let update = await req.update
       .$relatedQuery("updates")
