@@ -27,7 +27,7 @@ module.exports = Router()
     const arts = await user
       .$relatedQuery("artsBought")
       .selectWithFavorite(user.id)
-      .paginate(req.query.after)
+      .paginate(req.query.after, "arts.id")
 
     res.send(arts)
   })
