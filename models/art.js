@@ -4,6 +4,7 @@ const image = require("../lib/image")
 const assert = require("assert")
 const stripe = require("../lib/stripe")
 const dinero = require("dinero.js")
+const currency = require("../lib/currency")
 
 class Art extends BaseModel {
   static get jsonSchema() {
@@ -145,8 +146,12 @@ class Art extends BaseModel {
   }
 
   async purchase(buyerId, customer, source, destination, trx) {
+    this.price = dinero({ amount: this.price })
+      .multiply(currency.zeroDecimalFactors[this.priceUnit])
+      .getAmount()
+
     const charge = await stripe.charges.create({
-      amount: this.price * 100,
+      amount: this.price,
       currency: this.priceUnit,
       customer,
       ...(source && { source }),
