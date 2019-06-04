@@ -73,12 +73,10 @@ module.exports = Router({ mergeParams: true })
         .where("update_num", req.params.updateNum)
         .first()
 
-      update = await update
-        .$query()
-        .patch({
-          pictures: Array.from(req.files).map(file => file.path),
-          completed: true
-        })
+      update = await update.$query().patch({
+        pictures: Array.from(req.files).map(file => file.path),
+        completed: true
+      })
 
       if (req.params.updateNum === req.commission.numUpdates) {
         let commission = req.commission
