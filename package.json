@@ -27,7 +27,7 @@
     "express-jwt": "^5.3.1",
     "express-rate-limit": "^3.3.2",
     "express-ws": "^4.0.0",
-    "helmet": "^3.16.0",
+    "helmet": "^3.20.0",
     "http-assert": "^1.4.0",
     "ioredis": "^4.9.0",
     "jsonwebtoken": "^8.5.1",
