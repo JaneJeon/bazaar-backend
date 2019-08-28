@@ -1,6 +1,6 @@
 # Bazaar
 
-[![CircleCI](https://circleci.com/gh/dartmouth-cs98/19w-bazaar-backend.svg?style=shield&circle-token=da3f2720e545f2b6c92aceccc91852ffca18ea15)](https://circleci.com/gh/dartmouth-cs98/19w-bazaar-backend)
+[![CircleCI](https://circleci.com/gh/dartmouth-cs98/19w-bazaar-backend.svg?style=shield&circle-token=da3f2720e545f2b6c92aceccc91852ffca18ea15)](https://circleci.com/gh/dartmouth-cs98/19w-bazaar-backend) [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=JaneJeon/bazaar-web-API)](https://dependabot.com)
 
 This is a REST API that will support the Bazaar React client. Please refer to the frontent repo @ https://github.com/dartmouth-cs98/19w-bazaar-frontend.
 
