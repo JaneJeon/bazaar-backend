@@ -18,7 +18,7 @@
     "bull": "^3.7.0",
     "cors": "^2.8.5",
     "dayjs": "^1.8.12",
-    "db-errors": "^0.1.1",
+    "db-errors": "^0.2.3",
     "debug": "^4.1.1",
     "dinero.js": "^1.6.0",
     "dotenv-defaults": "^1.0.2",

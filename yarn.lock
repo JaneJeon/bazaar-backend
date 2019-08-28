@@ -996,15 +996,10 @@ dayjs@^1.8.12:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.14.tgz#43e4f62830c2c3342c3fcd25934dc9162dbe6f38"
   integrity sha512-AVhDmRTe541iWirnoeFSSDDGvCT6HWaNQ4z2WmmzXMGZj6ph6ydao2teKq/eUtR43GPJXlYFD+C/SotG1P9wUQ==
 
-db-errors@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/db-errors/-/db-errors-0.1.1.tgz#7fed5164f7822135ba655c73ed4f32277964920d"
-  integrity sha512-/yyJI6OAZg/KPBfG9TMgqV9m8W79XjkfZk++wChdeWxkwn3BvV5d6+aEkO8flh/tHMnasZ5k36bjliHuqHvFyw==
-
-db-errors@^0.2.1:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/db-errors/-/db-errors-0.2.2.tgz#26a5cb7ac26486ef2e7c802eaaffb44d50d8d264"
-  integrity sha512-zohLo8J6p3pcGF3x+24K3S2iyUU9zGX8jr/TiplvmlOsjdoqNd4/g7Ew7u1fCtFQAJU+o1faGpCftQ7GHvDwTA==
+db-errors@^0.2.1, db-errors@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/db-errors/-/db-errors-0.2.3.tgz#a6a38952e00b20e790f2695a6446b3c65497ffa2"
+  integrity sha512-OOgqgDuCavHXjYSJoV2yGhv6SeG8nk42aoCSoyXLZUH7VwFG27rxbavU1z+VrZbZjphw5UkDQwUlD21MwZpUng==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
