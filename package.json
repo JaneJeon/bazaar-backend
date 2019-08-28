@@ -47,7 +47,7 @@
     "pm2": "^3.5.1",
     "querystring": "^0.2.0",
     "rate-limit-redis": "^1.6.0",
-    "sharp": "^0.22.0",
+    "sharp": "^0.23.0",
     "stripe": "^6.28.0",
     "uid-safe": "^2.1.5",
     "ulid": "^2.3.0"
