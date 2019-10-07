@@ -8,7 +8,9 @@
     "migrate": "DEBUG=knex knex migrate:latest --knexfile ./config/database.js",
     "rollback": "DEBUG=knex knex migrate:rollback --knexfile ./config/database.js",
     "seed": "DEBUG=knex knex seed:run --knexfile ./config/database.js",
-    "clean": "rm -f *.log; rm -rf node_modules"
+    "clean": "rm -f *.log; rm -rf node_modules",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "@xyluet/objection-table-name": "^2.0.0",
@@ -50,7 +52,8 @@
     "sharp": "^0.23.0",
     "stripe": "^7.8.0",
     "uid-safe": "^2.1.5",
-    "ulid": "^2.3.0"
+    "ulid": "^2.3.0",
+    "snyk": "^1.230.5"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
@@ -74,5 +77,6 @@
       "pre-commit": "prettier --write '**/*.js'",
       "pre-push": "yarn test"
     }
-  }
+  },
+  "snyk": true
 }
