@@ -12,3 +12,7 @@ patch:
         patched: '2019-10-03T22:21:07.352Z'
     - pm2 > @pm2/io > @pm2/agent-node > proxy-agent > pac-proxy-agent > https-proxy-agent:
         patched: '2019-10-03T22:21:07.352Z'
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2019-10-14T22:21:25.415Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2019-10-14T22:21:25.415Z'
