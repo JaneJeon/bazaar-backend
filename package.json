@@ -53,7 +53,7 @@
     "stripe": "^7.10.0",
     "uid-safe": "^2.1.5",
     "ulid": "^2.3.0",
-    "snyk": "^1.236.1"
+    "snyk": "^1.239.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.1",
