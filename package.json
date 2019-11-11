@@ -44,7 +44,7 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.12.1",
-    "pino": "^5.13.5",
+    "pino": "^5.13.6",
     "pluralize": "^8.0.0",
     "pm2": "^4.1.2",
     "querystring": "^0.2.0",
