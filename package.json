@@ -48,7 +48,7 @@
     "pluralize": "^8.0.0",
     "pm2": "^4.1.2",
     "querystring": "^0.2.0",
-    "rate-limit-redis": "^1.6.0",
+    "rate-limit-redis": "^1.7.0",
     "sharp": "^0.23.2",
     "stripe": "^7.13.0",
     "uid-safe": "^2.1.5",
