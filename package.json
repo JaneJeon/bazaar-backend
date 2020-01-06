@@ -50,7 +50,7 @@
     "querystring": "^0.2.0",
     "rate-limit-redis": "^1.7.0",
     "sharp": "^0.23.4",
-    "stripe": "^7.14.0",
+    "stripe": "^7.15.0",
     "uid-safe": "^2.1.5",
     "ulid": "^2.3.0",
     "snyk": "^1.274.0"
