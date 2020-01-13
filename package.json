@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "faker": "^4.1.0",
-    "husky": "^3.1.0",
+    "husky": "^4.0.7",
     "mocha": "^7.0.0",
     "nodemon": "^2.0.2",
     "pino-pretty": "^3.5.0",
