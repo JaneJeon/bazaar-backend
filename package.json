@@ -16,7 +16,7 @@
     "@xyluet/objection-table-name": "^2.0.0",
     "algoliasearch": "^3.35.1",
     "aws-sdk": "^2.601.0",
-    "axios": "^0.19.1",
+    "axios": "^0.19.2",
     "bull": "^3.12.1",
     "cors": "^2.8.5",
     "dayjs": "^1.8.19",
